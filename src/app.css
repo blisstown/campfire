@@ -1,0 +1,20 @@
+@import url("/font/inter/inter.css");
+
+:root {
+    --fg0: #eee;
+    --bg0: #080808;
+    --bg1: #101010;
+    --bg2: #121212;
+    --accent: #b7fd49;
+    --accent-bg: #242b1a;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+
+    color: var(--fg0);
+    background-color: var(--bg0);
+
+    font-family: "Inter", sans-serif;
+}
