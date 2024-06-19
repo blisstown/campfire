@@ -1,6 +1,5 @@
 import * as mastodonAPI from '../api/mastodon.js';
 import * as firefishAPI from '../api/firefish.js';
-import * as misskeyAPI from '../api/misskey.js';
 
 let client = false;
 

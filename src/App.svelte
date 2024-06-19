@@ -118,7 +118,7 @@
         text-decoration: underline;
     }
 
-    input[type="text"], input[type="password"] {
+    input[type="text"] {
         margin: 8px 0;
         padding: 4px 6px;
         font-family: inherit;
@@ -145,9 +145,5 @@
 
     button#login:active, button#logout:active {
         background: #0001;
-    }
-
-    code {
-        font-size: 1.2em;
     }
 </style>
