@@ -23,15 +23,15 @@ incompatible, and the web console will get very upset.
 
 ### planned
 
-- a login flow that doesn't suck (seriously, it's bad)
 - posting! (incl. replies and quotes)
 - reacting!
 
 ### "maybe"
 
-- account switching
+- multiple account support
 - post editing/deletion
-- live updates over websocket (this may lead to notifications, too)
+- live updates over websocket
+- push notifications
 
 ## try it out!
 
