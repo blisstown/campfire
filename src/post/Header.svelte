@@ -1,5 +1,5 @@
 <script>
-    import { parse_text as parse_emojis } from '../emoji.js';
+    import { parseText as parseEmojis } from '../emoji.js';
     import { shorthand as short_time } from '../time.js';
 
     export let post;
@@ -13,7 +13,7 @@
     </a>
     <header class="post-header">
         <div class="post-user-info">
-            <a href="/{post.user.mention}" class="name">{@html parse_emojis(post.user.name, post.user.emojis, true)}</a>
+            <a href="/{post.user.mention}" class="name">{@html post.user.rich_name}</a>
             <span class="username">{post.user.mention}</span>
         </div>
         <div class="post-info">

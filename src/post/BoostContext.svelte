@@ -1,5 +1,5 @@
 <script>
-    import { parse_text as parse_emojis } from '../emoji.js';
+    import { parseText as parseEmojis } from '../emoji.js';
     import { shorthand as short_time } from '../time.js';
 
     export let post;
@@ -10,7 +10,7 @@
 <div class="post-context">
     <span class="post-context-icon">🔁</span>
     <span class="post-context-action">
-        <a href="/{post.user.mention}">{@html parse_emojis(post.user.name, post.user.emojis, true)}</a> boosted this post.
+        <a href="/{post.user.mention}">{@html parseEmojis(post.user.name)}</a> boosted this post.
     </span>
     <span class="post-context-time">
         <time title="{time_string}">{short_time(post.created_at)}</time>

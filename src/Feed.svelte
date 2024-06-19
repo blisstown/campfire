@@ -1,8 +1,9 @@
 <script>
     import Post from './post/Post.svelte';
     import Error from './Error.svelte';
-    import Instance from './instance.js';
+    import { Client } from './client/client.js';
 
+    let client = Client.get();
     let posts = [];
     let loading = false;
 
@@ -13,15 +14,11 @@
         loading = true;
 
         let new_posts = [];
-        if (posts.length === 0) new_posts = await Instance.get_timeline()
-        else new_posts = await Instance.get_timeline(posts[posts.length - 1].id);
+        if (posts.length === 0) new_posts = await client.getTimeline()
+        else new_posts = await client.getTimeline(posts[posts.length - 1].id);
         
         if (!new_posts) {
-            error = `sorry! the frontend is unable to communicate with your server.
-
-this app is still in very early development, and is currently only built to support iceshrimp.
-
-for more information, please consult the developer console.`;
+            console.error(`Failed to retrieve timeline posts.`);
             loading = false;
             return;
         }
@@ -37,13 +34,53 @@ for more information, please consult the developer console.`;
             load_posts();
         }
     });
+
+    /*
+    client.getPost("9upf5wtam363h1tp", 1).then(post => {
+        posts = [...posts, post];
+        console.log(post);
+    });
+    */
 </script>
 
 <div id="feed">
     {#if error}
         <Error msg={error.replaceAll('\n', '<br>')} />
     {/if}
+    {#if posts.length <= 0}
+        <div class="loading">
+            <span>just a moment...</span>
+        </div>
+    {/if}
     {#each posts as post}
-        <Post post={post} />
+        <Post post_data={post} />
     {/each}
 </div>
+
+<style>
+    .loading {
+        width: 100%;
+        height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2em;
+        font-weight: bold;
+    }
+
+    .loading span {
+        animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+        from {
+            opacity: .5;
+        }
+        50% {
+            opacity: 1;
+        }
+        to {
+            opacity: .5;
+        }
+    }
+</style>

@@ -21,6 +21,4 @@
         border-radius: 16px;
         background-color: var(--bg1);
     }
-
-
 </style>

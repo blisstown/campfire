@@ -3,7 +3,7 @@
     import Body from './Body.svelte';
     import FooterButton from './FooterButton.svelte';
     import Post from './Post.svelte';
-    import { parse_text as parse_emojis, parse_one as parse_reaction } from '../emoji.js';
+    import { parseText as parseEmojis, parseOne as parseEmoji } from '../emoji.js';
     import { shorthand as short_time } from '../time.js';
 
     export let post;
@@ -24,7 +24,7 @@
         <div class="post-header-container">
             <header class="post-header">
                 <div class="post-user-info">
-                    <a href="/{post.user.mention}" class="name">{@html parse_emojis(post.user.name, post.user.emojis, true)}</a>
+                    <a href="/{post.user.mention}" class="name">{@html post.user.rich_name}</a>
                     <span class="username">{post.user.mention}</span>
                 </div>
                 <div class="post-info">
@@ -39,8 +39,8 @@
 
         <footer class="post-footer">
             <div class="post-reactions">
-                {#each Object.keys(post.reactions) as reaction}
-                    <FooterButton icon={parse_reaction(reaction, post.emojis)} type="reaction" bind:count={post.reactions[reaction]} title={reaction} label="" />
+                {#each post.reactions as reaction}
+                    <FooterButton icon={reaction.emoji.html} type="reaction" bind:count={reaction.count} title={reaction.emoji.id} label="" />
                 {/each}
             </div>
             <div class="post-actions">

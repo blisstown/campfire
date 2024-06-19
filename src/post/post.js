@@ -1,9 +1,5 @@
-import Instance from '../instance.js';
-import User from '../user/user.js';
-
-import { parse_one as parse_emoji } from '../emoji.js';
-
-let post_cache = Object;
+import { Client, server_types } from '../client/client.js';
+import { parseOne as parseEmoji, EMOJI_REGEX } from '../emoji.js';
 
 export default class Post {
     id;
@@ -21,70 +17,7 @@ export default class Post {
     reply;
     boost;
 
-    static resolve_id(id) {
-        return post_cache[id] || null;
-    }
-
-    static parse(data) {
-        const instance = Instance.get_instance();
-        let post = null;
-        switch (instance.type) {
-            case Instance.types.ICESHRIMP:
-                post = Post.#parse_iceshrimp(data);
-                break;
-            case Instance.types.MASTODON:
-                post = Post.#parse_mastodon(data);
-                break;
-            default:
-                break;
-        }
-        if (!post) {
-            console.error("Error while parsing post data");
-            return null;
-        }
-        post_cache[post.id] = post;
-        return post;
-    }
-
-    static #parse_iceshrimp(data) {
-        let post = new Post()
-        post.id = data.id;
-        post.created_at = new Date(data.createdAt);
-        post.user = User.parse(data.user);
-        post.text = data.text;
-        post.warning = data.cw;
-        post.boost_count = data.renoteCount;
-        post.reply_count = data.repliesCount;
-        post.mentions = data.mentions;
-        post.reactions = data.reactions;
-        post.emojis = data.emojis;
-        post.files = data.files;
-        post.url = data.url;
-        post.boost = data.renote ? Post.parse(data.renote) : null;
-        post.reply = data.reply ? Post.parse(data.reply) : null;
-        return post;
-    }
-
-    static #parse_mastodon(data) {
-        let post = new Post()
-        post.id = data.id;
-        post.created_at = new Date(data.created_at);
-        post.user = User.parse(data.account);
-        post.text = data.content;
-        post.warning = data.spoiler_text;
-        post.boost_count = data.reblogs_count;
-        post.reply_count = data.replies_count;
-        post.mentions = data.mentions;
-        post.reactions = data.reactions;
-        post.emojis = data.emojis;
-        post.files = data.media_attachments;
-        post.url = data.url;
-        post.boost = data.reblog ? Post.parse(data.reblog) : null;
-        post.reply = data.in_reply_to_id ? Post.resolve_id(data.in_reply_to_id) : null;
-        return post;
-    }
-
-    get rich_text() {
+    async rich_text() {
         let text = this.text;
         if (!text) return text;
 
@@ -112,7 +45,8 @@ export default class Post {
             }
 
             // handle mentions
-            if (allow_new && sample.match(/@[a-z0-9-_.]+@[a-z0-9-_.]+/g)) {
+            // TODO: setup a better system for handling different server capabilities
+            if (Client.get().instance.type !== server_types.MASTODON && allow_new && sample.match(/^@[\w\-.]+@[\w\-.]+/g)) {
                 // find end of the mention
                 let length = 1;
                 while (index + length < text.length && /[a-z0-9-_.]/.test(text[index + length])) length++;
@@ -122,11 +56,11 @@ export default class Post {
                 let mention = text.substring(index, index + length);
 
                 // attempt to resolve mention to a user
-                let user = User.resolve_mention(mention);
+                let user = await Client.get().getUserByMention(mention);
                 if (user) {
                     const out = `<a href="/${user.mention}" class="mention">` +
                         `<img src="${user.avatar_url}" class="mention-avatar" width="20" height="20">` +
-                        "@" + user.name + "</a>";
+                        '@' + user.username + '@' + user.host + "</a>";
                     if (current) current.text += out;
                     else response += out;
                 } else {
@@ -136,33 +70,39 @@ export default class Post {
                 continue;
             }
 
-            if (Instance.get_instance().type !== Instance.types.MASTODON) {
-                // handle links
-                if (allow_new && sample.match(/^[a-z]{3,6}:\/\/[^\s]+/g)) {
-                    // get length of link
-                    let length = text.substring(index).search(/\s|$/g);
-                    let url = text.substring(index, index + length);
-                    let out = `<a href="${url}">${url}</a>`;
-                    if (current) current.text += out;
-                    else response += out;
-                    index += length;
-                    continue;
-                }
+            // handle links
+            if (Client.get().instance.type !== server_types.MASTODON && allow_new && sample.match(/^[a-z]{3,6}:\/\/[^\s]+/g)) {
+                // get length of link
+                let length = text.substring(index).search(/\s|$/g);
+                let url = text.substring(index, index + length);
+                let out = `<a href="${url}">${url}</a>`;
+                if (current) current.text += out;
+                else response += out;
+                index += length;
+                continue;
             }
 
             // handle emojis
-            if (allow_new && sample.startsWith(':')) {
-                // lookahead to next invalid emoji character
-                let look = sample.substring(1).search(/[^a-zA-Z0-9-_.]/g) + 1;
-                // if it's ':', we can parse it
-                if (look !== 0 && sample[look] === ':') {
-                    let emoji_code = sample.substring(0, look + 1);
-                    let out = parse_emoji(emoji_code, this.emojis);
+            if (allow_new && sample.match(/^:[\w\-.]{0,32}:/g)) {
+                // find the emoji name
+                let length = text.substring(index + 1).search(':');
+                if (length <= 0) return text;
+                let emoji_name = text.substring(index + 1, index + length + 1);
+                let emoji = Client.get().getEmoji(emoji_name + '@' + this.user.host);
+
+                index += length + 2;
+
+                if (!emoji) {
+                    let out = ':' + emoji_name + ':';
                     if (current) current.text += out;
                     else response += out;
-                    index += emoji_code.length;
                     continue;
                 }
+
+                let out = emoji.html;
+                if (current) current.text += out;
+                else response += out;
+                continue;
             }
 
             // handle markdown

@@ -4,42 +4,42 @@
     import Header from './Header.svelte';
     import Body from './Body.svelte';
     import FooterButton from './FooterButton.svelte';
-    import { parse_one as parse_reaction } from '../emoji.js';
+    import { parseOne as parseEmoji } from '../emoji.js';
     import { play_sound } from '../sound.js';
 
-    export let post;
+    export let post_data;
 
     let post_context = undefined;
-    let _post = post;
+    let post = post_data;
     let is_boost = false;
-    if (_post.boost) {
+    if (post_data.boost) {
         is_boost = true;
-        post_context = _post;
-        _post = _post.boost;
+        post_context = post_data;
+        post = post_data.boost;
     }
 
     let aria_label = post.user.username + '; ' + post.text + '; ' + post.created_at;
 </script>
 
 <div class="post-container" aria-label={aria_label}>
-    {#if _post.reply}
-        <ReplyContext post={_post.reply} />
+    {#if post.reply}
+        <ReplyContext post={post.reply} />
     {/if}
     {#if is_boost && !post_context.text}
         <BoostContext post={post_context} />
     {/if}
     <article class="post">
-        <Header post={_post} />
-        <Body post={_post} />
+        <Header post={post} />
+        <Body post={post} />
         <footer class="post-footer">
             <div class="post-reactions">
-                {#each Object.keys(_post.reactions) as reaction}
-                    <FooterButton icon={parse_reaction(reaction, _post.emojis)} type="reaction" bind:count={_post.reactions[reaction]} title={reaction} label="" />
+                {#each post.reactions as reaction}
+                    <FooterButton icon={reaction.emoji.html} type="reaction" bind:count={reaction.count} title={reaction.emoji.id} label="" />
                 {/each}
             </div>
             <div class="post-actions">
-                <FooterButton icon="🗨️" type="reply" label="Reply" bind:count={_post.reply_count} sound="post" />
-                <FooterButton icon="🔁" type="boost" label="Boost" bind:count={_post.boost_count} sound="boost" />
+                <FooterButton icon="🗨️" type="reply" label="Reply" bind:count={post.reply_count} sound="post" />
+                <FooterButton icon="🔁" type="boost" label="Boost" bind:count={post.boost_count} sound="boost" />
                 <FooterButton icon="⭐" type="favourite" label="Favourite" />
                 <FooterButton icon="😃" type="react" label="React" />
                 <FooterButton icon="🗣️" type="quote" label="Quote" />
@@ -63,17 +63,19 @@
         background-color: var(--bg2);
     }
 
-    .post-reactions {
-        margin-top: 8px;
+    :global(.post-reactions) {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: row;
     }
 
-    .post-actions {
+    :global(.post-actions) {
         margin-top: 8px;
+        display: flex;
+        flex-direction: row;
     }
 
     .post-container :global(.emoji) {
-        position: relative;
-        top: 6px;
-        height: 26px;
+        height: 20px;
     }
 </style>

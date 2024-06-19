@@ -1,5 +1,8 @@
 <script>
     export let post;
+
+    let rich_text;
+    post.rich_text().then(res => {rich_text = res});
 </script>
 
 <div class="post-body">
@@ -7,7 +10,7 @@
         <p class="post-warning"><strong>{post.warning}</strong></p>
     {/if}
     {#if post.text}
-        <span class="post-text">{@html post.rich_text}</span>
+        <span class="post-text">{@html rich_text}</span>
     {/if}
     <div class="post-media-container" data-count={post.files.length}>
         {#each post.files as file}
@@ -38,6 +41,12 @@
 
     .post-text {
         word-wrap: break-word;
+    }
+
+    .post-text :global(.emoji) {
+        position: relative;
+        top: 6px;
+        height: 24px!important;
     }
 
     .post-text :global(code) {

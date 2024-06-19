@@ -15,7 +15,7 @@
         aria-label="{label}"
         title="{title}"
         on:click={() => (play_sound(sound))}>
-        <span>{@html icon}</span>
+        <span class="icon">{@html icon}</span>
         {#if count}
             <span class="count">{count}</span>
         {/if}
@@ -23,7 +23,11 @@
 
 <style>
     button {
+        height: 32px;
         padding: 6px 8px;
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
         font-size: 1em;
         background: none;
         color: inherit;
@@ -42,6 +46,14 @@
 
     button:active {
         background: #0001;
+    }
+
+    .icon {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .count {
