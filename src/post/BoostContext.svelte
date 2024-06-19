@@ -10,7 +10,7 @@
 <div class="post-context">
     <span class="post-context-icon">🔁</span>
     <span class="post-context-action">
-        <a href="/{post.user.mention}">{@html parseEmojis(post.user.name)}</a> boosted this post.
+        <a href="/{post.user.mention}">{@html parseEmojis(post.user.rich_name)}</a> boosted this post.
     </span>
     <span class="post-context-time">
         <time title="{time_string}">{short_time(post.created_at)}</time>

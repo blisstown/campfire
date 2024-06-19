@@ -36,7 +36,7 @@
     });
 
     /*
-    client.getPost("9upf5wtam363h1tp", 1).then(post => {
+    client.getPost("", 1).then(post => {
         posts = [...posts, post];
         console.log(post);
     });
