@@ -17,6 +17,7 @@ export default class Post {
     url;
     reply;
     boost;
+    visibility;
 
     async rich_text() {
         let text = this.text;

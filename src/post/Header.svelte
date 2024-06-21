@@ -19,6 +19,9 @@
         <div class="post-info">
             <a href={post.url} class="created-at">
                 <time title={time_string}>{short_time(post.created_at)}</time>
+                {#if post.visibility !== "public"}
+                    <span class="post-visibility">({post.visibility})</span>
+                {/if}
             </a>
         </div>
     </header>

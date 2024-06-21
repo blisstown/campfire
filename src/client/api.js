@@ -144,18 +144,18 @@ export async function parsePost(data, num_replies) {
     post.id = data.id;
     post.created_at = new Date(data.created_at);
     post.user = await parseUser(data.account);
-
-    if (client.instance.capabilities.includes(capabilities.MARKDOWN_CONTENT))
-        post.text = data.text;
-    else
-        post.text = data.content;
-
     post.warning = data.spoiler_text;
     post.boost_count = data.reblogs_count;
     post.reply_count = data.replies_count;
     post.mentions = data.mentions;
     post.files = data.media_attachments;
     post.url = data.url;
+    post.visibility = data.visibility;
+
+    if (client.instance.capabilities.includes(capabilities.MARKDOWN_CONTENT))
+        post.text = data.text;
+    else
+        post.text = data.content;
 
     post.reply = null;
     if (data.in_reply_to_id && num_replies > 0) {
