@@ -3,27 +3,41 @@
 
     let rich_text;
     post.rich_text().then(res => {rich_text = res});
+    let open_warned = false;
 </script>
 
 <div class="post-body">
     {#if post.warning}
-        <p class="post-warning"><strong>{post.warning}</strong></p>
+        <p class="post-warning" on:click={() => { open_warned = !open_warned }}>
+        <strong>
+            {post.warning}
+            <span class="warning-instructions">
+                {#if !open_warned}
+                    (click to reveal)
+                {:else}
+                    (click to hide)
+                {/if}
+            </span>
+        </strong>
+        </p>
     {/if}
-    {#if post.text}
-        <span class="post-text">{@html rich_text}</span>
-    {/if}
-    <div class="post-media-container" data-count={post.files.length}>
-        {#each post.files as file}
-            <div class="post-media image">
-                <a href={file.url}>
-                    <img src={file.url} alt={file.alt} height="200" loading="lazy" decoding="async">
-                </a>
-            </div>
-        {/each}
-    </div>
-    {#if post.boost && post.text}
-        <p class="post-warning"><strong>this is quoting a post! quotes are not supported yet.</strong></p>
-        <!-- TODO: quotes support -->
+    {#if !post.warning || open_warned}
+        {#if post.text}
+            <span class="post-text">{@html rich_text}</span>
+        {/if}
+        <div class="post-media-container" data-count={post.files.length}>
+            {#each post.files as file}
+                <div class="post-media image">
+                    <a href={file.url}>
+                        <img src={file.url} alt={file.alt} height="200" loading="lazy" decoding="async">
+                    </a>
+                </div>
+            {/each}
+        </div>
+        {#if post.boost && post.text}
+            <p class="post-warning"><strong>this is quoting a post! quotes are not supported yet.</strong></p>
+            <!-- TODO: quotes support -->
+        {/if}
     {/if}
 </div>
 
@@ -34,9 +48,22 @@
 
     .post-warning {
         padding: 4px 8px;
-        --warn-bg: rgba(255,220,30,.2);
+        --warn-bg: rgba(255,220,30,.1);
         background-image: repeating-linear-gradient(-45deg, transparent, transparent 10px, var(--warn-bg) 10px, var(--warn-bg) 20px);
         border-radius: 8px;
+        cursor: pointer;
+        outline-color: var(--warn-bg);
+        transition: outline .05s, box-shadow .05s;
+    }
+
+    .post-warning:hover {
+        outline: 1px solid var(--warn-bg);
+        box-shadow: 0 0 8px var(--warn-bg);
+    }
+
+    .post-warning .warning-instructions {
+        font-weight: normal;
+        opacity: .5;
     }
 
     .post-text {
