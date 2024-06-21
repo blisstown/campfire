@@ -40,14 +40,20 @@ export class Client {
         client = new Client();
         window.peekie = client;
         client.load();
-        if (client.instance) client.#configureAPI();
+        if (client.instance && client.instance !== server_types.INCOMPATIBLE)
+            client.#configureAPI();
         return client;
     }
 
     async init(host) {
         if (host.startsWith("https://")) host = host.substring(8);
-        const url = "https://" + host + "/api/v1/instance";
-        const data = await fetch(url).then(res => res.json());
+        const url = `https://${host}/api/v1/instance`;
+        const data = await fetch(url).then(res => res.json()).catch(error => { console.log(error) });
+        if (!data) {
+            console.error(`Failed to connect to ${host}`);
+            alert(`Failed to connect to ${host}! Please try again later.`);
+            return false;
+        }
         this.instance = {
             host: host,
             version: data.version,
@@ -62,6 +68,14 @@ export class Client {
             }
         }
 
+        if (this.instance.type == server_types.INCOMPATIBLE) {
+            console.error(`Server ${host} is not supported - ${data.version}`);
+            alert(`Sorry, this app is not compatible with ${host}!`);
+            return false;
+        }
+
+        console.log(`Server is "${client.instance.type}" (or compatible).`);
+
         this.#configureAPI();
         this.app = await this.api.createApp(host);
 
@@ -70,7 +84,9 @@ export class Client {
             return false;
         }
 
-        return this.auth;
+        this.save();
+
+        return true;
     }
 
     #configureAPI() {

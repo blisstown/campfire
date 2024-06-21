@@ -18,14 +18,8 @@
         event.preventDefault();
         const host = event.target.host.value;
 
-        client.init(host).then(() => {
-            if (client.instance.type === server_types.INCOMPATIBLE) {
-                console.error("Server " + client.instance.host + " is not supported - " + client.instance.version);
-                alert("Sorry, this app is not compatible with " + client.instance.host + "!");
-                return;
-            }
-            console.log("Server is \"" + client.instance.type + "\" (or compatible).");
-            client.save();
+        client.init(host).then(res => {
+            if (!res) return;
             let oauth_url = client.getOAuthUrl();
             location = oauth_url;
         });
