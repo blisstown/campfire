@@ -214,11 +214,14 @@ export async function parseUser(data) {
     user.id = data.id;
     user.nickname = data.display_name;
     user.username = data.username;
+    user.avatar_url = data.avatar;
+    user.url = data.url;
+
     if (data.acct.includes('@'))
         user.host = data.acct.split('@')[1];
     else
         user.host = data.username + '@' + Client.get().instance.host;
-    user.avatar_url = data.avatar;
+
     user.emojis = [];
     data.emojis.forEach(emoji_data => {
         emoji_data.id = emoji_data.shortcode + '@' + user.host;
@@ -226,6 +229,7 @@ export async function parseUser(data) {
         emoji_data.host = user.host;
         user.emojis.push(parseEmoji(emoji_data));
     });
+
     Client.get().putCacheUser(user);
     return user;
 }

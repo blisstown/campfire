@@ -1,6 +1,4 @@
-import { Client } from '../client/client.js';
-import { capabilities, server_types } from '../client/instance.js';
-import { parseOne as parseEmoji, EMOJI_REGEX } from '../emoji.js';
+import { parseText as parseEmoji } from '../emoji.js';
 
 export default class Post {
     id;
@@ -19,6 +17,11 @@ export default class Post {
     boost;
     visibility;
 
+    async rich_text() {
+        return parseEmoji(this.text, this.user.host);
+    }
+
+    /*
     async rich_text() {
         let text = this.text;
         if (!text) return text;
@@ -165,4 +168,5 @@ export default class Post {
 
         return response;
     }
+    */
 }

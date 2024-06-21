@@ -24,8 +24,6 @@
             return;
         }
 
-        console.log(timeline_data);
-
         for (let i in timeline_data) {
             const post_data = timeline_data[i];
             const post = await parsePost(post_data, 1);

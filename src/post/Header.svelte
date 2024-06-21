@@ -8,16 +8,16 @@
 </script>
 
 <div class="post-header-container">
-    <a href="/{post.user.mention}" class="post-avatar-container">
+    <a href={post.user.url} target="_blank" class="post-avatar-container">
         <img src={post.user.avatar_url} type={post.user.avatar_type} alt="" width="48" height="48" class="post-avatar" loading="lazy" decoding="async">
     </a>
     <header class="post-header">
         <div class="post-user-info">
-            <a href="/{post.user.mention}" class="name">{@html post.user.rich_name}</a>
+            <a href={post.user.url} target="_blank" class="name">{@html post.user.rich_name}</a>
             <span class="username">{post.user.mention}</span>
         </div>
         <div class="post-info">
-            <a href={post.url} class="created-at">
+            <a href={post.url} target="_blank" class="created-at">
                 <time title={time_string}>{short_time(post.created_at)}</time>
                 {#if post.visibility !== "public"}
                     <span class="post-visibility">({post.visibility})</span>
@@ -44,6 +44,7 @@
 
     .post-avatar-container {
         margin-right: 12px;
+        display: flex;
     }
 
     .post-avatar {
@@ -61,6 +62,13 @@
         margin-left: auto;
     }
 
+    .post-user-info {
+        margin-top: -6px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
     .post-user-info a {
         display: block;
     }
@@ -68,7 +76,7 @@
     .post-user-info .name :global(.emoji) {
         position: relative;
         top: 4px;
-        height: 26px;
+        height: 20px;
     }
 
     .post-user-info .username {

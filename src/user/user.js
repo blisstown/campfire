@@ -7,6 +7,7 @@ export default class User {
     host;
     avatar_url;
     emojis;
+    url;
 
     get name() {
         return this.nickname || this.username;

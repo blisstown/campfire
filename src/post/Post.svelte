@@ -69,7 +69,6 @@
 
 
     :global(.post-reactions) {
-        margin-top: 16px;
         display: flex;
         flex-direction: row;
     }

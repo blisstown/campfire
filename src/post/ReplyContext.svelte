@@ -13,7 +13,7 @@
 
 <article class="post-reply">
     <div class="post-reply-avatar-container">
-        <a href="/{post.user.mention}" class="post-avatar-container">
+        <a href={post.user.url} target="_blank" class="post-avatar-container">
             <img src={post.user.avatar_url} type={post.user.avatar_type} alt="" width="48" height="48" class="post-avatar" loading="lazy" decoding="async">
         </a>
         <div class="line">
@@ -24,11 +24,11 @@
         <div class="post-header-container">
             <header class="post-header">
                 <div class="post-user-info">
-                    <a href="/{post.user.mention}" class="name">{@html post.user.rich_name}</a>
+                    <a href={post.user.url} target="_blank" class="name">{@html post.user.rich_name}</a>
                     <span class="username">{post.user.mention}</span>
                 </div>
                 <div class="post-info">
-                    <a href={post.url} class="created-at">
+                    <a href={post.url} target="_blank" class="created-at">
                         <time title={time_string}>{short_time(post.created_at)}</time>
                     </a>
                 </div>
@@ -62,6 +62,10 @@
         flex-direction: row;
     }
 
+    .post-avatar-container {
+        display: flex;
+    }
+
     .post-reply-avatar-container {
         margin-right: 12px;
         margin-bottom: -24px;
@@ -69,7 +73,6 @@
 
     .post-reply-avatar-container .line {
         position: relative;
-        top: -4px;
         left: -1px;
         width: 50%;
         height: calc(100% - 48px);
@@ -81,6 +84,7 @@
     }
 
     .post-header-container {
+        margin-bottom: -6px;
         display: flex;
         flex-direction: row;
     }
@@ -100,6 +104,7 @@
     }
 
     .post-header {
+        height: 48px;
         display: flex;
         flex-grow: 1;
         flex-direction: row;
@@ -107,6 +112,13 @@
 
     .post-info {
         margin-left: auto;
+    }
+
+    .post-user-info {
+        margin-top: -4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     .post-user-info a {
@@ -126,5 +138,13 @@
 
     .post-info .created-at {
         font-size: .8em;
+    }
+
+    :global(.post-body) {
+        margin-top: 0;
+    }
+
+    :global(.post-body p) {
+        margin: 0;
     }
 </style>

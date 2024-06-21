@@ -28,7 +28,7 @@
         <div class="post-media-container" data-count={post.files.length}>
             {#each post.files as file}
                 <div class="post-media image">
-                    <a href={file.url}>
+                    <a href={file.url} target="_blank">
                         <img src={file.url} alt={file.alt} height="200" loading="lazy" decoding="async">
                     </a>
                 </div>
@@ -43,10 +43,11 @@
 
 <style>
     .post-body {
-        margin-top: 8px;
+        margin-top: 10px;
     }
 
     .post-warning {
+        margin-bottom: 6px;
         padding: 4px 8px;
         --warn-bg: rgba(255,220,30,.1);
         background-image: repeating-linear-gradient(-45deg, transparent, transparent 10px, var(--warn-bg) 10px, var(--warn-bg) 20px);
@@ -67,12 +68,14 @@
     }
 
     .post-text {
+        line-height: 1.2em;
         word-wrap: break-word;
     }
 
     .post-text :global(.emoji) {
         position: relative;
         top: 6px;
+        margin-top: -10px;
         height: 24px!important;
     }
 
@@ -110,8 +113,7 @@
 
     .post-text :global(a.mention) {
         color: var(--accent);
-        padding: 6px 6px;
-        margin: -6px 0;
+        padding: 3px 6px;
         background: var(--accent-bg);
         border-radius: 6px;
         text-decoration: none;
