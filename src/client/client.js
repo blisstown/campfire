@@ -15,6 +15,7 @@ const versions_types = [
     { version: "mastodon", type: server_types.MASTODON },
     { version: "glitchsoc", type: server_types.MASTODON },
     { version: "chuckya", type: server_types.MASTODON },
+    { version: "firefish", type: server_types.FIREFISH },
     { version: "iceshrimp", type: server_types.FIREFISH },
     { version: "sharkey", type: server_types.FIREFISH },
 ];
