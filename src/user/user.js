@@ -1,3 +1,4 @@
+import { Client } from '../client/client.js';
 import { parseText as parseEmojis } from '../emoji.js';
 
 export default class User {
@@ -15,7 +16,8 @@ export default class User {
 
     get mention() {
         let res = "@" + this.username;
-        if (this.host) res += "@" + this.host;
+        if (this.host != Client.get().instance.host)
+            res += "@" + this.host;
         return res;
     }
 

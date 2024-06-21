@@ -148,7 +148,6 @@ export async function parsePost(data, num_replies) {
     post.boost_count = data.reblogs_count;
     post.reply_count = data.replies_count;
     post.mentions = data.mentions;
-    if (data.media_attachments.length > 0) console.log(data.media_attachments);
     post.files = data.media_attachments;
     post.url = data.url;
     post.visibility = data.visibility;
@@ -221,7 +220,7 @@ export async function parseUser(data) {
     if (data.acct.includes('@'))
         user.host = data.acct.split('@')[1];
     else
-        user.host = data.username + '@' + Client.get().instance.host;
+        user.host = Client.get().instance.host;
 
     user.emojis = [];
     data.emojis.forEach(emoji_data => {
