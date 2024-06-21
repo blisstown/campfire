@@ -49,6 +49,12 @@
         height: 24px!important;
     }
 
+    .post-text :global(blockquote) {
+        border-left: 4px solid #8888;
+        padding: .2em 2em;
+        margin: .8em 0;
+    }
+
     .post-text :global(code) {
         font-size: 1.2em;
     }
