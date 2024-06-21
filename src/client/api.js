@@ -118,9 +118,9 @@ export async function getPost(post_id, num_replies) {
     const data = await fetch(url, {
         method: 'GET',
         headers: { "Authorization": "Bearer " + client.app.token }
-    }).then(res => { res.ok ? res.json() : false });
+    }).then(res => { return res.ok ? res.json() : false });
 
-    if (!data) return null;
+    if (data === false) return false;
 
     const post = await parsePost(data, num_replies);
     if (post === null || post === undefined) {
@@ -158,9 +158,9 @@ export async function parsePost(data, num_replies) {
     post.reply = null;
     if (data.in_reply_to_id && num_replies > 0) {
         post.reply = await getPost(data.in_reply_to_id, num_replies - 1);
-        // if the post returns null, we probably don't have permission to read it.
+        // if the post returns false, we probably don't have permission to read it.
         // we'll respect the thread's privacy, and leave it alone :)
-        if (post.reply === null) return false;
+        if (post.reply === false) return false;
     }
     post.boost = data.reblog ? await parsePost(data.reblog, 1) : null;
 
