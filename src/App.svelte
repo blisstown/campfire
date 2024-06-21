@@ -1,6 +1,6 @@
 <script>
     import Feed from './Feed.svelte';
-    import { Client, server_types } from './client/client.js';
+    import { Client } from './client/client.js';
 
     let ready = Client.get().app && Client.get().app.token;
 
@@ -24,7 +24,6 @@
             location = oauth_url;
         });
     }
-
 
     function log_out() {
         Client.get().logout().then(() => {
