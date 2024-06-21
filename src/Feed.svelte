@@ -2,6 +2,7 @@
     import Post from './post/Post.svelte';
     import Error from './Error.svelte';
     import { Client } from './client/client.js';
+    import { parsePost } from './client/api.js';
 
     let client = Client.get();
     let posts = [];
@@ -13,18 +14,32 @@
         if (loading) return; // no spamming!!
         loading = true;
 
-        let new_posts = [];
-        if (posts.length === 0) new_posts = await client.getTimeline()
-        else new_posts = await client.getTimeline(posts[posts.length - 1].id);
-        
-        if (!new_posts) {
-            console.error(`Failed to retrieve timeline posts.`);
+        let timeline_data;
+        if (posts.length === 0) timeline_data = await client.getTimeline()
+        else timeline_data = await client.getTimeline(posts[posts.length - 1].id);
+
+        if (!timeline_data) {
+            console.error(`Failed to retrieve timeline.`);
             loading = false;
             return;
         }
 
-        posts = [...posts, ...new_posts];
-
+        for (let i in timeline_data) {
+            const post_data = timeline_data[i];
+            const post = await parsePost(post_data, 1);
+            if (!post) {
+                if (post === null || post === undefined) {
+                    if (post_data.id) {
+                        console.warn("Failed to parse post #" + post_data.id);
+                    } else {
+                        console.warn("Failed to parse post:");
+                        console.warn(post_data);
+                    }
+                }
+                continue;
+            }
+            posts = [...posts, post];
+        }
         loading = false;
     }
 

@@ -92,6 +92,8 @@ export async function getTimeline(last_post_id) {
         headers: { "Authorization": "Bearer " + client.app.token }
     }).then(res => res.json());
 
+    return data;
+
     let posts = [];
     for (let i in data) {
         const post_data = data[i];
