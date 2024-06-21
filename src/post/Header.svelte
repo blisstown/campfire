@@ -63,7 +63,7 @@
     }
 
     .post-user-info {
-        margin-top: -6px;
+        margin-top: -2px;
         display: flex;
         flex-direction: column;
         justify-content: center;
