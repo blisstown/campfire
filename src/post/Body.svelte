@@ -8,7 +8,7 @@
 
 <div class="post-body">
     {#if post.warning}
-        <p class="post-warning" on:click={() => { open_warned = !open_warned }}>
+        <button class="post-warning" on:click={() => { open_warned = !open_warned }}>
         <strong>
             {post.warning}
             <span class="warning-instructions">
@@ -19,7 +19,7 @@
                 {/if}
             </span>
         </strong>
-        </p>
+        </button>
     {/if}
     {#if !post.warning || open_warned}
         {#if post.text}
@@ -27,10 +27,18 @@
         {/if}
         <div class="post-media-container" data-count={post.files.length}>
             {#each post.files as file}
-                <div class="post-media image">
-                    <a href={file.url} target="_blank">
-                        <img src={file.url} alt={file.alt} height="200" loading="lazy" decoding="async">
-                    </a>
+                <div class="post-media {file.type}">
+                    {#if file.type === "image"}
+                        <a href={file.url} target="_blank">
+                            <img src={file.url} alt={file.description} height="200" loading="lazy" decoding="async">
+                        </a>
+                    {:else if file.type === "video"}
+                        <video controls height="200">
+                            <source src={file.url} type={file.url.endsWith('.mp4') ? 'video/mp4' : 'video/webm'}>
+                            <p>{file.description} &ensp; <a href={file.url}>[link]</a></p>
+                            <!-- <media src={file.url} alt={file.description} loading="lazy" decoding="async"> -->
+                        </video>
+                    {/if}
                 </div>
             {/each}
         </div>
@@ -47,10 +55,15 @@
     }
 
     .post-warning {
-        margin-bottom: 6px;
+        width: 100%;
+        margin-bottom: 10px;
         padding: 4px 8px;
         --warn-bg: rgba(255,220,30,.1);
-        background-image: repeating-linear-gradient(-45deg, transparent, transparent 10px, var(--warn-bg) 10px, var(--warn-bg) 20px);
+        background: repeating-linear-gradient(-45deg, transparent, transparent 10px, var(--warn-bg) 10px, var(--warn-bg) 20px);
+        font-size: inherit;
+        color: inherit;
+        text-align: left;
+        border: none;
         border-radius: 8px;
         cursor: pointer;
         outline-color: var(--warn-bg);
@@ -139,7 +152,7 @@
 
     .post-media-container {
         max-height: 540px;
-        margin-top: 8px;
+        margin: 16px 0 4px 0;
         display: grid;
         grid-gap: 8px;
     }
@@ -176,7 +189,8 @@
         cursor: zoom-in;
     }
 
-    .post-media a img {
+    .post-media img,
+    .post-media video {
         width: 100%;
         height: 100%;
         display: block;

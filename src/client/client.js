@@ -1,3 +1,4 @@
+import { version as APP_VERSION } from '../../package.json';
 import { Instance, server_types } from './instance.js';
 import * as api from './api.js';
 
@@ -118,6 +119,7 @@ export class Client {
 
     save() {
         localStorage.setItem(save_name, JSON.stringify({
+            version: APP_VERSION,
             instance: {
                 host: this.instance.host,
                 version: this.instance.version,
@@ -130,6 +132,11 @@ export class Client {
         let json = localStorage.getItem(save_name);
         if (!json) return false;
         let saved = JSON.parse(json);
+        if (!saved.version || saved.version !== APP_VERSION) {
+            localStorage.setItem(save_name + '-backup', json);
+            localStorage.removeItem(save_name);
+            return false;
+        }
         this.instance = new Instance(saved.instance.host, saved.instance.version);
         this.app = saved.app;
         return true;
