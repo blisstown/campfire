@@ -59,7 +59,7 @@
         font-size: 1.2em;
     }
 
-    .post-text :global(code:has(pre)) {
+    .post-text :global(pre:has(code)) {
         margin: 8px 0;
         padding: 8px;
         display: block;
@@ -69,7 +69,7 @@
         color: var(--accent);
     }
 
-    .post-text :global(code pre) {
+    .post-text :global(pre code) {
         margin: 0;
     }
 

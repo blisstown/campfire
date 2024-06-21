@@ -54,7 +54,9 @@ export class Instance {
                 c.push(capabilities.REACTIONS);
                 break;
             case server_types.ICESHRIMP:
-                c.push(capabilities.MARKDOWN_CONTENT);
+                // more trouble than it's worth atm
+                // the server already hands this to us ;p
+                // c.push(capabilities.MARKDOWN_CONTENT);
                 c.push(capabilities.REACTIONS);
                 break;
             case server_types.SHARKEY:

@@ -29,10 +29,6 @@
         transition: opacity .1s;
     }
 
-    .post-container:hover .post-context {
-        opacity: 1;
-    }
-
     .post-context-icon {
         margin-right: 4px;
     }

@@ -63,6 +63,11 @@
         background-color: var(--bg2);
     }
 
+    .post-container:hover :global(.post-context) {
+        opacity: 1;
+    }
+
+
     :global(.post-reactions) {
         margin-top: 16px;
         display: flex;
