@@ -1,27 +1,11 @@
-import * as mastodonAPI from '../api/mastodon.js';
-import * as firefishAPI from '../api/firefish.js';
+import { Instance, server_types } from './instance.js';
+import * as api from './api.js';
 
 let client = false;
 
-export const server_types = {
-    INCOMPATIBLE: "incompatible",
-    MASTODON: "mastodon",
-    FIREFISH: "firefish",
-};
-
 const save_name = "spacesocial";
 
-const versions_types = [
-    { version: "mastodon", type: server_types.MASTODON },
-    { version: "glitchsoc", type: server_types.MASTODON },
-    { version: "chuckya", type: server_types.MASTODON },
-    { version: "firefish", type: server_types.FIREFISH },
-    { version: "iceshrimp", type: server_types.FIREFISH },
-    { version: "sharkey", type: server_types.FIREFISH },
-];
-
 export class Client {
-    #api;
     instance;
     app;
     #cache;
@@ -40,44 +24,29 @@ export class Client {
         client = new Client();
         window.peekie = client;
         client.load();
-        if (client.instance && client.instance !== server_types.INCOMPATIBLE)
-            client.#configureAPI();
         return client;
     }
 
     async init(host) {
         if (host.startsWith("https://")) host = host.substring(8);
         const url = `https://${host}/api/v1/instance`;
-        const data = await fetch(url).then(res => res.json()).catch(error => { console.log(error) });
+        const data = await fetch(url).then(res => res.json()).catch(error => { console.error(error) });
         if (!data) {
             console.error(`Failed to connect to ${host}`);
             alert(`Failed to connect to ${host}! Please try again later.`);
             return false;
         }
-        this.instance = {
-            host: host,
-            version: data.version,
-            type: server_types.INCOMPATIBLE,
-        };
-
-        for (let index in versions_types) {
-            const pair = versions_types[index];
-            if (data.version.toLowerCase().includes(pair.version)) {
-                this.instance.type = pair.type;
-                break;
-            }
-        }
-
+        
+        this.instance = new Instance(host, data.version);
         if (this.instance.type == server_types.INCOMPATIBLE) {
             console.error(`Server ${host} is not supported - ${data.version}`);
             alert(`Sorry, this app is not compatible with ${host}!`);
             return false;
         }
 
-        console.log(`Server is "${client.instance.type}" (or compatible).`);
+        console.log(`Server is "${this.instance.type}" (or compatible) with capabilities: [${this.instance.capabilities}].`);
 
-        this.#configureAPI();
-        this.app = await this.api.createApp(host);
+        this.app = await api.createApp(host);
 
         if (!this.app || !this.instance) {
             console.error("Failed to create app. Check the network logs for details.");
@@ -89,29 +58,12 @@ export class Client {
         return true;
     }
 
-    #configureAPI() {
-        switch (this.instance.type) {
-            case server_types.MASTODON:
-                this.api = mastodonAPI;
-                break;
-            case server_types.FIREFISH:
-                this.api = firefishAPI;
-                break;
-            /* not opening that can of worms for a while
-            case server_types.MISSKEY:
-                this.api = misskeyAPI;
-                break; */
-            default:
-                break;
-        }
-    }
-
     getOAuthUrl() {
-        return this.api.getOAuthUrl(this.app.secret);
+        return api.getOAuthUrl(this.app.secret);
     }
 
     async getToken(code) {
-        const token = await this.api.getToken(code);
+        const token = await api.getToken(code);
         if (!token) {
             console.error("Failed to obtain access token");
             return false;
@@ -120,15 +72,15 @@ export class Client {
     }
 
     async revokeToken() {
-        return await this.api.revokeToken();
+        return await api.revokeToken();
     }
 
     async getTimeline(last_post_id) {
-        return await this.api.getTimeline(last_post_id);
+        return await api.getTimeline(last_post_id);
     }
 
     async getPost(post_id, num_replies) {
-        return await this.api.getPost(post_id, num_replies);
+        return await api.getPost(post_id, num_replies);
     }
 
     putCacheUser(user) {
@@ -139,7 +91,7 @@ export class Client {
         let user = this.cache.users[user_id];
         if (user) return user;
 
-        user = await this.api.getUser(user_id);
+        user = await api.getUser(user_id);
         if (user) return user;
 
         return false;
@@ -166,7 +118,10 @@ export class Client {
 
     save() {
         localStorage.setItem(save_name, JSON.stringify({
-            instance: this.instance,
+            instance: {
+                host: this.instance.host,
+                version: this.instance.version,
+            },
             app: this.app,
         }));
     }
@@ -175,13 +130,13 @@ export class Client {
         let json = localStorage.getItem(save_name);
         if (!json) return false;
         let saved = JSON.parse(json);
-        this.instance = saved.instance;
+        this.instance = new Instance(saved.instance.host, saved.instance.version);
         this.app = saved.app;
         return true;
     }
 
     async logout() {
-        if (!this.instance || !this.app || !this.api) return;
+        if (!this.instance || !this.app) return;
         if (!await this.revokeToken()) {
             console.warn("Failed to log out correctly; ditching the old tokens anyways.");
         }

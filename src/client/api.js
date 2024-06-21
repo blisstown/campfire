@@ -1,4 +1,5 @@
 import { Client } from '../client/client.js';
+import { capabilities } from '../client/instance.js';
 import Post from '../post/post.js';
 import User from '../user/user.js';
 import Emoji from '../emoji.js';
@@ -94,13 +95,15 @@ export async function getTimeline(last_post_id) {
     let posts = [];
     for (let i in data) {
         const post_data = data[i];
-        const post = await client.api.parsePost(post_data, 1);
+        const post = await parsePost(post_data, 1);
         if (!post) {
-            if (post_data.id) {
-                console.warn("Failed to parse post #" + post_data.id);
-            } else {
-                console.warn("Failed to parse post:");
-                console.warn(post_data);
+            if (post === null || post === undefined) {
+                if (post_data.id) {
+                    console.warn("Failed to parse post #" + post_data.id);
+                } else {
+                    console.warn("Failed to parse post:");
+                    console.warn(post_data);
+                }
             }
             continue;
         }
@@ -115,10 +118,12 @@ export async function getPost(post_id, num_replies) {
     const data = await fetch(url, {
         method: 'GET',
         headers: { "Authorization": "Bearer " + client.app.token }
-    }).then(res => res.json());
+    }).then(res => { res.ok ? res.json() : false });
 
-    const post = await client.api.parsePost(data, num_replies);
-    if (!post) {
+    if (!data) return null;
+
+    const post = await parsePost(data, num_replies);
+    if (post === null || post === undefined) {
         if (data.id) {
             console.warn("Failed to parse post data #" + data.id);
         } else {
@@ -133,56 +138,72 @@ export async function getPost(post_id, num_replies) {
 export async function parsePost(data, num_replies) {
     let client = Client.get();
     let post = new Post()
+
     post.id = data.id;
     post.created_at = new Date(data.created_at);
-    post.user = await Client.get().api.parseUser(data.account);
-    post.text = data.content;
+    post.user = await parseUser(data.account);
+
+    if (client.instance.capabilities.includes(capabilities.MARKDOWN_CONTENT))
+        post.text = data.text;
+    else
+        post.text = data.content;
+
     post.warning = data.spoiler_text;
     post.boost_count = data.reblogs_count;
     post.reply_count = data.replies_count;
     post.mentions = data.mentions;
-    post.reactions = data.reactions;
     post.files = data.media_attachments;
     post.url = data.url;
-    post.reply = data.in_reply_to_id && num_replies > 0 ? await getPost(data.in_reply_to_id, num_replies - 1) : null;
+
+    post.reply = null;
+    if (data.in_reply_to_id && num_replies > 0) {
+        post.reply = await getPost(data.in_reply_to_id, num_replies - 1);
+        // if the post returns null, we probably don't have permission to read it.
+        // we'll respect the thread's privacy, and leave it alone :)
+        if (post.reply === null) return false;
+    }
     post.boost = data.reblog ? await parsePost(data.reblog, 1) : null;
+
     post.emojis = [];
     data.emojis.forEach(emoji_data => {
         let name = emoji_data.shortcode.split('@')[0];
-        post.emojis.push(Client.get().api.parseEmoji({
+        post.emojis.push(parseEmoji({
             id: name + '@' + post.user.host,
             name: name,
             host: post.user.host,
             url: emoji_data.url,
         }));
     });
-    post.reactions = [];
-    data.reactions.forEach(reaction_data => {
-        if (/^[\w\-.@]+$/g.exec(reaction_data.name)) {
-            let name = reaction_data.name.split('@')[0];
-            let host = reaction_data.name.includes('@') ? reaction_data.name.split('@')[1] : client.instance.host;
-            post.reactions.push({
-                count: reaction_data.count,
-                emoji: Client.get().api.parseEmoji({
-                    id: name + '@' + host,
-                    name: name,
-                    host: host,
-                    url: reaction_data.url,
-                }),
-                me: reaction_data.me,
-            });
-        } else {
-            if (reaction_data.name == '❤') reaction_data.name = '❤️'; // stupid heart unicode
-            post.reactions.push({
-                count: reaction_data.count,
-                emoji: {
-                    html: reaction_data.name,
-                    name: reaction_data.name,
-                },
-                me: reaction_data.me,
-            });
-        }
-    });
+
+    if (client.instance.capabilities.includes(capabilities.REACTIONS)) {
+        post.reactions = [];
+        data.reactions.forEach(reaction_data => {
+            if (/^[\w\-.@]+$/g.exec(reaction_data.name)) {
+                let name = reaction_data.name.split('@')[0];
+                let host = reaction_data.name.includes('@') ? reaction_data.name.split('@')[1] : client.instance.host;
+                post.reactions.push({
+                    count: reaction_data.count,
+                    emoji: parseEmoji({
+                        id: name + '@' + host,
+                        name: name,
+                        host: host,
+                        url: reaction_data.url,
+                    }),
+                    me: reaction_data.me,
+                });
+            } else {
+                if (reaction_data.name == '❤') reaction_data.name = '❤️'; // stupid heart unicode
+                post.reactions.push({
+                    count: reaction_data.count,
+                    emoji: {
+                        html: reaction_data.name,
+                        name: reaction_data.name,
+                    },
+                    me: reaction_data.me,
+                });
+            }
+        });
+    }
     return post;
 }
 
@@ -201,7 +222,7 @@ export async function parseUser(data) {
         emoji_data.id = emoji_data.shortcode + '@' + user.host;
         emoji_data.name = emoji_data.shortcode;
         emoji_data.host = user.host;
-        user.emojis.push(Client.get().api.parseEmoji(emoji_data));
+        user.emojis.push(parseEmoji(emoji_data));
     });
     Client.get().putCacheUser(user);
     return user;
@@ -226,8 +247,8 @@ export async function getUser(user_id) {
         headers: { "Authorization": "Bearer " + client.app.token }
     }).then(res => res.json());
 
-    const user = await Client.get().api.parseUser(data);
-    if (!post) {
+    const user = await parseUser(data);
+    if (user === null || user === undefined) {
         if (data.id) {
             console.warn("Failed to parse user data #" + data.id);
         } else {
