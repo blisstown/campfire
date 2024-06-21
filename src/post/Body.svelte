@@ -50,9 +50,13 @@
     }
 
     .post-text :global(blockquote) {
+        margin: .4em 0;
+        padding: .1em 0 .1em 1em;
         border-left: 4px solid #8888;
-        padding: .2em 2em;
-        margin: .8em 0;
+    }
+
+    .post-text :global(blockquote span) {
+        opacity: .5;
     }
 
     .post-text :global(code) {
