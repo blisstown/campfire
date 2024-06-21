@@ -14,6 +14,9 @@
     </span>
     <span class="post-context-time">
         <time title="{time_string}">{short_time(post.created_at)}</time>
+        {#if post.visibility !== "public"}
+            <span class="post-visibility">({post.visibility})</span>
+        {/if}
     </span>
 </div>
 
