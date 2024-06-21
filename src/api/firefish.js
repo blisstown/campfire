@@ -44,7 +44,7 @@ export async function parsePost(data, num_replies) {
     post.files = data.media_attachments;
     post.url = data.url;
     post.reply = data.in_reply_to_id && num_replies > 0 ? await getPost(data.in_reply_to_id, num_replies - 1) : null;
-    post.boost = data.reblog ? await Client.get().api.parsePost(data.reblog, 1) : null;
+    post.boost = data.reblog ? await parsePost(data.reblog, 1) : null;
     post.emojis = [];
     data.emojis.forEach(emoji_data => {
         let name = emoji_data.shortcode.split('@')[0];
@@ -86,21 +86,7 @@ export async function parsePost(data, num_replies) {
 }
 
 export async function parseUser(data) {
-    let user = new User();
-    user.id = data.id;
-    user.nickname = data.display_name;
-    user.username = data.username;
-    user.host = data.fqn.split('@')[1];
-    user.avatar_url = data.avatar;
-    user.emojis = [];
-    data.emojis.forEach(emoji_data => {
-        emoji_data.id = emoji_data.shortcode + '@' + user.host;
-        emoji_data.name = emoji_data.shortcode;
-        emoji_data.host = user.host;
-        user.emojis.push(Client.get().api.parseEmoji(emoji_data));
-    });
-    Client.get().putCacheUser(user);
-    return user;
+    return mastodonAPI.parseUser(data);
 }
 
 export function parseEmoji(data) {

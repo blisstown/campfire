@@ -145,7 +145,7 @@ export async function parsePost(data, num_replies) {
     post.files = data.media_attachments;
     post.url = data.url;
     post.reply = data.in_reply_to_id && num_replies > 0 ? await getPost(data.in_reply_to_id, num_replies - 1) : null;
-    post.boost = data.reblog ? await Client.get().api.parsePost(data.reblog, 1) : null;
+    post.boost = data.reblog ? await parsePost(data.reblog, 1) : null;
     post.emojis = [];
     data.emojis.forEach(emoji_data => {
         let name = emoji_data.shortcode.split('@')[0];
