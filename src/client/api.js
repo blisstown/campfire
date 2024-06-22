@@ -93,25 +93,6 @@ export async function getTimeline(last_post_id) {
     }).then(res => res.json());
 
     return data;
-
-    let posts = [];
-    for (let i in data) {
-        const post_data = data[i];
-        const post = await parsePost(post_data, 1);
-        if (!post) {
-            if (post === null || post === undefined) {
-                if (post_data.id) {
-                    console.warn("Failed to parse post #" + post_data.id);
-                } else {
-                    console.warn("Failed to parse post:");
-                    console.warn(post_data);
-                }
-            }
-            continue;
-        }
-        posts.push(post);
-    }
-    return posts;
 }
 
 export async function getPost(post_id, num_replies) {

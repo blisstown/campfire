@@ -27,16 +27,16 @@ export class Instance {
     }
 
     #setType(version) {
+	this.type = server_types.UNSUPPORTED;
         if (version.constructor !== String) return;
         let version_lower = version.toLowerCase();
         for (let i = 1; i < Object.keys(server_types).length; i++) {
             const check_type = Object.values(server_types)[i];
             if (version_lower.includes(check_type)) {
                 this.type = check_type;
-                break;
+		return;
             }
         }
-        if (this.type === server_types.UNSUPPORTED) return;
     }
 
     #getCapabilities(type) {
@@ -56,7 +56,7 @@ export class Instance {
             case server_types.ICESHRIMP:
                 // more trouble than it's worth atm
                 // the server already hands this to us ;p
-                // c.push(capabilities.MARKDOWN_CONTENT);
+                //c.push(capabilities.MARKDOWN_CONTENT);
                 c.push(capabilities.REACTIONS);
                 break;
             case server_types.SHARKEY:

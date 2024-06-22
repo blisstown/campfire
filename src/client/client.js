@@ -39,13 +39,16 @@ export class Client {
         }
         
         this.instance = new Instance(host, data.version);
-        if (this.instance.type == server_types.INCOMPATIBLE) {
-            console.error(`Server ${host} is not supported - ${data.version}`);
-            alert(`Sorry, this app is not compatible with ${host}!`);
-            return false;
-        }
-
-        console.log(`Server is "${this.instance.type}" (or compatible) with capabilities: [${this.instance.capabilities}].`);
+        if (this.instance.type == server_types.UNSUPPORTED) {
+            console.warn(`Server ${host} is unsupported - ${data.version}`);
+            if (!confirm(
+		`This app does not officially support ${host}. ` +
+		`Things may break, or otherwise not work as epxected! ` +
+		`Are you sure you wish to continue?`
+	    )) return false;
+        } else {
+	    console.log(`Server is "${this.instance.type}" (or compatible) with capabilities: [${this.instance.capabilities}].`);
+	}
 
         this.app = await api.createApp(host);
 
