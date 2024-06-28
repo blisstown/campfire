@@ -1,5 +1,6 @@
 import { Client } from '../client/client.js';
 import { parseText as parseEmojis } from '../emoji.js';
+import { get } from 'svelte/store';
 
 export default class User {
     id;
@@ -16,7 +17,7 @@ export default class User {
 
     get mention() {
         let res = "@" + this.username;
-        if (this.host != Client.get().instance.host)
+        if (this.host != get(Client.get()).instance.host)
             res += "@" + this.host;
         return res;
     }

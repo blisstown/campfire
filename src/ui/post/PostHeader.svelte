@@ -1,13 +1,14 @@
 <script>
-    import { parseText as parseEmojis } from '../emoji.js';
-    import { shorthand as short_time } from '../time.js';
+    import { parseText as parseEmojis } from '../../emoji.js';
+    import { shorthand as short_time } from '../../time.js';
 
     export let post;
+    export let reply = undefined;
 
     let time_string = post.created_at.toLocaleString();
 </script>
 
-<div class="post-header-container">
+<div class={"post-header-container" + (reply ? " reply" : "")}>
     <a href={post.user.url} target="_blank" class="post-avatar-container">
         <img src={post.user.avatar_url} type={post.user.avatar_type} alt="" width="48" height="48" class="post-avatar" loading="lazy" decoding="async">
     </a>
@@ -20,7 +21,8 @@
             <a href={post.url} target="_blank" class="created-at">
                 <time title={time_string}>{short_time(post.created_at)}</time>
                 {#if post.visibility !== "public"}
-                    <span class="post-visibility">({post.visibility})</span>
+                    <br>
+                    <span class="post-visibility">{post.visibility}</span>
                 {/if}
             </a>
         </div>
@@ -29,8 +31,14 @@
 
 <style>
     .post-header-container {
+        width: 100%;
         display: flex;
         flex-direction: row;
+    }
+
+    .post-header-container.reply {
+        width: calc(100% + 60px);
+        margin-left: -60px;
     }
 
     .post-header-container a,
@@ -49,7 +57,6 @@
 
     .post-avatar {
         border-radius: 8px;
-        box-shadow: 2px 2px #0004;
     }
 
     .post-header {
@@ -80,11 +87,21 @@
     }
 
     .post-user-info .username {
-        opacity: .5;
+        opacity: .8;
         font-size: .9em;
     }
 
     .post-info .created-at {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: end;
+        justify-content: center;
         font-size: .8em;
+    }
+
+    .post-visibility {
+        font-size: .9em;
+        opacity: .8;
     }
 </style>

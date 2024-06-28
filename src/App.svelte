@@ -1,92 +1,109 @@
 <script>
-    import Feed from './Feed.svelte';
+    import Navigation from './ui/Navigation.svelte';
+    import Widgets from './ui/Widgets.svelte';
+    import Feed from './ui/Feed.svelte';
     import { Client } from './client/client.js';
+    import Button from './ui/Button.svelte';
+    import { get } from 'svelte/store';
 
-    let ready = Client.get().app && Client.get().app.token;
+    let client = get(Client.get());
+    let ready = client.app && client.app.token;
+    let instance_url_error = false;
+    let logging_in = false;
 
     let auth_code = new URLSearchParams(location.search).get("code");
     if (auth_code) {
-        let client = Client.get();
         client.getToken(auth_code).then(() => {
             client.save();
             location = location.origin;
         });
     }
 
+    if (client.app && client.app.token) {
+        client.verifyCredentials().then(res => {
+            if (res) {
+                console.log(`Logged in as @${client.user.username}@${client.user.host}`);
+            }
+        });
+    }
+
     function log_in(event) {
-        let client = Client.get();
+        logging_in = true;
         event.preventDefault();
         const host = event.target.host.value;
 
         client.init(host).then(res => {
+            logging_in = false;
             if (!res) return;
+            if (res.constructor === String) {
+                instance_url_error = res;
+                return;
+            };
             let oauth_url = client.getOAuthUrl();
             location = oauth_url;
         });
     }
-
-    function log_out() {
-        Client.get().logout().then(() => {
-            ready = false;
-        });
-    }
 </script>
 
-<header>
-    <h1>space social</h1>
-    <p>social media for the galaxy-wide-web! 🌌</p>
-    <button id="logout" on:click={log_out}>log out</button>
-</header>
+<div id="spacesocial-app">
 
-<main>
-    {#if ready}
-        <Feed />
-    {:else}
-        <div class="pane">
-            <form on:submit={log_in} id="login">
-                <h1>welcome!</h1>
-                <p>please enter your instance domain to log in.</p>
-                <input type="text" id="host" aria-label="instance domain">
-                <button type="submit" id="login">log in</button>
-            </form>
+    <header>
+        <Navigation />
+    </header>
 
-            <hr>
+    <main>
+        {#if ready}
+            <Feed />
+        {:else}
+            <div>
+                <form on:submit={log_in} id="login">
+                    <h1>Space Social</h1>
+                    <p>Welcome, fediverse user!</p>
+                    <p>Please enter your instance domain to log in.</p>
+                    <div class="input-wrapper">
+                        <input type="text" id="host" aria-label="instance domain" class={logging_in ? "throb" : ""}>
+                        {#if instance_url_error}
+                            <p class="error">{instance_url_error}</p>
+                        {/if}
+                    </div>
+                    <br>
+                    <button type="submit" id="login" class={logging_in ? "disabled" : ""}>Log in</button>
+                    <p><small>
+                        Please note this is
+                        <strong><em>extremely experimental software</em></strong>;
+                        things are likely to break!
+                        <br>
+                        If that's all cool with you, welcome aboard!
+                    </small></p>
 
-            <p><small>
-                please note this is <strong><em>extremely experimental software</em></strong>;
-                even if you use the exact same instance as me, you may encounter problems.
-                if that's all cool with you, welcome aboard!
-            </small></p>
+                    <p class="form-footer">made with ❤️ by <a href="https://arimelody.me">ari melody</a>, 2024</p>
+                </form>
+            </div>
+        {/if}
+    </main>
 
-            <p>made with ❤️ by <a href="https://arimelody.me">ari melody</a>, 2024</p>
-        </div>
-    {/if}
-</main>
+    <div id="widgets">
+        <Widgets />
+    </div>
 
-<footer>
-</footer>
+</div>
 
 <style>
-    header {
-        width: min(768px, calc(100vw - 32px));
-        margin: 16px auto;
+    #spacesocial-app {
+        margin: auto 0;
         padding: 0 16px;
         display: flex;
         flex-direction: row;
-        align-items: center;
+        justify-content: center;
+        gap: 16px;
     }
 
-    header h1 {
-        margin: 0 16px 0 0;
-    }
-
-    h1 {
-        color: var(--accent);
+    header, #widgets {
+        width: 300px;
     }
 
     main {
-        width: min(800px, calc(100vw - 16px));
-        margin: 0 auto;
+        width: 732px;
     }
 
     div.pane {
@@ -98,7 +115,7 @@
     }
 
     form#login {
-        margin: 64px 0;
+        margin: 25vh 0 32px 0;
         text-align: center;
     }
 
@@ -111,32 +128,93 @@
         text-decoration: underline;
     }
 
-    input[type="text"] {
-        margin: 8px 0;
-        padding: 4px 6px;
-        font-family: inherit;
-        border: none;
+    .input-wrapper {
+        width: 360px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    input[type=text] {
+        width: 100%;
+        padding: 12px;
+        display: block;
         border-radius: 8px;
+        border: 1px solid var(--accent);
+        background-color: var(--bg-800);
+
+        font-family: inherit;
+        font-weight: bold;
+        font-size: inherit;
+        color: var(--text);
+
+        transition: box-shadow .2s;
     }
 
-    button#login, button#logout {
-        margin-left: auto;
-        padding: 8px 12px;
-        font-size: 1em;
-        background-color: var(--bg2);
-        color: inherit;
-        border: none;
-        border-radius: 16px;
+    input[type=text]::placeholder {
+        opacity: .8;
+    }
+
+    input[type=text]:focus {
+        outline: none;
+        box-shadow: 0 0 16px color-mix(in srgb, transparent, var(--accent) 25%);
+    }
+
+    .error {
+        margin: 6px;
+        font-style: italic;
+        font-size: .9em;
+        color: red;
+        opacity: .7;
+    }
+
+    button#login {
+        margin: -8px auto 0 auto;
+        padding: 12px 24px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 600;
+        text-align: left;
+
+        border-radius: 8px;
+        border-width: 2px;
+        border-style: solid;
+
+        background-color: var(--bg-700);
+        color: var(--text);
+        border-color: transparent;
+
+        transition-property: border-color, background-color, color;
+        transition-timing-function: ease-out;
+        transition-duration: .1s;
+
         cursor: pointer;
-        transition: color .1s, background-color .1s;
+        text-align: center;
+        justify-content: center;
     }
 
-    button#login:hover, button#logout:hover {
-        color: var(--bg0);
-        background: var(--fg0);
+    button#login:hover {
+        background-color: color-mix(in srgb, var(--bg-700), var(--accent) 10%);
+        border-color: color-mix(in srgb, var(--bg-700), var(--accent) 20%);
     }
 
-    button#login:active, button#logout:active {
-        background: #0001;
+    button#login:active {
+        background-color: color-mix(in srgb, var(--bg-700), var(--bg-800) 50%);
+        border-color: color-mix(in srgb, var(--bg-700), var(--bg-800) 10%);
+    }
+
+    button#login.disabled {
+        opacity: .5;
+        cursor: initial;
+    }
+
+    .form-footer {
+        opacity: .7;
     }
 </style>

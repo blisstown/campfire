@@ -1,6 +1,6 @@
 <script>
-    import { parseText as parseEmojis } from '../emoji.js';
-    import { shorthand as short_time } from '../time.js';
+    import { parseText as parseEmojis } from '../../emoji.js';
+    import { shorthand as short_time } from '../../time.js';
 
     export let post;
 
@@ -27,7 +27,8 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        color: var(--accent);
+        font-weight: 600;
+        color: var(--text);
         opacity: .8;
         transition: opacity .1s;
     }

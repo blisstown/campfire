@@ -1,8 +1,9 @@
 import { Client } from '../client/client.js';
 import { capabilities } from '../client/instance.js';
-import Post from '../post/post.js';
+import Post from '../post.js';
 import User from '../user/user.js';
 import Emoji from '../emoji.js';
+import { get } from 'svelte/store';
 
 export async function createApp(host) {
     let form = new FormData();
@@ -30,7 +31,7 @@ export async function createApp(host) {
 }
 
 export function getOAuthUrl() {
-    let client = Client.get();
+    let client = get(Client.get());
     return `https://${client.instance.host}/oauth/authorize` +
         `?client_id=${client.app.id}` +
         "&scope=read+write+push" +
@@ -39,7 +40,7 @@ export function getOAuthUrl() {
 }
 
 export async function getToken(code) {
-    let client = Client.get();
+    let client = get(Client.get());
     let form = new FormData();
     form.append("client_id", client.app.id);
     form.append("client_secret", client.app.secret);
@@ -64,7 +65,7 @@ export async function getToken(code) {
 }
 
 export async function revokeToken() {
-    let client = Client.get();
+    let client = get(Client.get());
     let form = new FormData();
     form.append("client_id", client.app.id);
     form.append("client_secret", client.app.secret);
@@ -83,8 +84,19 @@ export async function revokeToken() {
     return true;
 }
 
+export async function verifyCredentials() {
+    let client = get(Client.get());
+    let url = `https://${client.instance.host}/api/v1/accounts/verify_credentials`;
+    const data = await fetch(url, {
+        method: 'GET',
+        headers: { "Authorization": "Bearer " + client.app.token }
+    }).then(res => res.json());
+
+    return data;
+}
+
 export async function getTimeline(last_post_id) {
-    let client = Client.get();
+    let client = get(Client.get());
     let url = `https://${client.instance.host}/api/v1/timelines/home`;
     if (last_post_id) url += "?max_id=" + last_post_id;
     const data = await fetch(url, {
@@ -95,8 +107,8 @@ export async function getTimeline(last_post_id) {
     return data;
 }
 
-export async function getPost(post_id, num_replies) {
-    let client = Client.get();
+export async function getPost(post_id, parent_replies) {
+    let client = get(Client.get());
     let url = `https://${client.instance.host}/api/v1/statuses/${post_id}`;
     const data = await fetch(url, {
         method: 'GET',
@@ -104,23 +116,49 @@ export async function getPost(post_id, num_replies) {
     }).then(res => { return res.ok ? res.json() : false });
 
     if (data === false) return false;
-
-    const post = await parsePost(data, num_replies);
-    if (post === null || post === undefined) {
-        if (data.id) {
-            console.warn("Failed to parse post data #" + data.id);
-        } else {
-            console.warn("Failed to parse post data:");
-            console.warn(data);
-        }
-        return false;
-    }
-    return post;
+    return data;
 }
 
-export async function parsePost(data, num_replies) {
-    let client = Client.get();
-    let post = new Post()
+export async function getPostContext(post_id) {
+    let client = get(Client.get());
+    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/context`;
+    const data = await fetch(url, {
+        method: 'GET',
+        headers: { "Authorization": "Bearer " + client.app.token }
+    }).then(res => { return res.ok ? res.json() : false });
+
+    if (data === false) return false;
+    return data;
+}
+
+export async function parsePost(data, parent_replies, child_replies) {
+    let client = get(Client.get());
+    let post = new Post();
+
+    // if (client.instance.capabilities.includes(capabilities.MARKDOWN_CONTENT))
+    //     post.text = data.text;
+    // else
+    post.text = data.content;
+
+    post.reply = null;
+    if ((data.in_reply_to_id || data.reply) && parent_replies !== 0) {
+        const reply_data = data.reply || await getPost(data.in_reply_to_id, parent_replies - 1);
+        post.reply = await parsePost(reply_data, parent_replies - 1, false);
+        // if the post returns false, we probably don't have permission to read it.
+        // we'll respect the thread's privacy, and leave it alone :)
+        if (post.reply === false) return false;
+    }
+    post.boost = data.reblog ? await parsePost(data.reblog, 1, false) : null;
+
+    post.replies = [];
+    if (child_replies) {
+        const replies_data = await getPostContext(data.id);
+        if (replies_data && replies_data.descendants) {
+            for (let i in replies_data.descendants) {
+                post.replies.push(await parsePost(replies_data.descendants[i], 0, false));
+            }
+        }
+    }
 
     post.id = data.id;
     post.created_at = new Date(data.created_at);
@@ -133,32 +171,20 @@ export async function parsePost(data, num_replies) {
     post.url = data.url;
     post.visibility = data.visibility;
 
-    if (client.instance.capabilities.includes(capabilities.MARKDOWN_CONTENT))
-        post.text = data.text;
-    else
-        post.text = data.content;
-
-    post.reply = null;
-    if (data.in_reply_to_id && num_replies > 0) {
-        post.reply = await getPost(data.in_reply_to_id, num_replies - 1);
-        // if the post returns false, we probably don't have permission to read it.
-        // we'll respect the thread's privacy, and leave it alone :)
-        if (post.reply === false) return false;
-    }
-    post.boost = data.reblog ? await parsePost(data.reblog, 1) : null;
-
     post.emojis = [];
-    data.emojis.forEach(emoji_data => {
-        let name = emoji_data.shortcode.split('@')[0];
-        post.emojis.push(parseEmoji({
-            id: name + '@' + post.user.host,
-            name: name,
-            host: post.user.host,
-            url: emoji_data.url,
-        }));
-    });
+    if (data.emojis) {
+        data.emojis.forEach(emoji_data => {
+            let name = emoji_data.shortcode.split('@')[0];
+            post.emojis.push(parseEmoji({
+                id: name + '@' + post.user.host,
+                name: name,
+                host: post.user.host,
+                url: emoji_data.url,
+            }));
+        });
+    }
 
-    if (client.instance.capabilities.includes(capabilities.REACTIONS)) {
+    if (data.reactions && client.instance.capabilities.includes(capabilities.REACTIONS)) {
         post.reactions = [];
         data.reactions.forEach(reaction_data => {
             if (/^[\w\-.@]+$/g.exec(reaction_data.name)) {
@@ -191,7 +217,17 @@ export async function parsePost(data, num_replies) {
 }
 
 export async function parseUser(data) {
-    let user = new User();
+    if (!data) {
+        console.error("Attempted to parse user data but no data was provided");
+        return null;
+    }
+    let client = get(Client.get());
+    let user = await client.getCacheUser(data.id);
+
+    if (user) return user;
+    // cache miss!
+
+    user = new User();
     user.id = data.id;
     user.nickname = data.display_name;
     user.username = data.username;
@@ -201,7 +237,7 @@ export async function parseUser(data) {
     if (data.acct.includes('@'))
         user.host = data.acct.split('@')[1];
     else
-        user.host = Client.get().instance.host;
+        user.host = get(Client.get()).instance.host;
 
     user.emojis = [];
     data.emojis.forEach(emoji_data => {
@@ -211,7 +247,7 @@ export async function parseUser(data) {
         user.emojis.push(parseEmoji(emoji_data));
     });
 
-    Client.get().putCacheUser(user);
+    get(Client.get()).putCacheUser(user);
     return user;
 }
 
@@ -222,12 +258,12 @@ export function parseEmoji(data) {
         data.host,
         data.url,
     );
-    Client.get().putCacheEmoji(emoji);
+    get(Client.get()).putCacheEmoji(emoji);
     return emoji;
 }
 
 export async function getUser(user_id) {
-    let client = Client.get();
+    let client = get(Client.get());
     let url = `https://${client.instance.host}/api/v1/accounts/${user_id}`;
     const data = await fetch(url, {
         method: 'GET',

@@ -12,6 +12,7 @@ export function play_sound(name) {
         return;
     }
     sound.pause();
+    sound.volume = 0.25;
     sound.currentTime = 0;
     sound.play();
 }

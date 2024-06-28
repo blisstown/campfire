@@ -1,14 +1,16 @@
 import { version as APP_VERSION } from '../../package.json';
 import { Instance, server_types } from './instance.js';
 import * as api from './api.js';
+import { get, writable } from 'svelte/store';
 
-let client = false;
+let client = writable(false);
 
 const save_name = "spacesocial";
 
 export class Client {
     instance;
     app;
+    user;
     #cache;
 
     constructor() {
@@ -21,10 +23,11 @@ export class Client {
     }
 
     static get() {
-        if (client) return client;
-        client = new Client();
-        window.peekie = client;
-        client.load();
+        if (get(client)) return client;
+        let new_client = new Client();
+        window.peekie = new_client;
+        new_client.load();
+        client.set(new_client);
         return client;
     }
 
@@ -34,8 +37,7 @@ export class Client {
         const data = await fetch(url).then(res => res.json()).catch(error => { console.error(error) });
         if (!data) {
             console.error(`Failed to connect to ${host}`);
-            alert(`Failed to connect to ${host}! Please try again later.`);
-            return false;
+            return `Failed to connect to ${host}!`;
         }
         
         this.instance = new Instance(host, data.version);
@@ -59,6 +61,8 @@ export class Client {
 
         this.save();
 
+        client.set(this);
+
         return true;
     }
 
@@ -73,29 +77,36 @@ export class Client {
             return false;
         }
         this.app.token = token;
+        client.set(this);
     }
 
     async revokeToken() {
         return await api.revokeToken();
     }
 
+    async verifyCredentials() {
+        const data = await api.verifyCredentials();
+        if (!data) return false;
+        this.user = await api.parseUser(data);
+        client.set(this);
+        return data;
+    }
+
     async getTimeline(last_post_id) {
         return await api.getTimeline(last_post_id);
     }
 
-    async getPost(post_id, num_replies) {
-        return await api.getPost(post_id, num_replies);
+    async getPost(post_id, parent_replies, child_replies) {
+        return await api.getPost(post_id, parent_replies, child_replies);
     }
 
     putCacheUser(user) {
         this.cache.users[user.id] = user;
+        client.set(this);
     }
 
-    async getUser(user_id) {
+    async getCacheUser(user_id) {
         let user = this.cache.users[user_id];
-        if (user) return user;
-
-        user = await api.getUser(user_id);
         if (user) return user;
 
         return false;
@@ -112,6 +123,7 @@ export class Client {
 
     putCacheEmoji(emoji) {
         this.cache.emojis[emoji.id] = emoji;
+        client.set(this);
     }
 
     getEmoji(emoji_id) {
@@ -142,6 +154,7 @@ export class Client {
         }
         this.instance = new Instance(saved.instance.host, saved.instance.version);
         this.app = saved.app;
+        client.set(this);
         return true;
     }
 
@@ -151,7 +164,7 @@ export class Client {
             console.warn("Failed to log out correctly; ditching the old tokens anyways.");
         }
         localStorage.removeItem(save_name);
-        client = new Client();
+        client.set(false);
         console.log("Logged out successfully.");
     }
 }
