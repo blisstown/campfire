@@ -10,27 +10,29 @@ starting, of course, with a nice frontend! ✨
 
 should you choose to play around with this yourself, just know that *many
 things are bound not to work!* notably, this has only been tested on iceshrimp
-and mastodon-compatible instances. anything beyond this will likely be
+and mastodon API-compliant instances. anything beyond this will likely be
 incompatible, and the web console will get very upset.
 
 ## features
 
 ### current
 
-- a read-only, infinite-scrolling feed
-- custom emotes and reactions (again, read-only)
-- fun, clicky buttons! (they still do nothing)
+- infinite-scrolling feed
+- log in with most/all fedi services! (with varying compatibility)
+- ability to favourite, boost, and react to posts
+- view threads in context
+- fun, clicky buttons!
 
 ### planned
 
 - posting! (incl. replies and quotes)
-- reacting!
+- live feed
+- notifications feed
 
 ### "maybe"
 
-- multiple account support
+- fast account switching
 - post editing/deletion
-- live updates over websocket
 - push notifications
 
 ## try it out!
