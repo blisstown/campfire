@@ -8,6 +8,9 @@
     import { parseOne as parseEmoji } from '../../emoji.js';
     import { play_sound } from '../../sound.js';
     import { onMount } from 'svelte';
+    import { get } from 'svelte/store';
+    import { Client } from '../../client/client.js';
+    import * as api from '../../client/api.js';
 
     export let post_data;
     export let focused = false;
@@ -23,6 +26,55 @@
 
     function gotoPost() {
         location = `/post/${post.id}`;
+    }
+
+    async function toggleBoost() {
+        let client = get(Client.get());
+        let data;
+        if (post.boosted)
+            data = await client.unboostPost(post.id);
+        else
+            data = await client.boostPost(post.id);
+        if (!data) {
+            console.error(`Failed to boost post ${post.id}`);
+            return;
+        }
+        post.boosted = data.boosted;
+        post.boost_count = data.reblogs_count;
+    }
+
+    async function toggleFavourite() {
+        let client = get(Client.get());
+        let data;
+        if (post.favourited)
+            data = await client.unfavouritePost(post.id);
+        else
+            data = await client.favouritePost(post.id);
+        if (!data) {
+            console.error(`Failed to favourite post ${post.id}`);
+            return;
+        }
+        post.favourited = data.favourited;
+        post.favourite_count = data.favourites_count;
+        if (data.reactions) post.reactions = api.parseReactions(data.reactions);
+    }
+
+    async function toggleReaction(reaction) {
+        if (reaction.name.includes('@')) return;
+        let client = get(Client.get());
+
+        let data;
+        if (reaction.me)
+            data = await client.unreactPost(post.id, reaction.name);
+        else
+            data = await client.reactPost(post.id, reaction.name);
+        if (!data) {
+            console.error(`Failed to favourite post ${post.id}`);
+            return;
+        }
+        post.favourited = data.favourited;
+        post.favourite_count = data.favourites_count;
+        if (data.reactions) post.reactions = api.parseReactions(data.reactions);
     }
 
     let el;
@@ -46,18 +98,31 @@
         <PostHeader post={post} />
         <Body post={post} />
         <footer class="post-footer">
-            <div class="post-reactions">
+            <div class="post-reactions" on:click|stopPropagation>
                 {#each post.reactions as reaction}
-                    <ReactionButton icon={reaction.emoji.html} type="reaction" bind:count={reaction.count} title={reaction.emoji.id} label="" />
+                    <ReactionButton
+                            type="reaction"
+                            on:click={() => toggleReaction(reaction)}
+                            bind:active={reaction.me}
+                            bind:count={reaction.count}
+                            disabled={reaction.name.includes('@')}
+                            title={reaction.name}
+                            label="">
+                        {#if reaction.url}
+                            <img src={reaction.url} class="emoji" height="20" title={reaction.name} alt={reaction.name}>
+                        {:else}
+                            {reaction.name}
+                        {/if}
+                    </ReactionButton>
                 {/each}
             </div>
-            <div class="post-actions">
-                <ActionButton icon="🗨️" type="reply" label="Reply" bind:count={post.reply_count} sound="post" />
-                <ActionButton icon="🔁" type="boost" label="Boost" bind:count={post.boost_count} sound="boost" />
-                <ActionButton icon="⭐" type="favourite" label="Favourite" />
-                <ActionButton icon="😃" type="react" label="React" />
-                <ActionButton icon="🗣️" type="quote" label="Quote" />
-                <ActionButton icon="🛠️" type="more" label="More" />
+            <div class="post-actions" on:click|stopPropagation>
+                <ActionButton type="reply" label="Reply" bind:count={post.reply_count} sound="post" disabled>🗨️</ActionButton>
+                <ActionButton type="boost" label="Boost" on:click={() => toggleBoost()} bind:active={post.boosted} bind:count={post.boost_count} sound="boost">🔁</ActionButton>
+                <ActionButton type="favourite" label="Favourite" on:click={() => toggleFavourite()} bind:active={post.favourited} bind:count={post.favourite_count}>⭐</ActionButton>
+                <ActionButton type="react" label="React" disabled>😃</ActionButton>
+                <ActionButton type="quote" label="Quote" disabled>🗣️</ActionButton>
+                <ActionButton type="more" label="More" disabled>🛠️</ActionButton>
             </div>
         </footer>
     </article>
@@ -97,14 +162,18 @@
     }
 
     :global(.post-reactions) {
+        width: fit-content;
         display: flex;
         flex-direction: row;
+        gap: 4px;
     }
 
     :global(.post-actions) {
+        width: fit-content;
         margin-top: 8px;
         display: flex;
         flex-direction: row;
+        gap: 2px;
     }
 
     .post-container :global(.emoji) {

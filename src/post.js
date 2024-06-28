@@ -8,6 +8,9 @@ export default class Post {
     warning;
     boost_count;
     reply_count;
+    favourite_count;
+    favourited;
+    boosted;
     mentions;
     reactions;
     emojis;

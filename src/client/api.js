@@ -131,6 +131,83 @@ export async function getPostContext(post_id) {
     return data;
 }
 
+export async function boostPost(post_id) {
+    let client = get(Client.get());
+    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/reblog`;
+    const data = await fetch(url, {
+        method: 'POST',
+        headers: { "Authorization": "Bearer " + client.app.token }
+    }).then(res => { return res.ok ? res.json() : false });
+
+    if (data === false) return false;
+    return data;
+}
+
+export async function unboostPost(post_id) {
+    let client = get(Client.get());
+    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/unreblog`;
+    const data = await fetch(url, {
+        method: 'POST',
+        headers: { "Authorization": "Bearer " + client.app.token }
+    }).then(res => { return res.ok ? res.json() : false });
+
+    if (data === false) return false;
+    return data;
+}
+
+export async function favouritePost(post_id) {
+    let client = get(Client.get());
+    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/favourite`;
+    const data = await fetch(url, {
+        method: 'POST',
+        headers: { "Authorization": "Bearer " + client.app.token }
+    }).then(res => { return res.ok ? res.json() : false });
+
+    if (data === false) return false;
+    return data;
+}
+
+export async function unfavouritePost(post_id) {
+    let client = get(Client.get());
+    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/unfavourite`;
+    const data = await fetch(url, {
+        method: 'POST',
+        headers: { "Authorization": "Bearer " + client.app.token }
+    }).then(res => { return res.ok ? res.json() : false });
+
+    if (data === false) return false;
+    return data;
+}
+
+export async function reactPost(post_id, shortcode) {
+    // for whatever reason (at least in my testing on iceshrimp)
+    // using shortcodes for external emoji results in a fallback
+    // to the default like emote.
+    // identical api calls on chuckya instances do not display
+    // this behaviour.
+    let client = get(Client.get());
+    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/react/${encodeURIComponent(shortcode)}`;
+    const data = await fetch(url, {
+        method: 'POST',
+        headers: { "Authorization": "Bearer " + client.app.token }
+    }).then(res => { return res.ok ? res.json() : false });
+
+    if (data === false) return false;
+    return data;
+}
+
+export async function unreactPost(post_id, shortcode) {
+    let client = get(Client.get());
+    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/unreact/${encodeURIComponent(shortcode)}`;
+    const data = await fetch(url, {
+        method: 'POST',
+        headers: { "Authorization": "Bearer " + client.app.token }
+    }).then(res => { return res.ok ? res.json() : false });
+
+    if (data === false) return false;
+    return data;
+}
+
 export async function parsePost(data, parent_replies, child_replies) {
     let client = get(Client.get());
     let post = new Post();
@@ -166,6 +243,9 @@ export async function parsePost(data, parent_replies, child_replies) {
     post.warning = data.spoiler_text;
     post.boost_count = data.reblogs_count;
     post.reply_count = data.replies_count;
+    post.favourite_count = data.favourites_count;
+    post.favourited = data.favourited;
+    post.boosted = data.boosted;
     post.mentions = data.mentions;
     post.files = data.media_attachments;
     post.url = data.url;
@@ -185,33 +265,7 @@ export async function parsePost(data, parent_replies, child_replies) {
     }
 
     if (data.reactions && client.instance.capabilities.includes(capabilities.REACTIONS)) {
-        post.reactions = [];
-        data.reactions.forEach(reaction_data => {
-            if (/^[\w\-.@]+$/g.exec(reaction_data.name)) {
-                let name = reaction_data.name.split('@')[0];
-                let host = reaction_data.name.includes('@') ? reaction_data.name.split('@')[1] : client.instance.host;
-                post.reactions.push({
-                    count: reaction_data.count,
-                    emoji: parseEmoji({
-                        id: name + '@' + host,
-                        name: name,
-                        host: host,
-                        url: reaction_data.url,
-                    }),
-                    me: reaction_data.me,
-                });
-            } else {
-                if (reaction_data.name == '❤') reaction_data.name = '❤️'; // stupid heart unicode
-                post.reactions.push({
-                    count: reaction_data.count,
-                    emoji: {
-                        html: reaction_data.name,
-                        name: reaction_data.name,
-                    },
-                    me: reaction_data.me,
-                });
-            }
-        });
+        post.reactions = parseReactions(data.reactions);
     }
     return post;
 }
@@ -249,6 +303,21 @@ export async function parseUser(data) {
 
     get(Client.get()).putCacheUser(user);
     return user;
+}
+
+export function parseReactions(data) {
+    let client = get(Client.get());
+    let reactions = [];
+    data.forEach(reaction_data => {
+        let reaction = {
+            count: reaction_data.count,
+            name: reaction_data.name,
+            me: reaction_data.me,
+        };
+        if (reaction_data.url) reaction.url = reaction_data.url;
+        reactions.push(reaction);
+    });
+    return reactions;
 }
 
 export function parseEmoji(data) {

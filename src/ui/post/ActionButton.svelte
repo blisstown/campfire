@@ -1,21 +1,36 @@
 <script>
     import { play_sound } from '../../sound.js';
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
 
-    export let icon = "🔧";
     export let type = "action";
     export let label = "Action";
     export let title = label;
     export let count = 0;
+    export let active = false;
+    export let disabled = false;
     export let sound = "default";
+
+    function click() {
+        if (disabled) return;
+        play_sound(sound);
+        dispatch('click');
+    }
 </script>
 
 <button
         type="button"
-        class="{type}"
+        class={[
+        type,
+        active ? "active" : "",
+        disabled ? "disabled" : "",
+        ].join(' ')}
         aria-label="{label}"
         title="{title}"
-        on:click|stopPropagation={() => (play_sound(sound))}>
-        <span class="icon">{@html icon}</span>
+        on:click={click}>
+        <span class="icon">
+            <slot/>
+        </span>
         {#if count}
             <span class="count">{count}</span>
         {/if}
@@ -28,24 +43,34 @@
         display: flex;
         flex-direction: row;
         gap: 4px;
+        font-family: inherit;
         font-size: 1em;
         background: none;
         color: inherit;
         border: none;
         border-radius: 8px;
+        transition: background-color .1s, color .1s;
+        cursor: pointer;
     }
 
     button.active {
-        background: var(--accent);
-        color: var(--bg0);
+        background-color: color-mix(in srgb, transparent, var(--accent) 50%);
+        color: var(--bg-1000);
     }
 
-    button:hover {
-        background: #8881;
+    button:not(.disabled):hover {
+        background-color: var(--bg-600);
+        color: var(--text);
     }
 
-    button:active {
-        background: #0001;
+    button:not(.disabled):active {
+        background-color: var(--bg-1000);
+        color: var(--text);
+    }
+
+    button.disabled {
+        opacity: .5;
+        cursor: initial;
     }
 
     .icon {

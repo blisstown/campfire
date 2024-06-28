@@ -20,6 +20,7 @@
     }
 
     if (client.app && client.app.token) {
+        // this triggers the client actually getting the authenticated user's data.
         client.verifyCredentials().then(res => {
             if (res) {
                 console.log(`Logged in as @${client.user.username}@${client.user.host}`);

@@ -1,6 +1,6 @@
 {
     "name": "spacesocial-client",
-    "version": "0.2.0_rev1",
+    "version": "0.2.0_rev2",
     "description": "social media for the galaxy-wide-web! 🌌",
     "type": "module",
     "scripts": {

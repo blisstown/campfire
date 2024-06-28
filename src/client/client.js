@@ -100,6 +100,30 @@ export class Client {
         return await api.getPost(post_id, parent_replies, child_replies);
     }
 
+    async boostPost(post_id) {
+        return await api.boostPost(post_id);
+    }
+
+    async unboostPost(post_id) {
+        return await api.unboostPost(post_id);
+    }
+
+    async favouritePost(post_id) {
+        return await api.favouritePost(post_id);
+    }
+
+    async unfavouritePost(post_id) {
+        return await api.unfavouritePost(post_id);
+    }
+
+    async reactPost(post_id, shortcode) {
+        return await api.reactPost(post_id, shortcode);
+    }
+
+    async unreactPost(post_id, shortcode) {
+        return await api.unreactPost(post_id, shortcode);
+    }
+
     putCacheUser(user) {
         this.cache.users[user.id] = user;
         client.set(this);
@@ -148,7 +172,6 @@ export class Client {
         if (!json) return false;
         let saved = JSON.parse(json);
         if (!saved.version || saved.version !== APP_VERSION) {
-            localStorage.setItem(save_name + '-backup', json);
             localStorage.removeItem(save_name);
             return false;
         }

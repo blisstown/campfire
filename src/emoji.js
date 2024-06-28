@@ -5,9 +5,7 @@ export const EMOJI_REGEX = /:[\w\-.]{0,32}@[\w\-.]{0,32}:/g;
 export const EMOJI_NAME_REGEX = /:[\w\-.]{0,32}:/g;
 
 export default class Emoji {
-    id;
     name;
-    host;
     url;
 
     constructor(id, name, host, url) {
@@ -18,7 +16,10 @@ export default class Emoji {
     }
 
     get html() {
-        return `<img src="${this.url}" class="emoji" height="20" title="${this.name}" alt="${this.name}">`;
+        if (this.url)
+            return `<img src="${this.url}" class="emoji" height="20" title="${this.name}" alt="${this.name}">`;
+        else
+            return `${this.name}`;
     }
 }
 
