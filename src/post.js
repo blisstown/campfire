@@ -1,4 +1,4 @@
-import { parseText as parseEmoji } from '../emoji.js';
+import { parseText as parseEmoji } from './emoji.js';
 
 export default class Post {
     id;
@@ -14,6 +14,7 @@ export default class Post {
     files;
     url;
     reply;
+    replies;
     boost;
     visibility;
 

@@ -1,5 +1,5 @@
 <script>
-    import { play_sound } from '../sound.js';
+    import { play_sound } from '../../sound.js';
 
     export let icon = "🔧";
     export let type = "action";
@@ -14,7 +14,7 @@
         class="{type}"
         aria-label="{label}"
         title="{title}"
-        on:click={() => (play_sound(sound))}>
+        on:click|stopPropagation={() => (play_sound(sound))}>
         <span class="icon">{@html icon}</span>
         {#if count}
             <span class="count">{count}</span>

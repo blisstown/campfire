@@ -1,20 +1,54 @@
 @import url("/font/inter/inter.css");
 
 :root {
-    --fg0: #eee;
-    --bg0: #080808;
-    --bg1: #101010;
-    --bg2: #121212;
-    --accent: #b7fd49;
-    --accent-bg: #242b1a;
+    --bg-1000: #fff6de;
+    --bg-900: #f9f1db;
+    --bg-800: #f1e8cf;
+    --bg-700: #d2c9b1;
+    --bg-600: #f0f6c2;
+    --accent: #8d9936;
+    --text: #322e1f;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-1000: #141016;
+        --bg-900: #1B141E;
+        --bg-800: #2A202F;
+        --bg-700: #443749;
+        --bg-600: #513D60;
+        --accent: #CDA1EC;
+        --text: #E2DFE3;
+    }
+}
+
+@supports (font-variation-settings: normal) {
+    body { font-family: InterVariable, sans-serif; }
 }
 
 body {
+    width: 100vw;
     margin: 0;
     padding: 0;
 
-    color: var(--fg0);
-    background-color: var(--bg0);
+    color: var(--text);
+    background-color: var(--bg-1000);
 
     font-family: "Inter", sans-serif;
+    font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+
+    box-sizing: border-box;
+}
+
+.throb {
+    animation: .25s throb alternate infinite ease-in;
+}
+
+@keyframes throb {
+    from {
+        opacity: .5;
+    }
+    to {
+        opacity: 1;
+    }
 }

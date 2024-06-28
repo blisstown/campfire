@@ -8,7 +8,7 @@
 
 <div class="post-body">
     {#if post.warning}
-        <button class="post-warning" on:click={() => { open_warned = !open_warned }}>
+        <button class="post-warning" on:click|stopPropagation={() => { open_warned = !open_warned }}>
         <strong>
             {post.warning}
             <span class="warning-instructions">
@@ -27,14 +27,14 @@
         {/if}
         <div class="post-media-container" data-count={post.files.length}>
             {#each post.files as file}
-                <div class="post-media {file.type}">
+                <div class="post-media {file.type}" on:click|stopPropagation={null}>
                     {#if file.type === "image"}
                         <a href={file.url} target="_blank">
-                            <img src={file.url} alt={file.description} height="200" loading="lazy" decoding="async">
+                            <img src={file.url} alt={file.description} title={file.description} height="200" loading="lazy" decoding="async">
                         </a>
                     {:else if file.type === "video"}
                         <video controls height="200">
-                            <source src={file.url} type={file.url.endsWith('.mp4') ? 'video/mp4' : 'video/webm'}>
+                            <source src={file.url} alt={file.description} title={file.description} type={file.url.endsWith('.mp4') ? 'video/mp4' : 'video/webm'}>
                             <p>{file.description} &ensp; <a href={file.url}>[link]</a></p>
                             <!-- <media src={file.url} alt={file.description} loading="lazy" decoding="async"> -->
                         </video>
@@ -58,8 +58,9 @@
         width: 100%;
         margin-bottom: 10px;
         padding: 4px 8px;
-        --warn-bg: rgba(255,220,30,.1);
+        --warn-bg: color-mix(in srgb, var(--bg-700), var(--accent) 1%);
         background: repeating-linear-gradient(-45deg, transparent, transparent 10px, var(--warn-bg) 10px, var(--warn-bg) 20px);
+        font-family: inherit;
         font-size: inherit;
         color: inherit;
         text-align: left;
@@ -125,9 +126,10 @@
     }
 
     .post-text :global(a.mention) {
-        color: var(--accent);
+        color: inherit;
+        font-weight: 600;
         padding: 3px 6px;
-        background: var(--accent-bg);
+        background: var(--bg-700);
         border-radius: 6px;
         text-decoration: none;
     }
