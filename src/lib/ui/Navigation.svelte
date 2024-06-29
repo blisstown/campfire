@@ -1,9 +1,10 @@
 <script>
-    import Logo from '../../img/spacesocial-logo.svg';
+    import Logo from '$lib/../img/spacesocial-logo.svg';
     import Button from './Button.svelte';
     import Feed from './Feed.svelte';
-    import { Client } from '../client/client.js';
-    import { play_sound } from '../sound.js';
+    import { Client } from '$lib/client/client.js';
+    import { play_sound } from '$lib/sound.js';
+    import { getTimeline } from '$lib/timeline.js';
 
     const VERSION = APP_VERSION;
 
@@ -17,6 +18,7 @@
 
     function goTimeline() {
         if (location.pathname === "/") {
+            getTimeline(true);
             window.scrollTo({
                 top: 0,
                 behavior: "smooth"

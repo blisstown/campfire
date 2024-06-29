@@ -12,7 +12,7 @@ export async function getTimeline(clean) {
     loading = true;
 
     let timeline_data;
-    if (get(posts).length === 0) timeline_data = await client.getTimeline()
+    if (clean || get(posts).length === 0) timeline_data = await client.getTimeline()
     else timeline_data = await client.getTimeline(get(posts)[get(posts).length - 1].id);
 
     if (!timeline_data) {
