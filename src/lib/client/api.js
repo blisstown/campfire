@@ -212,9 +212,6 @@ export async function parsePost(data, ancestor_count, with_context) {
     let client = get(Client.get());
     let post = new Post();
 
-    // if (client.instance.capabilities.includes(capabilities.MARKDOWN_CONTENT))
-    //     post.text = data.text;
-    // else
     post.text = data.content;
 
     post.reply = null;
@@ -223,10 +220,10 @@ export async function parsePost(data, ancestor_count, with_context) {
         ancestor_count !== 0
     ) {
         const reply_data = data.reply || await getPost(data.in_reply_to_id, ancestor_count - 1);
-        post.reply = await parsePost(reply_data, ancestor_count - 1, false);
         // if the post returns false, we probably don't have permission to read it.
         // we'll respect the thread's privacy, and leave it alone :)
-        if (post.reply === false) return false;
+        if (!reply_data) return false;
+        post.reply = await parsePost(reply_data, ancestor_count - 1, false);
     }
     post.boost = data.reblog ? await parsePost(data.reblog, 1, false) : null;
 
