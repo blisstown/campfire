@@ -1,5 +1,6 @@
 <script>
-    import Logo from '$lib/../img/spacesocial-logo.svg';
+    import LogoLight from '$lib/../img/spacesocial-logo-light.svg';
+    import LogoDark from '$lib/../img/spacesocial-logo-dark.svg';
     import Button from './Button.svelte';
     import Feed from './Feed.svelte';
     import { Client } from '$lib/client/client.js';
@@ -37,11 +38,16 @@
 </script>
 
 <div id="navigation">
-    <header id="instance-header"> <!-- style={`background-image: url(${banner_url})`}> -->
-        <!-- <img src={icon_url} class="instance-icon" height="92px" aria-hidden="true"> -->
-        <div class="instance-icon instance-icon-mask" style={`mask-image: url(${Logo})`} height="92px" aria-hidden="true">
-        <!-- <img src={Logo} class="instance-icon" height="92px" aria-hidden="true"> -->
-    </header>
+    {#if client.instance && client.instance.icon_url && client.instance.banner_url}
+        <header class="instance-header" style="background-image: url({client.instance.banner_url})">
+            <img src={client.instance.icon_url} class="instance-icon" height="92px" aria-hidden="true">
+        </header>
+    {:else}
+        <header class="instance-header">
+            <img class="app-icon light-only" src={LogoLight} width="320px" aria-label="Space Social"/>
+            <img class="app-icon dark-only" src={LogoDark} width="320px" aria-label="Space Social"/>
+        </header>
+    {/if}
 
     <div id="nav-items">
         <Button label="Timeline" on:click={() => goTimeline()} active>🖼️ Timeline</Button>
@@ -104,7 +110,7 @@
         background-color: var(--bg-800);
     }
 
-    #instance-header {
+    .instance-header {
         width: 100%;
         height: 172px;
         display: flex;
@@ -118,18 +124,14 @@
     }
 
     .instance-icon {
-        height: 92px;
+        height: 50%;
         border-radius: 8px;
     }
 
-    .instance-icon-mask {
-        width: 80%;
+    .app-icon {
+        max-width: 80%;
+        max-height: 80%;
         margin: auto;
-        background-color: var(--text);
-        mask-repeat: no-repeat;
-        -webkit-mask-repeat: no-repeat;
-        mask-origin: border-box;
-        -webkit-mask-origin: border-box;
     }
 
     #nav-items {

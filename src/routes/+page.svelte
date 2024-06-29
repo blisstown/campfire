@@ -1,5 +1,7 @@
 <script>
     import '$lib/app.css';
+    import LogoLight from '$lib/../img/spacesocial-logo-light.svg';
+    import LogoDark from '$lib/../img/spacesocial-logo-dark.svg';
     import Navigation from '$lib/ui/Navigation.svelte';
     import Widgets from '$lib/ui/Widgets.svelte';
     import Feed from '$lib/ui/Feed.svelte';
@@ -8,8 +10,8 @@
     import { get } from 'svelte/store';
 
     let client = get(Client.get());
-    let ready = client.app;
-    let logged_in = ready && client.app.token;
+    let ready = !!client;
+    let logged_in = client.app && client.app.token;
     let instance_url_error = false;
     let logging_in = false;
 
@@ -33,9 +35,17 @@
     }
 
     function log_in(event) {
-        logging_in = true;
         event.preventDefault();
+        instance_url_error = false;
+
+        logging_in = true;
         const host = event.target.host.value;
+
+        if (!host || host === "") {
+            instance_url_error = "Please enter an instance domain.";
+            logging_in = false;
+            return;
+        }
 
         client.init(host).then(res => {
             logging_in = false;
@@ -70,30 +80,29 @@
 
                 <Feed />
             {:else}
-                <div>
-                    <form on:submit={log_in} id="login">
-                        <h1>Space Social</h1>
-                        <p>Welcome, fediverse user!</p>
-                        <p>Please enter your instance domain to log in.</p>
-                        <div class="input-wrapper">
-                            <input type="text" id="host" aria-label="instance domain" class={logging_in ? "throb" : ""}>
-                            {#if instance_url_error}
-                                <p class="error">{instance_url_error}</p>
-                            {/if}
-                        </div>
+                <form on:submit={log_in} id="login-form">
+                    <img class="app-icon light-only" src={LogoLight} width="320px" aria-label="Space Social"/>
+                    <img class="app-icon dark-only" src={LogoDark} width="320px" aria-label="Space Social"/>
+                    <p>Welcome, fediverse user!</p>
+                    <p>Please enter your instance domain to log in.</p>
+                    <div class="input-wrapper">
+                        <input type="text" id="host" aria-label="instance domain" class={logging_in ? "throb" : ""}>
+                        {#if instance_url_error}
+                            <p class="error">{instance_url_error}</p>
+                        {/if}
+                    </div>
+                    <br>
+                    <button type="submit" id="login" class={logging_in ? "disabled" : ""}>Log in</button>
+                    <p><small>
+                        Please note this is
+                        <strong><em>extremely experimental software</em></strong>;
+                        things are likely to break!
                         <br>
-                        <button type="submit" id="login" class={logging_in ? "disabled" : ""}>Log in</button>
-                        <p><small>
-                            Please note this is
-                            <strong><em>extremely experimental software</em></strong>;
-                            things are likely to break!
-                            <br>
-                            If that's all cool with you, welcome aboard!
-                        </small></p>
+                        If that's all cool with you, welcome aboard!
+                    </small></p>
 
-                        <p class="form-footer">made with ❤️ by <a href="https://arimelody.me">ari melody</a>, 2024</p>
-                    </form>
-                </div>
+                    <p class="form-footer">made with ❤️ by <a href="https://arimelody.me">ari melody</a>, 2024</p>
+                </form>
             {/if}
         {:else}
             <div class="loading throb">
@@ -109,9 +118,12 @@
 </div>
 
 <style>
-    form#login {
-        margin: 25vh 0 32px 0;
-        text-align: center;
+    form#login-form {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
     a {
@@ -165,7 +177,7 @@
     }
 
     button#login {
-        margin: -8px auto 0 auto;
+        margin: 8px auto;
         padding: 12px 24px;
         display: flex;
         flex-direction: row;
@@ -215,7 +227,7 @@
 
     .loading {
         width: 100%;
-        height: 80vh;
+        height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -239,5 +251,10 @@
         display: flex;
         flex-direction: row;
         gap: 8px;
+    }
+
+    .app-icon {
+        width: 320px;
+        margin: 8px;
     }
 </style>

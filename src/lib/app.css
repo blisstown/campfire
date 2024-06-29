@@ -20,6 +20,15 @@
         --accent: #CDA1EC;
         --text: #E2DFE3;
     }
+    .light-only {
+        display: none
+    }
+}
+
+@media screen and (prefers-color-scheme: light) {
+    .dark-only {
+        display: none
+    }
 }
 
 @supports (font-variation-settings: normal) {
