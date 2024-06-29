@@ -3,9 +3,6 @@ import { Client } from '$lib/client/client.js';
 import { parsePost } from '$lib/client/api.js';
 import { get } from 'svelte/store';
 
-export const prerender = true;
-export const ssr = false;
-
 export async function load({ params }) {
     let client = get(Client.get());
     if (client.app && client.app.token) {

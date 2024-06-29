@@ -64,60 +64,46 @@
     }
 </script>
 
-<div id="spacesocial-app">
+{#if logged_in === undefined}
+    <div class="loading throb">
+        <span>just a moment...</span>
+    </div>
+{:else if logged_in === false}
+    <form on:submit={log_in} id="login-form">
+        <img class="app-icon light-only" src={LogoLight} width="320px" aria-label="Space Social"/>
+        <img class="app-icon dark-only" src={LogoDark} width="320px" aria-label="Space Social"/>
+        <p>Welcome, fediverse user!</p>
+        <p>Please enter your instance domain to log in.</p>
+        <div class="input-wrapper">
+            <input type="text" id="host" aria-label="instance domain" class={logging_in ? "throb" : ""}>
+                         {#if instance_url_error}
+                             <p class="error">{instance_url_error}</p>
+                         {/if}
+        </div>
+        <br>
+        <button type="submit" id="login" class={logging_in ? "disabled" : ""}>Log in</button>
+        <p><small>
+                              Please note this is
+                              <strong><em>extremely experimental software</em></strong>;
+                              things are likely to break!
+                              <br>
+                              If that's all cool with you, welcome aboard!
+        </small></p>
 
+        <p class="form-footer">made with ❤️ by <a href="https://arimelody.me">ari melody</a>, 2024</p>
+    </form>
+{:else}
     <header>
-        <Navigation />
+        <h1>Home</h1>
+        <nav>
+            <Button centered active>Home</Button>
+                <Button centered disabled>Local</Button>
+                    <Button centered disabled>Federated</Button>
+        </nav>
     </header>
 
-    <main>
-        {#if logged_in === undefined}
-            <div class="loading throb">
-                <span>just a moment...</span>
-            </div>
-        {:else if logged_in === false}
-            <form on:submit={log_in} id="login-form">
-                <img class="app-icon light-only" src={LogoLight} width="320px" aria-label="Space Social"/>
-                <img class="app-icon dark-only" src={LogoDark} width="320px" aria-label="Space Social"/>
-                <p>Welcome, fediverse user!</p>
-                <p>Please enter your instance domain to log in.</p>
-                <div class="input-wrapper">
-                    <input type="text" id="host" aria-label="instance domain" class={logging_in ? "throb" : ""}>
-                    {#if instance_url_error}
-                        <p class="error">{instance_url_error}</p>
-                    {/if}
-                </div>
-                <br>
-                <button type="submit" id="login" class={logging_in ? "disabled" : ""}>Log in</button>
-                <p><small>
-                    Please note this is
-                    <strong><em>extremely experimental software</em></strong>;
-                    things are likely to break!
-                    <br>
-                    If that's all cool with you, welcome aboard!
-                </small></p>
-
-                <p class="form-footer">made with ❤️ by <a href="https://arimelody.me">ari melody</a>, 2024</p>
-            </form>
-        {:else}
-            <header>
-                <h1>Home</h1>
-                <nav>
-                    <Button centered active>Home</Button>
-                        <Button centered disabled>Local</Button>
-                            <Button centered disabled>Federated</Button>
-                </nav>
-            </header>
-
-            <Feed />
-        {/if}
-    </main>
-
-    <div id="widgets">
-        <Widgets />
-    </div>
-
-</div>
+    <Feed />
+{/if}
 
 <style>
     form#login-form {
@@ -237,18 +223,18 @@
         font-weight: bold;
     }
 
-    main header {
+    header {
         width: 100%;
         margin: 16px 0 8px 0;
         display: flex;
         flex-direction: row;
     }
 
-    main header h1 {
+    header h1 {
         font-size: 1.5em;
     }
 
-    main header nav {
+    header nav {
         margin-left: auto;
         display: flex;
         flex-direction: row;

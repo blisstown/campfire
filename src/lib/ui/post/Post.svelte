@@ -88,6 +88,8 @@
     });
 
     let aria_label = post.user.username + '; ' + post.text + '; ' + post.created_at;
+
+    if (post.reply && post.reply.id === undefined) console.log(post);
 </script>
 
 <div class="post-container">
