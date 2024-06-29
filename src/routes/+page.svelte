@@ -10,8 +10,7 @@
     import { get } from 'svelte/store';
 
     let client = get(Client.get());
-    let ready = !!client;
-    let logged_in = client.app && client.app.token;
+    let logged_in;
     let instance_url_error = false;
     let logging_in = false;
 
@@ -27,11 +26,16 @@
 
     if (client.app && client.app.token) {
         // this triggers the client actually getting the authenticated user's data.
-        client.verifyCredentials().then(res => {
-            if (res) {
-                console.log(`Logged in as @${client.user.username}@${client.user.host}`);
+        client.verifyCredentials().then(user => {
+            if (user) {
+                console.log(`Logged in as @${user.username}@${user.host}`);
+                logged_in = true;
+            } else {
+                logged_in = false;
             }
         });
+    } else {
+        logged_in = false;
     }
 
     function log_in(event) {
@@ -67,47 +71,45 @@
     </header>
 
     <main>
-        {#if ready}
-            {#if logged_in}
-                <header>
-                    <h1>Home</h1>
-                    <nav>
-                        <Button centered active>Home</Button>
-                        <Button centered disabled>Local</Button>
-                        <Button centered disabled>Federated</Button>
-                    </nav>
-                </header>
-
-                <Feed />
-            {:else}
-                <form on:submit={log_in} id="login-form">
-                    <img class="app-icon light-only" src={LogoLight} width="320px" aria-label="Space Social"/>
-                    <img class="app-icon dark-only" src={LogoDark} width="320px" aria-label="Space Social"/>
-                    <p>Welcome, fediverse user!</p>
-                    <p>Please enter your instance domain to log in.</p>
-                    <div class="input-wrapper">
-                        <input type="text" id="host" aria-label="instance domain" class={logging_in ? "throb" : ""}>
-                        {#if instance_url_error}
-                            <p class="error">{instance_url_error}</p>
-                        {/if}
-                    </div>
-                    <br>
-                    <button type="submit" id="login" class={logging_in ? "disabled" : ""}>Log in</button>
-                    <p><small>
-                        Please note this is
-                        <strong><em>extremely experimental software</em></strong>;
-                        things are likely to break!
-                        <br>
-                        If that's all cool with you, welcome aboard!
-                    </small></p>
-
-                    <p class="form-footer">made with ❤️ by <a href="https://arimelody.me">ari melody</a>, 2024</p>
-                </form>
-            {/if}
-        {:else}
+        {#if logged_in === undefined}
             <div class="loading throb">
                 <span>just a moment...</span>
             </div>
+        {:else if logged_in === false}
+            <form on:submit={log_in} id="login-form">
+                <img class="app-icon light-only" src={LogoLight} width="320px" aria-label="Space Social"/>
+                <img class="app-icon dark-only" src={LogoDark} width="320px" aria-label="Space Social"/>
+                <p>Welcome, fediverse user!</p>
+                <p>Please enter your instance domain to log in.</p>
+                <div class="input-wrapper">
+                    <input type="text" id="host" aria-label="instance domain" class={logging_in ? "throb" : ""}>
+                    {#if instance_url_error}
+                        <p class="error">{instance_url_error}</p>
+                    {/if}
+                </div>
+                <br>
+                <button type="submit" id="login" class={logging_in ? "disabled" : ""}>Log in</button>
+                <p><small>
+                    Please note this is
+                    <strong><em>extremely experimental software</em></strong>;
+                    things are likely to break!
+                    <br>
+                    If that's all cool with you, welcome aboard!
+                </small></p>
+
+                <p class="form-footer">made with ❤️ by <a href="https://arimelody.me">ari melody</a>, 2024</p>
+            </form>
+        {:else}
+            <header>
+                <h1>Home</h1>
+                <nav>
+                    <Button centered active>Home</Button>
+                        <Button centered disabled>Local</Button>
+                            <Button centered disabled>Federated</Button>
+                </nav>
+            </header>
+
+            <Feed />
         {/if}
     </main>
 

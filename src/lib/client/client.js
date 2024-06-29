@@ -15,6 +15,7 @@ export class Client {
     constructor() {
         this.instance = null;
         this.app = null;
+        this.user = null;
         this.cache = {
             users: {},
             emojis: {},
@@ -86,10 +87,13 @@ export class Client {
 
     async verifyCredentials() {
         const data = await api.verifyCredentials();
-        if (!data) return false;
+        if (!data) {
+            this.user = false;
+            return false;
+        }
         this.user = await api.parseUser(data);
         client.set(this);
-        return data;
+        return this.user;
     }
 
     async getTimeline(last_post_id) {
