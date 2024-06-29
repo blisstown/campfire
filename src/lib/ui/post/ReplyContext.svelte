@@ -9,12 +9,16 @@
     import { get } from 'svelte/store';
     import { Client } from '../../client/client.js';
     import * as api from '../../client/api.js';
+    import { goto } from '$app/navigation';
 
     export let post;
     let time_string = post.created_at.toLocaleString();
+    let aria_label = post.user.username + '; ' + post.text + '; ' + post.created_at;
 
     function gotoPost() {
-        location = `/post/${post.id}`;
+        if (focused) return;
+        if (event.key && event.key !== "Enter") return;
+        goto(`/post/${post.id}`);
     }
 
     async function toggleBoost() {
@@ -71,7 +75,11 @@
     <svelte:self post={post.reply} />
 {/if}
 
-<article class="post-reply" on:click={() => gotoPost()}>
+<article
+        class="post-reply"
+        aria-label={aria_label}
+        on:click={gotoPost}
+        on:keydown={gotoPost}>
     <div class="line"></div>
         
     <div class="post-reply-main">
@@ -80,7 +88,7 @@
         <Body post={post} />
 
         <footer class="post-footer">
-            <div class="post-reactions" on:click|stopPropagation>
+            <div class="post-reactions" aria-label="Reactions" on:click|stopPropagation on:keydown|stopPropagation>
                 {#each post.reactions as reaction}
                     <ReactionButton
                             type="reaction"
@@ -98,7 +106,7 @@
                     </ReactionButton>
                 {/each}
             </div>
-            <div class="post-actions" on:click|stopPropagation>
+            <div class="post-actions" aria-label="Post actions" on:click|stopPropagation on:keydown|stopPropagation>
                 <ActionButton type="reply" label="Reply" bind:count={post.reply_count} sound="post" disabled>🗨️</ActionButton>
                 <ActionButton type="boost" label="Boost" on:click={() => toggleBoost()} bind:active={post.boosted} bind:count={post.boost_count} sound="boost">🔁</ActionButton>
                 <ActionButton type="favourite" label="Favourite" on:click={() => toggleFavourite()} bind:active={post.favourited} bind:count={post.favourite_count}>⭐</ActionButton>
@@ -112,11 +120,18 @@
 
 <style>
     .post-reply {
-        padding-bottom: 24px;
+        padding: 16px 16px 16px 16px;
         display: flex;
         flex-direction: row;
         color: var(--text);
         align-items: stretch;
+        border-radius: 8px;
+        transition: background-color .1s;
+        cursor: pointer;
+    }
+
+    .post-reply:hover {
+        background-color: color-mix(in srgb, var(--bg-800), black 5%);
     }
 
     .post-avatar-container {
@@ -125,8 +140,8 @@
 
     .line {
         position: relative;
-        top: 24px;
-        left: 25px;
+        top: 32px;
+        left: 23px;
         border-right: 2px solid var(--bg-700);
     }
 

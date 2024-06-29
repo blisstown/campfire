@@ -5,6 +5,8 @@
     import { Client } from '../client/client.js';
     import { play_sound } from '../sound.js';
 
+    const VERSION = APP_VERSION;
+
     let client = false;
     Client.get().subscribe(c => {
         client = c;
@@ -14,6 +16,13 @@
     if (notification_count > 99) notification_count = "99+";
 
     function goTimeline() {
+        if (location.pathname === "/") {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+            return;
+        }
         location = "/";
     }
 
@@ -61,7 +70,7 @@
         </div>
 
         <div id="account-button">
-            <img src={client.user.avatar_url} class="account-avatar" height="64px" aria-hidden="true" on:click={() => play_sound()}>
+            <img src={client.user.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => play_sound()}>
             <div class="account-name" aria-hidden="true">
                 <span class="nickname" title={client.user.nickname}>{client.user.nickname}</span>
                 <span class="username" title={`@${client.user.username}@${client.user.host}`}>
@@ -73,7 +82,7 @@
     </div>
     {/if}
     <span class="version">
-        space social v{APP_VERSION}
+        space social v{VERSION}
         <br>
         <ul>
             <li><a href="https://git.arimelody.me/ari/spacesocial-client">source</a></li>
@@ -250,26 +259,6 @@
     .username {
         opacity: .8;
         font-size: .65em;
-    }
-
-    .settings {
-        width: 32px;
-        height: 32px;
-        padding: none;
-        border: none;
-        font-size: inherit;
-        font-family: inherit;
-        background: none;
-        border-radius: 8px;
-        transition: background-color .1s;
-    }
-
-    .settings:hover {
-        background-color: color-mix(in srgb, var(--bg-700), var(--text) 15%);
-    }
-
-    .settings:active {
-        background-color: color-mix(in srgb, var(--bg-700), var(--bg-1000) 30%);
     }
 
     .flex-row {

@@ -1,4 +1,4 @@
-@import url("/font/inter/inter.css");
+@import url("../font/inter/inter.css");
 
 :root {
     --bg-1000: #fff6de;
@@ -38,6 +38,32 @@ body {
     font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
 
     box-sizing: border-box;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+#spacesocial-app {
+    margin: auto 0;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+}
+
+header, #widgets {
+    width: 300px;
+}
+
+main {
+    width: 732px;
 }
 
 .throb {

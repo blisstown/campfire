@@ -15,22 +15,24 @@
     <span class="post-context-time">
         <time title="{time_string}">{short_time(post.created_at)}</time>
         {#if post.visibility !== "public"}
-            <span class="post-visibility">({post.visibility})</span>
+            <span class="post-visibility">- {post.visibility}</span>
         {/if}
     </span>
 </div>
 
 <style>
     .post-context {
-        margin-bottom: 8px;
-        padding-left: 58px;
+        padding: 12px 16px 0 74px;
         display: flex;
         flex-direction: row;
         align-items: center;
+        font-size: .8em;
         font-weight: 600;
         color: var(--text);
         opacity: .8;
-        transition: opacity .1s;
+        transition: opacity .1s, background-color .1s;
+        border-radius: 8px;
+        z-index: 1;
     }
 
     .post-context-icon {
@@ -48,5 +50,9 @@
 
     .post-context-time {
         margin-left: auto;
+    }
+
+    .post-visibility {
+        opacity: .7;
     }
 </style>

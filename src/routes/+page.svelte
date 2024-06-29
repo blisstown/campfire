@@ -8,7 +8,8 @@
     import { get } from 'svelte/store';
 
     let client = get(Client.get());
-    let ready = client.app && client.app.token;
+    let ready = client.app;
+    let logged_in = ready && client.app.token;
     let instance_url_error = false;
     let logging_in = false;
 
@@ -57,31 +58,46 @@
 
     <main>
         {#if ready}
-            <Feed />
-        {:else}
-            <div>
-                <form on:submit={log_in} id="login">
-                    <h1>Space Social</h1>
-                    <p>Welcome, fediverse user!</p>
-                    <p>Please enter your instance domain to log in.</p>
-                    <div class="input-wrapper">
-                        <input type="text" id="host" aria-label="instance domain" class={logging_in ? "throb" : ""}>
-                        {#if instance_url_error}
-                            <p class="error">{instance_url_error}</p>
-                        {/if}
-                    </div>
-                    <br>
-                    <button type="submit" id="login" class={logging_in ? "disabled" : ""}>Log in</button>
-                    <p><small>
-                        Please note this is
-                        <strong><em>extremely experimental software</em></strong>;
-                        things are likely to break!
-                        <br>
-                        If that's all cool with you, welcome aboard!
-                    </small></p>
+            {#if logged_in}
+                <header>
+                    <h1>Home</h1>
+                    <nav>
+                        <Button centered active>Home</Button>
+                        <Button centered disabled>Local</Button>
+                        <Button centered disabled>Federated</Button>
+                    </nav>
+                </header>
 
-                    <p class="form-footer">made with ❤️ by <a href="https://arimelody.me">ari melody</a>, 2024</p>
-                </form>
+                <Feed />
+            {:else}
+                <div>
+                    <form on:submit={log_in} id="login">
+                        <h1>Space Social</h1>
+                        <p>Welcome, fediverse user!</p>
+                        <p>Please enter your instance domain to log in.</p>
+                        <div class="input-wrapper">
+                            <input type="text" id="host" aria-label="instance domain" class={logging_in ? "throb" : ""}>
+                            {#if instance_url_error}
+                                <p class="error">{instance_url_error}</p>
+                            {/if}
+                        </div>
+                        <br>
+                        <button type="submit" id="login" class={logging_in ? "disabled" : ""}>Log in</button>
+                        <p><small>
+                            Please note this is
+                            <strong><em>extremely experimental software</em></strong>;
+                            things are likely to break!
+                            <br>
+                            If that's all cool with you, welcome aboard!
+                        </small></p>
+
+                        <p class="form-footer">made with ❤️ by <a href="https://arimelody.me">ari melody</a>, 2024</p>
+                    </form>
+                </div>
+            {/if}
+        {:else}
+            <div class="loading throb">
+                <span>just a moment...</span>
             </div>
         {/if}
     </main>
@@ -93,31 +109,6 @@
 </div>
 
 <style>
-    #spacesocial-app {
-        margin: auto 0;
-        padding: 0 16px;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        gap: 16px;
-    }
-
-    header, #widgets {
-        width: 300px;
-    }
-
-    main {
-        width: 732px;
-    }
-
-    div.pane {
-        margin-top: 16px;
-        padding: 20px 32px;
-        border: 1px solid #8884;
-        border-radius: 16px;
-        background-color: var(--bg1);
-    }
-
     form#login {
         margin: 25vh 0 32px 0;
         text-align: center;
@@ -220,5 +211,33 @@
 
     .form-footer {
         opacity: .7;
+    }
+
+    .loading {
+        width: 100%;
+        height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2em;
+        font-weight: bold;
+    }
+
+    main header {
+        width: 100%;
+        margin: 16px 0 8px 0;
+        display: flex;
+        flex-direction: row;
+    }
+
+    main header h1 {
+        font-size: 1.5em;
+    }
+
+    main header nav {
+        margin-left: auto;
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
     }
 </style>

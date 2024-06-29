@@ -1,10 +1,13 @@
+import sound_log from '../sound/log.ogg';
+import sound_hello from '../sound/hello.ogg';
+import sound_success from '../sound/success.ogg';
 let sounds;
 
 if (typeof Audio !== typeof undefined) {
     sounds = {
-        "default": new Audio("/sound/log.ogg"),
-        "post": new Audio("/sound/success.ogg"),
-        "boost": new Audio("/sound/hello.ogg"),
+        "default": new Audio(sound_log),
+        "post": new Audio(sound_hello),
+        "boost": new Audio(sound_success),
     };
 }
 

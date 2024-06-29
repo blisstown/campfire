@@ -8,7 +8,7 @@ import { get } from 'svelte/store';
 export async function createApp(host) {
     let form = new FormData();
     form.append("client_name", "space social");
-    form.append("redirect_uris", `${location.origin}/callback`);
+    form.append("redirect_uris", `${location.origin}`);
     form.append("scopes", "read write push");
     form.append("website", "https://spacesocial.arimelody.me");
 
@@ -35,7 +35,7 @@ export function getOAuthUrl() {
     return `https://${client.instance.host}/oauth/authorize` +
         `?client_id=${client.app.id}` +
         "&scope=read+write+push" +
-        `&redirect_uri=${location.origin}/callback` +
+        `&redirect_uri=${location.origin}` +
         "&response_type=code";
 }
 
@@ -44,7 +44,7 @@ export async function getToken(code) {
     let form = new FormData();
     form.append("client_id", client.app.id);
     form.append("client_secret", client.app.secret);
-    form.append("redirect_uri", `${location.origin}/callback`);
+    form.append("redirect_uri", `${location.origin}`);
     form.append("grant_type", "authorization_code");
     form.append("code", code);
     form.append("scope", "read write push");
@@ -107,7 +107,7 @@ export async function getTimeline(last_post_id) {
     return data;
 }
 
-export async function getPost(post_id, parent_replies) {
+export async function getPost(post_id, ancestor_count) {
     let client = get(Client.get());
     let url = `https://${client.instance.host}/api/v1/statuses/${post_id}`;
     const data = await fetch(url, {
@@ -208,7 +208,7 @@ export async function unreactPost(post_id, shortcode) {
     return data;
 }
 
-export async function parsePost(data, parent_replies, child_replies) {
+export async function parsePost(data, ancestor_count, with_context) {
     let client = get(Client.get());
     let post = new Post();
 
@@ -218,9 +218,12 @@ export async function parsePost(data, parent_replies, child_replies) {
     post.text = data.content;
 
     post.reply = null;
-    if ((data.in_reply_to_id || data.reply) && parent_replies !== 0) {
-        const reply_data = data.reply || await getPost(data.in_reply_to_id, parent_replies - 1);
-        post.reply = await parsePost(reply_data, parent_replies - 1, false);
+    if (!with_context && // ancestor replies are handled in full later
+        (data.in_reply_to_id || data.reply) &&
+        ancestor_count !== 0
+    ) {
+        const reply_data = data.reply || await getPost(data.in_reply_to_id, ancestor_count - 1);
+        post.reply = await parsePost(reply_data, ancestor_count - 1, false);
         // if the post returns false, we probably don't have permission to read it.
         // we'll respect the thread's privacy, and leave it alone :)
         if (post.reply === false) return false;
@@ -228,11 +231,22 @@ export async function parsePost(data, parent_replies, child_replies) {
     post.boost = data.reblog ? await parsePost(data.reblog, 1, false) : null;
 
     post.replies = [];
-    if (child_replies) {
+    if (with_context) {
         const replies_data = await getPostContext(data.id);
-        if (replies_data && replies_data.descendants) {
-            for (let i in replies_data.descendants) {
-                post.replies.push(await parsePost(replies_data.descendants[i], 0, false));
+        if (replies_data) {
+            // posts this is replying to
+            if (replies_data.ancestors) {
+                let head = post;
+                while (replies_data.ancestors.length > 0) {
+                    head.reply = await parsePost(replies_data.ancestors.pop(), 0, false);
+                    head = head.reply;
+                }
+            }
+            // posts in reply to this
+            if (replies_data.descendants) {
+                for (let i in replies_data.descendants) {
+                    post.replies.push(await parsePost(replies_data.descendants[i], 0, false));
+                }
             }
         }
     }

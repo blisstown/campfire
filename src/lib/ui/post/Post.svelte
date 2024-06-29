@@ -11,6 +11,7 @@
     import { get } from 'svelte/store';
     import { Client } from '../../client/client.js';
     import * as api from '../../client/api.js';
+    import { goto } from '$app/navigation';
 
     export let post_data;
     export let focused = false;
@@ -25,7 +26,9 @@
     }
 
     function gotoPost() {
-        location = `/post/${post.id}`;
+        if (focused) return;
+        if (event.key && event.key !== "Enter") return;
+        goto(`/post/${post.id}`);
     }
 
     async function toggleBoost() {
@@ -80,25 +83,30 @@
     let el;
     onMount(() => {
         if (focused) {
-            window.scrollTo(0, el.scrollHeight - 700);
+            window.scrollTo(0, el.scrollHeight);
         }
     });
 
     let aria_label = post.user.username + '; ' + post.text + '; ' + post.created_at;
 </script>
 
-<div class="post-container" aria-label={aria_label} bind:this={el}>
+<div class="post-container">
     {#if post.reply}
         <ReplyContext post={post.reply} />
     {/if}
     {#if is_boost && !post_context.text}
         <BoostContext post={post_context} />
     {/if}
-    <article class={"post" + (focused ? " focused" : "")} on:click={!focused ? gotoPost() : null}>
+    <article
+            class={"post" + (focused ? " focused" : "")}
+            aria-label={aria_label}
+            bind:this={el}
+            on:click={gotoPost}
+            on:keydown={gotoPost}>
         <PostHeader post={post} />
         <Body post={post} />
         <footer class="post-footer">
-            <div class="post-reactions" on:click|stopPropagation>
+            <div class="post-reactions" aria-label="Reactions" on:click|stopPropagation on:keydown|stopPropagation>
                 {#each post.reactions as reaction}
                     <ReactionButton
                             type="reaction"
@@ -116,7 +124,7 @@
                     </ReactionButton>
                 {/each}
             </div>
-            <div class="post-actions" on:click|stopPropagation>
+            <div class="post-actions" aria-label="Post actions" on:click|stopPropagation on:keydown|stopPropagation>
                 <ActionButton type="reply" label="Reply" bind:count={post.reply_count} sound="post" disabled>🗨️</ActionButton>
                 <ActionButton type="boost" label="Boost" on:click={() => toggleBoost()} bind:active={post.boosted} bind:count={post.boost_count} sound="boost">🔁</ActionButton>
                 <ActionButton type="favourite" label="Favourite" on:click={() => toggleFavourite()} bind:active={post.favourited} bind:count={post.favourite_count}>⭐</ActionButton>
@@ -130,23 +138,19 @@
 
 <style>
     .post-container {
-        width: 700px;
-        max-width: 700px;
+        width: 732px;
+        max-width: 732px;
         margin-bottom: 8px;
-        padding: 16px;
         display: flex;
         flex-direction: column;
         border-radius: 8px;
         background-color: var(--bg-800);
+    }
+
+    .post {
+        padding: 16px;
+        border-radius: 8px;
         transition: background-color .1s;
-    }
-
-    .post-container:hover {
-        background-color: color-mix(in srgb, var(--bg-800), black 5%);
-    }
-
-    .post-container:hover :global(.post-context) {
-        opacity: 1;
     }
     
     .post:not(.focused) {
@@ -154,11 +158,17 @@
     }
 
     .post.focused {
-        padding: 16px;
-        margin: -16px;
-        border-radius: 8px;
         border: 1px solid color-mix(in srgb, transparent, var(--accent) 20%);
         box-shadow: 0 0 16px color-mix(in srgb, transparent, var(--accent) 20%);
+    }
+
+    .post:hover {
+        background-color: color-mix(in srgb, var(--bg-800), black 5%);
+    }
+
+    .post-container:has(.post-context) .post {
+        padding-top: 40px;
+        margin-top: -32px;
     }
 
     :global(.post-reactions) {

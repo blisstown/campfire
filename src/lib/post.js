@@ -17,6 +17,7 @@ export default class Post {
     files;
     url;
     reply;
+    reply_id;
     replies;
     boost;
     visibility;
