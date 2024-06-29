@@ -3,8 +3,8 @@
     import Post from '$lib/ui/post/Post.svelte';
 
     export let data;
-    const main_post = data.posts[0];
-    const replies = data.posts.slice(1);
+    $: main_post = data.posts[0];
+    $: replies = data.posts.slice(1);
 </script>
 
 <div id="feed" role="feed">
@@ -13,11 +13,13 @@
             <span>just a moment...</span>
         </div>
     {:else}
+        {#key data}
         <Post post_data={main_post} focused />
         <br>
         {#each replies as post}
             <Post post_data={post} />
         {/each}
+        {/key}
     {/if}
 </div>
 

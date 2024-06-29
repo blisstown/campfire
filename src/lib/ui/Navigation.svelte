@@ -6,6 +6,7 @@
     import { Client } from '$lib/client/client.js';
     import { play_sound } from '$lib/sound.js';
     import { getTimeline } from '$lib/timeline.js';
+    import { goto } from '$app/navigation';
 
     const VERSION = APP_VERSION;
 
@@ -26,7 +27,7 @@
             });
             return;
         }
-        location = "/";
+        goto("/");
     }
 
     function log_out() {

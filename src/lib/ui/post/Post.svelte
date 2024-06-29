@@ -18,9 +18,8 @@
 
     let post_context = undefined;
     let post = post_data;
-    let is_boost = false;
-    if (post_data.boost) {
-        is_boost = true;
+    let is_boost = !!post_data.boost;
+    if (is_boost) {
         post_context = post_data;
         post = post_data.boost;
     }
@@ -28,6 +27,7 @@
     function gotoPost() {
         if (focused) return;
         if (event.key && event.key !== "Enter") return;
+        console.log(`/post/${post.id}`);
         goto(`/post/${post.id}`);
     }
 

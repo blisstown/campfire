@@ -16,8 +16,8 @@
     let aria_label = post.user.username + '; ' + post.text + '; ' + post.created_at;
 
     function gotoPost() {
-        if (focused) return;
         if (event.key && event.key !== "Enter") return;
+        console.log(`/post/${post.id}`);
         goto(`/post/${post.id}`);
     }
 
