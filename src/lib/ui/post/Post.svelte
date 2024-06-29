@@ -42,8 +42,8 @@
             console.error(`Failed to boost post ${post.id}`);
             return;
         }
-        post.boosted = data.boosted;
-        post.boost_count = data.reblogs_count;
+        post.boosted = data.reblog ? data.reblog.reblogged : data.boosted;
+        post.boost_count = data.reblog ? data.reblog.reblogs_count : data.reblogs_count;
     }
 
     async function toggleFavourite() {
@@ -88,8 +88,6 @@
     });
 
     let aria_label = post.user.username + '; ' + post.text + '; ' + post.created_at;
-
-    if (post.reply && post.reply.id === undefined) console.log(post);
 </script>
 
 <div class="post-container">
@@ -128,8 +126,8 @@
             </div>
             <div class="post-actions" aria-label="Post actions" on:click|stopPropagation on:keydown|stopPropagation>
                 <ActionButton type="reply" label="Reply" bind:count={post.reply_count} sound="post" disabled>🗨️</ActionButton>
-                <ActionButton type="boost" label="Boost" on:click={() => toggleBoost()} bind:active={post.boosted} bind:count={post.boost_count} sound="boost">🔁</ActionButton>
-                <ActionButton type="favourite" label="Favourite" on:click={() => toggleFavourite()} bind:active={post.favourited} bind:count={post.favourite_count}>⭐</ActionButton>
+                <ActionButton type="boost" label="Boost" on:click={toggleBoost} bind:active={post.boosted} bind:count={post.boost_count} sound="boost">🔁</ActionButton>
+                <ActionButton type="favourite" label="Favourite" on:click={toggleFavourite} bind:active={post.favourited} bind:count={post.favourite_count}>⭐</ActionButton>
                 <ActionButton type="react" label="React" disabled>😃</ActionButton>
                 <ActionButton type="quote" label="Quote" disabled>🗣️</ActionButton>
                 <ActionButton type="more" label="More" disabled>🛠️</ActionButton>

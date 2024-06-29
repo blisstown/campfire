@@ -4,12 +4,13 @@ import { parsePost } from '$lib/client/api.js';
 
 export let posts = writable([]);
 
-let client = get(Client.get());
 let loading = false;
 
 export async function getTimeline(clean) {
     if (loading) return; // no spamming!!
     loading = true;
+
+    let client = get(Client.get());
 
     let timeline_data;
     if (clean || get(posts).length === 0) timeline_data = await client.getTimeline()

@@ -1,27 +1,18 @@
 <script>
+    import LogoLight from '$lib/../img/spacesocial-logo-light.svg';
+    import LogoDark from '$lib/../img/spacesocial-logo-dark.svg';
     import Feed from '$lib/ui/Feed.svelte';
     import { Client } from '$lib/client/client.js';
+    import User from '$lib/user/user.js';
     import Button from '$lib/ui/Button.svelte';
     import { get } from 'svelte/store';
 
-    let client = get(Client.get());
-    let logged_in;
+    export let data;
+
+    let client = data.client;
+    let logged_in = client.user && client.user.constructor === User;
     let instance_url_error = false;
     let logging_in = false;
-
-    if (client.app && client.app.token) {
-        // this triggers the client actually getting the authenticated user's data.
-        client.verifyCredentials().then(user => {
-            if (user) {
-                console.log(`Logged in as @${user.username}@${user.host}`);
-                logged_in = true;
-            } else {
-                logged_in = false;
-            }
-        });
-    } else {
-        logged_in = false;
-    }
 
     function log_in(event) {
         event.preventDefault();
@@ -49,11 +40,18 @@
     }
 </script>
 
-{#if logged_in === undefined}
-    <div class="loading throb">
-        <span>just a moment...</span>
-    </div>
-{:else if logged_in === false}
+{#if logged_in}
+    <header>
+        <h1>Home</h1>
+        <nav>
+            <Button centered active>Home</Button>
+            <Button centered disabled>Local</Button>
+            <Button centered disabled>Federated</Button>
+        </nav>
+    </header>
+
+    <Feed />
+{:else}
     <form on:submit={log_in} id="login-form">
         <img class="app-icon light-only" src={LogoLight} width="320px" aria-label="Space Social"/>
         <img class="app-icon dark-only" src={LogoDark} width="320px" aria-label="Space Social"/>
@@ -77,17 +75,6 @@
 
         <p class="form-footer">made with ❤️ by <a href="https://arimelody.me">ari melody</a>, 2024</p>
     </form>
-{:else}
-    <header>
-        <h1>Home</h1>
-        <nav>
-            <Button centered active>Home</Button>
-            <Button centered disabled>Local</Button>
-            <Button centered disabled>Federated</Button>
-        </nav>
-    </header>
-
-    <Feed />
 {/if}
 
 <style>

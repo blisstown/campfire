@@ -108,8 +108,8 @@
             </div>
             <div class="post-actions" aria-label="Post actions" on:click|stopPropagation on:keydown|stopPropagation>
                 <ActionButton type="reply" label="Reply" bind:count={post.reply_count} sound="post" disabled>🗨️</ActionButton>
-                <ActionButton type="boost" label="Boost" on:click={() => toggleBoost()} bind:active={post.boosted} bind:count={post.boost_count} sound="boost">🔁</ActionButton>
-                <ActionButton type="favourite" label="Favourite" on:click={() => toggleFavourite()} bind:active={post.favourited} bind:count={post.favourite_count}>⭐</ActionButton>
+                <ActionButton type="boost" label="Boost" on:click={toggleBoost} bind:active={post.boosted} bind:count={post.boost_count} sound="boost">🔁</ActionButton>
+                <ActionButton type="favourite" label="Favourite" on:click={toggleFavourite} bind:active={post.favourited} bind:count={post.favourite_count}>⭐</ActionButton>
                 <ActionButton type="react" label="React" disabled>😃</ActionButton>
                 <ActionButton type="quote" label="Quote" disabled>🗣️</ActionButton>
                 <ActionButton type="more" label="More" disabled>🛠️</ActionButton>

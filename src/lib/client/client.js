@@ -23,10 +23,9 @@ export class Client {
     }
 
     static get() {
-        if (get(client)) return client;
+        let current = get(client);
+        if (current && current.app) return client;
         let new_client = new Client();
-        if (typeof window !== typeof undefined)
-            window.peekie = new_client;
         new_client.load();
         client.set(new_client);
         return client;
@@ -45,13 +44,13 @@ export class Client {
         if (this.instance.type == server_types.UNSUPPORTED) {
             console.warn(`Server ${host} is unsupported - ${data.version}`);
             if (!confirm(
-		`This app does not officially support ${host}. ` +
-		`Things may break, or otherwise not work as epxected! ` +
-		`Are you sure you wish to continue?`
-	    )) return false;
+                `This app does not officially support ${host}. ` +
+                `Things may break, or otherwise not work as epxected! ` +
+                `Are you sure you wish to continue?`
+            )) return false;
         } else {
-	    console.log(`Server is "${this.instance.type}" (or compatible) with capabilities: [${this.instance.capabilities}].`);
-	}
+            console.log(`Server is "${this.instance.type}" (or compatible) with capabilities: [${this.instance.capabilities}].`);
+        }
 
         this.app = await api.createApp(host);
 
@@ -86,13 +85,20 @@ export class Client {
     }
 
     async verifyCredentials() {
+        if (this.user) return this.user;
+        if (!this.app || !this.app.token) {
+            this.user = false;
+            return false;
+        }
         const data = await api.verifyCredentials();
         if (!data) {
             this.user = false;
             return false;
         }
-        this.user = await api.parseUser(data);
-        client.set(this);
+        await client.update(async c => {
+            c.user = await api.parseUser(data);
+            console.log(`Logged in as @${c.user.username}@${c.user.host}`);
+        });
         return this.user;
     }
 

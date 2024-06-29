@@ -11,7 +11,7 @@ export async function load({ params, url }) {
     if (auth_code) {
         client.getToken(auth_code).then(() => {
             client.save();
-            goto(url.origin);
+            goto("/");
         });
     }
     error(400, {

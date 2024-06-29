@@ -256,7 +256,7 @@ export async function parsePost(data, ancestor_count, with_context) {
     post.reply_count = data.replies_count;
     post.favourite_count = data.favourites_count;
     post.favourited = data.favourited;
-    post.boosted = data.boosted;
+    post.boosted = data.reblogged;
     post.mentions = data.mentions;
     post.files = data.media_attachments;
     post.url = data.url;
@@ -302,7 +302,7 @@ export async function parseUser(data) {
     if (data.acct.includes('@'))
         user.host = data.acct.split('@')[1];
     else
-        user.host = get(Client.get()).instance.host;
+        user.host = client.instance.host;
 
     user.emojis = [];
     data.emojis.forEach(emoji_data => {
@@ -312,7 +312,7 @@ export async function parseUser(data) {
         user.emojis.push(parseEmoji(emoji_data));
     });
 
-    get(Client.get()).putCacheUser(user);
+    client.putCacheUser(user);
     return user;
 }
 

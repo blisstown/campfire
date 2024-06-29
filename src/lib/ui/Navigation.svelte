@@ -7,9 +7,10 @@
     import { play_sound } from '$lib/sound.js';
     import { getTimeline } from '$lib/timeline.js';
     import { goto } from '$app/navigation';
+    import { get } from 'svelte/store';
 
     const VERSION = APP_VERSION;
-
+    
     let client = false;
     Client.get().subscribe(c => {
         client = c;
@@ -30,11 +31,10 @@
         goto("/");
     }
 
-    function log_out() {
+    async function log_out() {
         if (!confirm("This will log you out. Are you sure?")) return;
-        client.logout().then(() => {
-            location = "/";
-        });
+        await get(Client.get()).logout();
+        goto("/");
     }
 </script>
 
@@ -51,7 +51,7 @@
     {/if}
 
     <div id="nav-items">
-        <Button label="Timeline" on:click={() => goTimeline()} active>🖼️ Timeline</Button>
+        <Button label="Timeline" on:click={() => goTimeline()} active={client.user}>🖼️ Timeline</Button>
         <Button label="Notifications" disabled>
             🔔 Notifications
             {#if notification_count}
