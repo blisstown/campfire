@@ -1,9 +1,4 @@
 <script>
-    import '$lib/app.css';
-    import LogoLight from '$lib/../img/spacesocial-logo-light.svg';
-    import LogoDark from '$lib/../img/spacesocial-logo-dark.svg';
-    import Navigation from '$lib/ui/Navigation.svelte';
-    import Widgets from '$lib/ui/Widgets.svelte';
     import Feed from '$lib/ui/Feed.svelte';
     import { Client } from '$lib/client/client.js';
     import Button from '$lib/ui/Button.svelte';
@@ -13,16 +8,6 @@
     let logged_in;
     let instance_url_error = false;
     let logging_in = false;
-
-    if (typeof location !== typeof undefined) {
-        let auth_code = new URLSearchParams(location.search).get("code");
-        if (auth_code) {
-            client.getToken(auth_code).then(() => {
-                client.save();
-                location = location.origin;
-            });
-        }
-    }
 
     if (client.app && client.app.token) {
         // this triggers the client actually getting the authenticated user's data.
@@ -97,8 +82,8 @@
         <h1>Home</h1>
         <nav>
             <Button centered active>Home</Button>
-                <Button centered disabled>Local</Button>
-                    <Button centered disabled>Federated</Button>
+            <Button centered disabled>Local</Button>
+            <Button centered disabled>Federated</Button>
         </nav>
     </header>
 
@@ -112,6 +97,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        text-align: center;
     }
 
     a {

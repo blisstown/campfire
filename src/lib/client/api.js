@@ -8,7 +8,7 @@ import { get } from 'svelte/store';
 export async function createApp(host) {
     let form = new FormData();
     form.append("client_name", "space social");
-    form.append("redirect_uris", `${location.origin}`);
+    form.append("redirect_uris", `${location.origin}/callback`);
     form.append("scopes", "read write push");
     form.append("website", "https://spacesocial.arimelody.me");
 
@@ -35,7 +35,7 @@ export function getOAuthUrl() {
     return `https://${client.instance.host}/oauth/authorize` +
         `?client_id=${client.app.id}` +
         "&scope=read+write+push" +
-        `&redirect_uri=${location.origin}` +
+        `&redirect_uri=${location.origin}/callback` +
         "&response_type=code";
 }
 
@@ -44,7 +44,7 @@ export async function getToken(code) {
     let form = new FormData();
     form.append("client_id", client.app.id);
     form.append("client_secret", client.app.secret);
-    form.append("redirect_uri", `${location.origin}`);
+    form.append("redirect_uri", `${location.origin}/callback`);
     form.append("grant_type", "authorization_code");
     form.append("code", code);
     form.append("scope", "read write push");
