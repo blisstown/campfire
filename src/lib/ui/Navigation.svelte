@@ -1,6 +1,5 @@
 <script>
-    import { version as APP_VERSION } from '../../package.json';
-    import Logo from '../img/spacesocial-logo.svg';
+    import Logo from '../../img/spacesocial-logo.svg';
     import Button from './Button.svelte';
     import Feed from './Feed.svelte';
     import { Client } from '../client/client.js';

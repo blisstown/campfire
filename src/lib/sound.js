@@ -1,8 +1,12 @@
-const sounds = {
-    "default": new Audio("/sound/log.ogg"),
-    "post": new Audio("/sound/success.ogg"),
-    "boost": new Audio("/sound/hello.ogg"),
-};
+let sounds;
+
+if (typeof Audio !== typeof undefined) {
+    sounds = {
+        "default": new Audio("/sound/log.ogg"),
+        "post": new Audio("/sound/success.ogg"),
+        "boost": new Audio("/sound/hello.ogg"),
+    };
+}
 
 export function play_sound(name) {
     if (name === false) return;

@@ -5,10 +5,10 @@
         <link rel="icon" type="image/png" href="/favicon.png">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>space social</title>
+        %sveltekit.head%
     </head>
-    <body>
-        <div id="app"></div>
+    <body data-sveltekit-preload-data="hover">
+        <div style="display: contents">%sveltekit.body%</div>
         <noscript>you need to enable javascript to use this app! :(</noscript>
-        <script type="module" src="/src/main.js"></script>
     </body>
 </html>

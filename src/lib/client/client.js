@@ -1,4 +1,3 @@
-import { version as APP_VERSION } from '../../package.json';
 import { Instance, server_types } from './instance.js';
 import * as api from './api.js';
 import { get, writable } from 'svelte/store';
@@ -25,7 +24,8 @@ export class Client {
     static get() {
         if (get(client)) return client;
         let new_client = new Client();
-        window.peekie = new_client;
+        if (typeof window !== typeof undefined)
+            window.peekie = new_client;
         new_client.load();
         client.set(new_client);
         return client;
@@ -157,6 +157,7 @@ export class Client {
     }
 
     save() {
+        if (typeof localStorage === typeof undefined) return;
         localStorage.setItem(save_name, JSON.stringify({
             version: APP_VERSION,
             instance: {
@@ -168,6 +169,7 @@ export class Client {
     }
 
     load() {
+        if (typeof localStorage === typeof undefined) return;
         let json = localStorage.getItem(save_name);
         if (!json) return false;
         let saved = JSON.parse(json);
