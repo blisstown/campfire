@@ -2,12 +2,16 @@ import Post from '$lib/ui/post/Post.svelte';
 import { Client } from '$lib/client/client.js';
 import { parsePost } from '$lib/client/api.js';
 import { get } from 'svelte/store';
+import { goto } from '$app/navigation';
 
 export const ssr = false;
 
 export async function load({ params }) {
     let client = get(Client.get());
-    await client.verifyCredentials();
+
+    if (!client.instance || !client.user) {
+        goto("/");
+    }
 
     const post_id = params.id;
 
