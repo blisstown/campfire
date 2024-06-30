@@ -11,6 +11,14 @@
     import ActionBar from './ActionBar.svelte';
     import ReactionBar from './ReactionBar.svelte';
 
+    import ReplyIcon from '../../../img/icons/reply.svg';
+    import RepostIcon from '../../../img/icons/repost.svg';
+    import FavouriteIcon from '../../../img/icons/like.svg';
+    import FavouriteIconFill from '../../../img/icons/like_fill.svg';
+    import ReactIcon from '../../../img/icons/react.svg';
+    import QuoteIcon from '../../../img/icons/quote.svg';
+    import MoreIcon from '../../../img/icons/more.svg';
+
     export let post_data;
     export let focused = false;
 
