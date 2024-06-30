@@ -29,7 +29,11 @@
         title="{title}"
         on:click={click}>
         <span class="icon">
-            <slot/>
+            {#if active}
+                <slot name="activeIcon"/>
+            {:else} 
+                <slot/>
+            {/if}
         </span>
         {#if count}
             <span class="count">{count}</span>
@@ -38,10 +42,11 @@
 
 <style>
     button {
-        height: 32px;
+        /* height: 32px; */
         padding: 6px 8px;
         display: flex;
         flex-direction: row;
+        align-items: center;
         gap: 4px;
         font-family: inherit;
         font-size: 1em;
@@ -54,8 +59,7 @@
     }
 
     button.active {
-        background-color: color-mix(in srgb, transparent, var(--accent) 50%);
-        color: var(--bg-1000);
+        background-color: color-mix(in srgb, transparent, var(--accent) 50%); 
     }
 
     button:not(.disabled):hover {
@@ -74,8 +78,8 @@
     }
 
     .icon {
-        width: 20px;
-        height: 20px;
+        width: 24px;
+        height: 24px;
         display: flex;
         justify-content: center;
         align-items: center;

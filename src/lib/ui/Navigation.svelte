@@ -1,5 +1,5 @@
 <script>
-    import Logo from '$lib/../img/CampfireLogo.svelte';
+    import Logo from '$lib/../img/campfire-logo.svg';
     import Button from './Button.svelte';
     import Feed from './Feed.svelte';
     import { Client } from '$lib/client/client.js';
@@ -7,6 +7,18 @@
     import { getTimeline } from '$lib/timeline.js';
     import { goto } from '$app/navigation';
     import { get } from 'svelte/store';
+
+    import TimelineIcon from '../../img/icons/timeline.svg';
+    import NotificationsIcon from '../../img/icons/notifications.svg';
+    import ExploreIcon from '../../img/icons/explore.svg';
+    import ListIcon from '../../img/icons/lists.svg';
+    import FavouritesIcon from '../../img/icons/like_fill.svg';
+    import BookmarkIcon from '../../img/icons/bookmark.svg';
+    import HashtagIcon from '../../img/icons/hashtag.svg';
+    import PostIcon from '../../img/icons/post.svg';
+    import InfoIcon from '../../img/icons/info.svg';
+    import SettingsIcon from '../../img/icons/settings.svg';
+    import LogoutIcon from '../../img/icons/logout.svg';
 
     const VERSION = APP_VERSION;
     
@@ -44,36 +56,85 @@
         </header>
     {:else}
         <header class="instance-header">
-            <Logo />
+            <div class="app-logo">
+                <Logo />
+            </div>
         </header>
     {/if}
 
     <div id="nav-items">
-        <Button label="Timeline" on:click={() => goTimeline()} active={client.user}>🖼️ Timeline</Button>
+        <Button label="Timeline" on:click={() => goTimeline()} active={client.user}>
+            <svelte:fragment slot="icon">
+                <TimelineIcon/>
+            </svelte:fragment>
+            Timeline
+        </Button>
         <Button label="Notifications" disabled>
-            🔔 Notifications
+            <svelte:fragment slot="icon">
+                <NotificationsIcon/>
+            </svelte:fragment>
+            Notifications
             {#if notification_count}
             <span class="notification-count">{notification_count}</span>
             {/if}
         </Button>
-        <Button label="Explore" disabled>🌍 Explore</Button>
-        <Button label="Lists" disabled>🗒️ Lists</Button>
+        <Button label="Explore" disabled>
+            <svelte:fragment slot="icon">
+                <ExploreIcon height="auto"/>
+            </svelte:fragment>
+            Explore
+        </Button>
+        <Button label="Lists" disabled>
+            <svelte:fragment slot="icon">
+                <ListIcon/>
+            </svelte:fragment>
+            Lists
+        </Button>
 
         <div class="flex-row">
-            <Button centered label="Favourites" disabled>⭐</Button>
-            <Button centered label="Bookmarks" disabled>🔖</Button>
-            <Button centered label="Hashtags" disabled>#</Button>
+            <Button centered label="Favourites" disabled>
+                <svelte:fragment slot="icon">
+                    <FavouritesIcon/>
+                </svelte:fragment>
+            </Button>
+            <Button centered label="Bookmarks" disabled>
+                <svelte:fragment slot="icon">
+                    <BookmarkIcon/>
+                </svelte:fragment>
+            </Button>
+            <Button centered label="Hashtags" disabled>
+                <svelte:fragment slot="icon">
+                    <HashtagIcon/>
+                </svelte:fragment>
+            </Button>
         </div>
 
-        <Button filled label="Post" disabled>✏️ Post</Button>
+        <Button filled label="Post" disabled>
+            <svelte:fragment slot="icon">
+                <PostIcon/>
+            </svelte:fragment>
+            Post
+            </Button>
     </div>
 
     {#if (client.user)}
     <div id="account-items">
         <div class="flex-row">
-            <Button centered label="Profile information" disabled>ℹ️</Button>
-            <Button centered label="Settings" disabled>⚙️</Button>
-            <Button centered label="Log out" on:click={() => log_out()}>🚪</Button>
+            <Button centered label="Profile information" disabled>
+                <svelte:fragment slot="icon">
+                    <InfoIcon/>
+                </svelte:fragment>
+            </Button>
+            <Button centered label="Settings" disabled>
+                <svelte:fragment slot="icon">
+                    <SettingsIcon/>
+                </svelte:fragment>
+            </Button>
+            <Button centered label="Log out" on:click={() => log_out()}>
+                <svelte:fragment slot="icon">
+                    <LogoutIcon/>
+                </svelte:fragment>
+            </Button>
         </div>
 
         <div id="account-button">

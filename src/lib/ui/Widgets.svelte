@@ -1,5 +1,5 @@
 <div id="widgets">
-    <input type="text" id="search" placeholder="🔍 Search">
+    <input type="text" id="search" placeholder="Search">
 </div>
 
 <style>

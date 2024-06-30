@@ -1,5 +1,5 @@
 <script>
-    import Logo from '$lib/../img/CampfireLogo.svelte';
+    import Logo from '$lib/../img/campfire-logo.svg';
     import Feed from '$lib/ui/Feed.svelte';
     import { Client } from '$lib/client/client.js';
     import User from '$lib/user/user.js';
@@ -52,7 +52,9 @@
     <Feed />
 {:else}
     <form on:submit={log_in} id="login-form">
-        <Logo />
+        <div class="app-logo">
+            <Logo />
+        </div>
         <p>Welcome, fediverse user!</p>
         <p>Please enter your instance domain to log in.</p>
         <div class="input-wrapper">
