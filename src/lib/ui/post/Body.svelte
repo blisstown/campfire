@@ -25,23 +25,25 @@
         {#if post.text}
             <span class="post-text">{@html rich_text}</span>
         {/if}
-        <div class="post-media-container" data-count={post.files.length}>
-            {#each post.files as file}
-                <div class="post-media {file.type}" on:click|stopPropagation={null}>
-                    {#if file.type === "image"}
-                        <a href={file.url} target="_blank">
-                            <img src={file.url} alt={file.description} title={file.description} height="200" loading="lazy" decoding="async">
-                        </a>
-                    {:else if file.type === "video"}
-                        <video controls height="200">
-                            <source src={file.url} alt={file.description} title={file.description} type={file.url.endsWith('.mp4') ? 'video/mp4' : 'video/webm'}>
-                            <p>{file.description} &ensp; <a href={file.url}>[link]</a></p>
-                            <!-- <media src={file.url} alt={file.description} loading="lazy" decoding="async"> -->
-                        </video>
-                    {/if}
-                </div>
-            {/each}
-        </div>
+        {#if post.files && post.files.length > 0}
+            <div class="post-media-container" data-count={post.files.length}>
+                {#each post.files as file}
+                    <div class="post-media {file.type}" on:click|stopPropagation={null}>
+                        {#if file.type === "image"}
+                            <a href={file.url} target="_blank">
+                                <img src={file.url} alt={file.description} title={file.description} height="200" loading="lazy" decoding="async">
+                            </a>
+                        {:else if file.type === "video"}
+                            <video controls height="200">
+                                <source src={file.url} alt={file.description} title={file.description} type={file.url.endsWith('.mp4') ? 'video/mp4' : 'video/webm'}>
+                                <p>{file.description} &ensp; <a href={file.url}>[link]</a></p>
+                                <!-- <media src={file.url} alt={file.description} loading="lazy" decoding="async"> -->
+                            </video>
+                        {/if}
+                    </div>
+                {/each}
+            </div>
+        {/if}
         {#if post.boost && post.text}
             <p class="post-warning"><strong>this is quoting a post! quotes are not supported yet.</strong></p>
             <!-- TODO: quotes support -->

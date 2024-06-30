@@ -145,7 +145,6 @@
                     {`@${client.user.username}@${client.user.host}`}
                 </span>
             </div>
-            <!-- <button class="settings" aria-label={`Account: ${client.user.username}@${client.user.host}`} on:click={() => play_sound()}>🔧</button> -->
         </div>
     </div>
     {/if}
@@ -153,7 +152,8 @@
         campfire v{VERSION}
         <br>
         <ul>
-            <li><a href="https://git.arimelody.me/ari/spacesocial-client">source</a></li>
+            <li><a href="https://git.arimelody.me/blisstown/campfire">source</a></li>
+            <li><a href="https://github.com/blisstown/campfire/issues">issues</a></li>
         </ul>
     </span>
 </div>

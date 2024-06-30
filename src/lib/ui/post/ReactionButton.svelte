@@ -67,7 +67,8 @@
     }
 
     button.disabled {
-        cursor: initial;
+        /* cursor: initial; */
+        cursor: not-allowed;
     }
 
     .icon {

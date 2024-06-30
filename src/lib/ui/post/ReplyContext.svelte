@@ -1,9 +1,4 @@
 <script>
-    import PostHeader from './PostHeader.svelte';
-    import Body from './Body.svelte';
-    import ReactionButton from './ReactionButton.svelte';
-    import ActionButton from './ActionButton.svelte';
-    import Post from './Post.svelte';
     import { parseText as parseEmojis, parseOne as parseEmoji } from '../../emoji.js';
     import { shorthand as short_time } from '../../time.js';
     import { get } from 'svelte/store';
@@ -11,13 +6,11 @@
     import * as api from '../../client/api.js';
     import { goto } from '$app/navigation';
 
-    import ReplyIcon from '../../../img/icons/reply.svg';
-    import RepostIcon from '../../../img/icons/repost.svg';
-    import FavouriteIcon from '../../../img/icons/like.svg';
-    import FavouriteIconFill from '../../../img/icons/like_fill.svg';
-    import ReactIcon from '../../../img/icons/react.svg';
-    import QuoteIcon from '../../../img/icons/quote.svg';
-    import MoreIcon from '../../../img/icons/more.svg';
+    import PostHeader from './PostHeader.svelte';
+    import Body from './Body.svelte';
+    import Post from './Post.svelte';
+    import ActionBar from './ActionBar.svelte';
+    import ReactionBar from './ReactionBar.svelte';
 
     export let post;
     let time_string = post.created_at.toLocaleString();
@@ -96,50 +89,8 @@
         <Body post={post} />
 
         <footer class="post-footer">
-            <div class="post-reactions" aria-label="Reactions" on:click|stopPropagation on:keydown|stopPropagation>
-                {#each post.reactions as reaction}
-                    <ReactionButton
-                            type="reaction"
-                            on:click={() => toggleReaction(reaction)}
-                            bind:active={reaction.me}
-                            bind:count={reaction.count}
-                            disabled={reaction.name.includes('@')}
-                            title={reaction.name}
-                            label="">
-                        {#if reaction.url}
-                            <img src={reaction.url} class="emoji" height="20" title={reaction.name} alt={reaction.name}>
-                        {:else}
-                            {reaction.name}
-                        {/if}
-                    </ReactionButton>
-                {/each}
-            </div>
-            <div class="post-actions" aria-label="Post actions" on:click|stopPropagation on:keydown|stopPropagation>
-                <ActionButton type="reply" label="Reply" bind:count={post.reply_count} sound="post" disabled>
-                    <ReplyIcon/>
-                </ActionButton>
-                <ActionButton type="boost" label="Boost" on:click={toggleBoost} bind:active={post.boosted} bind:count={post.boost_count} sound="boost">
-                    <RepostIcon/>
-                    <svelte:fragment slot="activeIcon">
-                        <RepostIcon/>
-                    </svelte:fragment>
-                </ActionButton>
-                <ActionButton type="favourite" label="Favourite" on:click={toggleFavourite} bind:active={post.favourited} bind:count={post.favourite_count}>
-                    <FavouriteIcon/>
-                    <svelte:fragment slot="activeIcon">
-                        <FavouriteIconFill/>
-                    </svelte:fragment>
-                </ActionButton>
-                <ActionButton type="react" label="React" disabled>
-                    <ReactIcon/>
-                </ActionButton>
-                <ActionButton type="quote" label="Quote" disabled>
-                    <QuoteIcon/>
-                </ActionButton>
-                <ActionButton type="more" label="More" disabled>
-                    <MoreIcon/>
-                </ActionButton>
-            </div>
+            <ReactionBar post={post} />
+            <ActionBar post={post} />
         </footer>
     </div>
 </article>

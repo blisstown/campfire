@@ -74,7 +74,8 @@
 
     button.disabled {
         opacity: .5;
-        cursor: initial;
+        /* cursor: initial; */
+        cursor: not-allowed;
     }
 
     .icon {
