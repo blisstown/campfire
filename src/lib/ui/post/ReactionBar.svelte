@@ -5,7 +5,7 @@
     export let post;
 </script>
 
-<div class="post-reactions" aria-label="Reactions" on:click|stopPropagation on:keydown|stopPropagation>
+<div class="post-reactions" aria-label="Reactions" on:mouseup|stopPropagation on:keydown|stopPropagation>
     {#each post.reactions as reaction}
         <ReactionButton
                 type="reaction"

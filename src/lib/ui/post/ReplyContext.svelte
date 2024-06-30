@@ -16,59 +16,12 @@
     let time_string = post.created_at.toLocaleString();
     let aria_label = post.user.username + '; ' + post.text + '; ' + post.created_at;
 
+    let mouse_pos = { top: 0, left: 0 };
+
     function gotoPost() {
-        if (event.key && event.key !== "Enter") return;
+        if (event && event.key && event.key !== "Enter") return;
         console.log(`/post/${post.id}`);
         goto(`/post/${post.id}`);
-    }
-
-    async function toggleBoost() {
-        let client = get(Client.get());
-        let data;
-        if (post.boosted)
-            data = await client.unboostPost(post.id);
-        else
-            data = await client.boostPost(post.id);
-        if (!data) {
-            console.error(`Failed to boost post ${post.id}`);
-            return;
-        }
-        post.boosted = data.boosted;
-        post.boost_count = data.reblogs_count;
-    }
-
-    async function toggleFavourite() {
-        let client = get(Client.get());
-        let data;
-        if (post.favourited)
-            data = await client.unfavouritePost(post.id);
-        else
-            data = await client.favouritePost(post.id);
-        if (!data) {
-            console.error(`Failed to favourite post ${post.id}`);
-            return;
-        }
-        post.favourited = data.favourited;
-        post.favourite_count = data.favourites_count;
-        if (data.reactions) post.reactions = api.parseReactions(data.reactions);
-    }
-
-    async function toggleReaction(reaction) {
-        if (reaction.name.includes('@')) return;
-        let client = get(Client.get());
-
-        let data;
-        if (reaction.me)
-            data = await client.unreactPost(post.id, reaction.name);
-        else
-            data = await client.reactPost(post.id, reaction.name);
-        if (!data) {
-            console.error(`Failed to favourite post ${post.id}`);
-            return;
-        }
-        post.favourited = data.favourited;
-        post.favourite_count = data.favourites_count;
-        if (data.reactions) post.reactions = api.parseReactions(data.reactions);
     }
 </script>
 
@@ -79,7 +32,8 @@
 <article
         class="post-reply"
         aria-label={aria_label}
-        on:click={gotoPost}
+        on:mousedown={e => {mouse_pos.left = e.pageX; mouse_pos.top = e.pageY; console.log(mouse_pos)}}
+        on:mouseup={e => {if (e.pageX == mouse_pos.left && e.pageY == mouse_pos.top) gotoPost()}}
         on:keydown={gotoPost}>
     <div class="line"></div>
         

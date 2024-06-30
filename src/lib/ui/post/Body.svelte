@@ -8,7 +8,7 @@
 
 <div class="post-body">
     {#if post.warning}
-        <button class="post-warning" on:click|stopPropagation={() => { open_warned = !open_warned }}>
+        <button class="post-warning" on:click|stopPropagation={() => { open_warned = !open_warned }} on:mouseup|stopPropagation>
         <strong>
             {post.warning}
             <span class="warning-instructions">
@@ -28,7 +28,7 @@
         {#if post.files && post.files.length > 0}
             <div class="post-media-container" data-count={post.files.length}>
                 {#each post.files as file}
-                    <div class="post-media {file.type}" on:click|stopPropagation={null}>
+                    <div class="post-media {file.type}" on:click|stopPropagation on:mouseup|stopPropagation>
                         {#if file.type === "image"}
                             <a href={file.url} target="_blank">
                                 <img src={file.url} alt={file.description} title={file.description} height="200" loading="lazy" decoding="async">

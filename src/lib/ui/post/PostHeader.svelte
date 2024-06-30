@@ -8,7 +8,7 @@
     let time_string = post.created_at.toLocaleString();
 </script>
 
-<div class={"post-header-container" + (reply ? " reply" : "")}>
+<div class={"post-header-container" + (reply ? " reply" : "")} on:mouseup|stopPropagation>
     <a href={post.user.url} target="_blank" class="post-avatar-container">
         <img src={post.user.avatar_url} type={post.user.avatar_type} alt="" width="48" height="48" class="post-avatar" loading="lazy" decoding="async">
     </a>

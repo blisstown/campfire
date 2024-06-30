@@ -22,9 +22,11 @@
         post = post_data.boost;
     }
 
+    let mouse_pos = { top: 0, left: 0 };
+
     function gotoPost() {
         if (focused) return;
-        if (event.key && event.key !== "Enter") return;
+        if (event && event.key && event.key !== "Enter") return;
         console.log(`/post/${post.id}`);
         goto(`/post/${post.id}`);
     }
@@ -50,7 +52,8 @@
             class={"post" + (focused ? " focused" : "")}
             aria-label={aria_label}
             bind:this={el}
-            on:click={gotoPost}
+            on:mousedown={e => {mouse_pos.left = e.pageX; mouse_pos.top = e.pageY; console.log(mouse_pos)}}
+            on:mouseup={e => {if (e.pageX == mouse_pos.left && e.pageY == mouse_pos.top) gotoPost()}}
             on:keydown={gotoPost}>
         <PostHeader post={post} />
         <Body post={post} />

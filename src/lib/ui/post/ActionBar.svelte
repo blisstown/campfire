@@ -65,7 +65,7 @@
     }
 </script>
 
-<div class="post-actions" aria-label="Post actions" on:click|stopPropagation on:keydown|stopPropagation>
+<div class="post-actions" aria-label="Post actions" on:mouseup|stopPropagation on:keydown|stopPropagation>
     <ActionButton type="reply" label="Reply" bind:count={post.reply_count} sound="post" disabled>
         <ReplyIcon/>
     </ActionButton>

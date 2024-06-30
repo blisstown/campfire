@@ -188,10 +188,15 @@
         border-radius: 8px;
     }
 
-    :global(.app-logo) {
-        max-width: 80%;
-        max-height: 80%;
+    .app-logo {
+        max-width: 70%;
+        max-height: 70%;
         margin: auto;
+    }
+
+    .app-logo :global(svg) {
+        width: 100%;
+        height: 100%;
     }
 
     #nav-items {
