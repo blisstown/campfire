@@ -1,6 +1,6 @@
 {
     "name": "campfire-client",
-    "version": "0.2.0_rev3",
+    "version": "0.2.0_rev4",
     "description": "social media for the galaxy-wide-web! 🌌",
     "private": true,
     "type": "module",
