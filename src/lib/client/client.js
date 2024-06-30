@@ -4,7 +4,7 @@ import { get, writable } from 'svelte/store';
 
 let client = writable(false);
 
-const save_name = "spacesocial";
+const save_name = "campfire";
 
 export class Client {
     instance;

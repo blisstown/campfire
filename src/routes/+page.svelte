@@ -1,6 +1,5 @@
 <script>
-    import LogoLight from '$lib/../img/spacesocial-logo-light.svg';
-    import LogoDark from '$lib/../img/spacesocial-logo-dark.svg';
+    import Logo from '$lib/../img/CampfireLogo.svelte';
     import Feed from '$lib/ui/Feed.svelte';
     import { Client } from '$lib/client/client.js';
     import User from '$lib/user/user.js';
@@ -53,8 +52,7 @@
     <Feed />
 {:else}
     <form on:submit={log_in} id="login-form">
-        <img class="app-icon light-only" src={LogoLight} width="320px" aria-label="Space Social"/>
-        <img class="app-icon dark-only" src={LogoDark} width="320px" aria-label="Space Social"/>
+        <Logo />
         <p>Welcome, fediverse user!</p>
         <p>Please enter your instance domain to log in.</p>
         <div class="input-wrapper">
@@ -73,7 +71,7 @@
                               If that's all cool with you, welcome aboard!
         </small></p>
 
-        <p class="form-footer">made with ❤️ by <a href="https://arimelody.me">ari melody</a>, 2024</p>
+        <p class="form-footer">made with ❤ by <a href="https://bliss.town">bliss town</a>, 2024</p>
     </form>
 {/if}
 
@@ -214,7 +212,8 @@
         gap: 8px;
     }
 
-    .app-icon {
+    :global(.app-logo) {
+        height: auto;
         width: 320px;
         margin: 8px;
     }

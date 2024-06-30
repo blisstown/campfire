@@ -1,6 +1,5 @@
 <script>
-    import LogoLight from '$lib/../img/spacesocial-logo-light.svg';
-    import LogoDark from '$lib/../img/spacesocial-logo-dark.svg';
+    import Logo from '$lib/../img/CampfireLogo.svelte';
     import Button from './Button.svelte';
     import Feed from './Feed.svelte';
     import { Client } from '$lib/client/client.js';
@@ -45,8 +44,7 @@
         </header>
     {:else}
         <header class="instance-header">
-            <img class="app-icon light-only" src={LogoLight} width="320px" aria-label="Space Social"/>
-            <img class="app-icon dark-only" src={LogoDark} width="320px" aria-label="Space Social"/>
+            <Logo />
         </header>
     {/if}
 
@@ -91,7 +89,7 @@
     </div>
     {/if}
     <span class="version">
-        space social v{VERSION}
+        campfire v{VERSION}
         <br>
         <ul>
             <li><a href="https://git.arimelody.me/ari/spacesocial-client">source</a></li>
@@ -129,7 +127,7 @@
         border-radius: 8px;
     }
 
-    .app-icon {
+    :global(.app-logo) {
         max-width: 80%;
         max-height: 80%;
         margin: auto;

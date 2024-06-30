@@ -1,17 +1,14 @@
-# space social
+# Campfire
 
 social media for the galaxy-wide-web! 🌌
 
-this is a neat experiment in building as much of a fediverse-compatible
-software stack as i can (at least before the crippling weight of the full
-activitypub spec finally cripples me)
-
-starting, of course, with a nice frontend! ✨
+this is a *very experimental* frontend for browsing the fediverse, built
+from the ground up in svelte!
 
 should you choose to play around with this yourself, just know that *many
-things are bound not to work!* notably, this has only been tested on iceshrimp
-and mastodon API-compliant instances. anything beyond this will likely be
-incompatible, and the web console will get very upset.
+things are bound not to work!* notably, campfire is currently only being
+battle-tested on mastodon API-compliant instances. anything beyond this
+will likely be incompatible, and the web console will get very upset.
 
 ## features
 
@@ -34,10 +31,17 @@ incompatible, and the web console will get very upset.
 - fast account switching
 - post editing/deletion
 - push notifications
+- ...and potentially much more as development continues!
 
 ## try it out!
 
 - `git clone` this repo
 - `npm install` the dependencies
 - `npm run dev` to spin up the dev environment
-- have fun! ✨
+
+if you wish to run this in production, you need only `npm run build` and
+place the static files somewhere accessible by a static webhost, such as
+nginx or apache! **note:** your web server should attempt to reach
+`/fallback.html` before erroring out.
+
+have fun! ✨

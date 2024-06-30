@@ -7,10 +7,10 @@ import { get } from 'svelte/store';
 
 export async function createApp(host) {
     let form = new FormData();
-    form.append("client_name", "space social");
+    form.append("client_name", "Campfire");
     form.append("redirect_uris", `${location.origin}/callback`);
     form.append("scopes", "read write push");
-    form.append("website", "https://spacesocial.arimelody.me");
+    form.append("website", "https://campfire.bliss.town");
 
     const res = await fetch(`https://${host}/api/v1/apps`, {
         method: "POST",
