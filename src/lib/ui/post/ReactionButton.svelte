@@ -18,15 +18,15 @@
 </script>
 
 <button
-        type="button"
-        class={[
+    type="button"
+    class={[
         type,
         active ? "active" : "",
         disabled ? "disabled" : "",
         ].join(' ')}
-        aria-label="{label}"
-        title="{title}"
-        on:click={click}>
+    aria-label="{label}"
+    title="{title}"
+    on:click={click}>
         <span class="icon">
             <slot/>
         </span>

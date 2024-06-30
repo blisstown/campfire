@@ -34,6 +34,9 @@
         title={label}
         aria-label={label}
         on:click={() => click()}>
+    <span class="icon">
+        <slot name="icon" />
+    </span>
     <slot/>
 </button>
 
@@ -45,7 +48,6 @@
         padding: 16px;
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
         align-items: center;
 
         font-family: inherit;
@@ -130,5 +132,18 @@
     }
 
     button.disabled:active {
+    }
+
+    .icon:not(:empty) {
+        height: 150%;
+        margin-right: 8px;
+    }
+
+    .icon :global(svg) {
+        height: 100%;
+    }
+
+    .centered .icon {
+        margin-right: 0px;
     }
 </style>

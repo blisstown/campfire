@@ -11,6 +11,14 @@
     import * as api from '../../client/api.js';
     import { goto } from '$app/navigation';
 
+    import ReplyIcon from '../../../img/icons/reply.svg';
+    import RepostIcon from '../../../img/icons/repost.svg';
+    import FavouriteIcon from '../../../img/icons/like.svg';
+    import FavouriteIconFill from '../../../img/icons/like_fill.svg';
+    import ReactIcon from '../../../img/icons/react.svg';
+    import QuoteIcon from '../../../img/icons/quote.svg';
+    import MoreIcon from '../../../img/icons/more.svg';
+
     export let post;
     let time_string = post.created_at.toLocaleString();
     let aria_label = post.user.username + '; ' + post.text + '; ' + post.created_at;
@@ -107,12 +115,30 @@
                 {/each}
             </div>
             <div class="post-actions" aria-label="Post actions" on:click|stopPropagation on:keydown|stopPropagation>
-                <ActionButton type="reply" label="Reply" bind:count={post.reply_count} sound="post" disabled>🗨️</ActionButton>
-                <ActionButton type="boost" label="Boost" on:click={toggleBoost} bind:active={post.boosted} bind:count={post.boost_count} sound="boost">🔁</ActionButton>
-                <ActionButton type="favourite" label="Favourite" on:click={toggleFavourite} bind:active={post.favourited} bind:count={post.favourite_count}>⭐</ActionButton>
-                <ActionButton type="react" label="React" disabled>😃</ActionButton>
-                <ActionButton type="quote" label="Quote" disabled>🗣️</ActionButton>
-                <ActionButton type="more" label="More" disabled>🛠️</ActionButton>
+                <ActionButton type="reply" label="Reply" bind:count={post.reply_count} sound="post" disabled>
+                    <ReplyIcon/>
+                </ActionButton>
+                <ActionButton type="boost" label="Boost" on:click={toggleBoost} bind:active={post.boosted} bind:count={post.boost_count} sound="boost">
+                    <RepostIcon/>
+                    <svelte:fragment slot="activeIcon">
+                        <RepostIcon/>
+                    </svelte:fragment>
+                </ActionButton>
+                <ActionButton type="favourite" label="Favourite" on:click={toggleFavourite} bind:active={post.favourited} bind:count={post.favourite_count}>
+                    <FavouriteIcon/>
+                    <svelte:fragment slot="activeIcon">
+                        <FavouriteIconFill/>
+                    </svelte:fragment>
+                </ActionButton>
+                <ActionButton type="react" label="React" disabled>
+                    <ReactIcon/>
+                </ActionButton>
+                <ActionButton type="quote" label="Quote" disabled>
+                    <QuoteIcon/>
+                </ActionButton>
+                <ActionButton type="more" label="More" disabled>
+                    <MoreIcon/>
+                </ActionButton>
             </div>
         </footer>
     </div>
