@@ -43,7 +43,9 @@
         <Body post={post} />
 
         <footer class="post-footer">
-            <ReactionBar post={post} />
+            {#if post.reactions}
+                <ReactionBar post={post} />
+            {/if}
             <ActionBar post={post} />
         </footer>
     </div>
