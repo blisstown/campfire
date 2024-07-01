@@ -32,9 +32,15 @@
 
     let mouse_pos = { top: 0, left: 0 };
 
-    function gotoPost() {
+    function gotoPost(event) {
         if (focused) return;
-        if (event && event.key && event.key !== "Enter") return;
+        if (event) {
+            if (event.type == "mouseup" && (
+                event.button !== 0 ||
+                event.shiftKey ||
+                event.ctrlKey)) return;
+            if (event.key && event.key !== "Enter") return;
+        }
         goto(`/post/${post.id}`);
     }
 
@@ -62,7 +68,7 @@
             aria-label={aria_label}
             bind:this={el}
             on:mousedown={e => {mouse_pos.left = e.pageX; mouse_pos.top = e.pageY}}
-            on:mouseup={e => {if (e.pageX == mouse_pos.left && e.pageY == mouse_pos.top) gotoPost()}}
+            on:mouseup={e => {if (e.pageX == mouse_pos.left && e.pageY == mouse_pos.top) gotoPost(e)}}
             on:keydown={gotoPost}>
         <PostHeader post={post} />
         <Body post={post} />

@@ -16,8 +16,15 @@
 
     let mouse_pos = { top: 0, left: 0 };
 
-    function gotoPost() {
-        if (event && event.key && event.key !== "Enter") return;
+    function gotoPost(event) {
+        if (event) {
+
+            if (event.type == "mouseup" && (
+                event.button !== 0 ||
+                event.shiftKey ||
+                event.ctrlKey)) return;
+            if (event.key && event.key !== "Enter") return;
+        }
         goto(`/post/${post.id}`);
     }
 </script>
@@ -32,7 +39,7 @@
         class="post-reply"
         aria-label={aria_label}
         on:mousedown={e => {mouse_pos.left = e.pageX; mouse_pos.top = e.pageY}}
-        on:mouseup={e => {if (e.pageX == mouse_pos.left && e.pageY == mouse_pos.top) gotoPost()}}
+        on:mouseup={e => {if (e.pageX == mouse_pos.left && e.pageY == mouse_pos.top) gotoPost(e)}}
         on:keydown={gotoPost}>
     <div class="line"></div>
         
