@@ -42,7 +42,6 @@
             );
         }
 
-        console.log(post);
         return post;
     })();
 </script>
