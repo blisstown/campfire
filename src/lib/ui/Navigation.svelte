@@ -2,7 +2,7 @@
     import Logo from '$lib/../img/campfire-logo.svg';
     import Button from './Button.svelte';
     import Feed from './Feed.svelte';
-    import { Client } from '$lib/client/client.js';
+    import { client } from '$lib/client/client.js';
     import { play_sound } from '$lib/sound.js';
     import { getTimeline } from '$lib/timeline.js';
     import { goto } from '$app/navigation';
@@ -22,11 +22,6 @@
 
     const VERSION = APP_VERSION;
     
-    let client = false;
-    Client.get().subscribe(c => {
-        client = c;
-    });
-
     let notification_count = 0;
     if (notification_count > 99) notification_count = "99+";
 
@@ -44,26 +39,20 @@
 
     async function log_out() {
         if (!confirm("This will log you out. Are you sure?")) return;
-        await get(Client.get()).logout();
+        await get(client).logout();
         goto("/");
     }
 </script>
 
 <div id="navigation">
-    {#if client.instance && client.instance.icon_url && client.instance.banner_url}
-        <header class="instance-header" style="background-image: url({client.instance.banner_url})">
-            <img src={client.instance.icon_url} class="instance-icon" height="92px" aria-hidden="true">
-        </header>
-    {:else}
-        <header class="instance-header">
-            <div class="app-logo">
-                <Logo />
-            </div>
-        </header>
-    {/if}
+    <header class="instance-header">
+        <div class="app-logo">
+            <Logo />
+        </div>
+    </header>
 
     <div id="nav-items">
-        <Button label="Timeline" on:click={() => goTimeline()} active={client.user}>
+        <Button label="Timeline" on:click={() => goTimeline()} active={!!$client.user}>
             <svelte:fragment slot="icon">
                 <TimelineIcon/>
             </svelte:fragment>
@@ -117,7 +106,7 @@
             </Button>
     </div>
 
-    {#if (client.user)}
+    {#if $client.user}
     <div id="account-items">
         <div class="flex-row">
             <Button centered label="Profile information" disabled>
@@ -138,11 +127,11 @@
         </div>
 
         <div id="account-button">
-            <img src={client.user.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => play_sound()}>
+            <img src={$client.user.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => play_sound()}>
             <div class="account-name" aria-hidden="true">
-                <span class="nickname" title={client.user.nickname}>{client.user.nickname}</span>
-                <span class="username" title={`@${client.user.username}@${client.user.host}`}>
-                    {`@${client.user.username}@${client.user.host}`}
+                <span class="nickname" title={$client.user.nickname}>{$client.user.nickname}</span>
+                <span class="username" title={`@${$client.user.username}@${$client.user.host}`}>
+                    {`@${$client.user.username}@${$client.user.host}`}
                 </span>
             </div>
         </div>

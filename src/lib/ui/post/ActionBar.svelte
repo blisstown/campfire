@@ -1,5 +1,5 @@
 <script>
-    import { Client } from '../../client/client.js';
+    import { client } from '../../client/client.js';
     import * as api from '../../client/api.js';
     import { get } from 'svelte/store';
 
@@ -16,12 +16,11 @@
     export let post;
 
     async function toggleBoost() {
-        let client = get(Client.get());
         let data;
         if (post.boosted)
-            data = await client.unboostPost(post.id);
+            data = await get(client).unboostPost(post.id);
         else
-            data = await client.boostPost(post.id);
+            data = await get(client).boostPost(post.id);
         if (!data) {
             console.error(`Failed to boost post ${post.id}`);
             return;
@@ -31,12 +30,11 @@
     }
 
     async function toggleFavourite() {
-        let client = get(Client.get());
         let data;
         if (post.favourited)
-            data = await client.unfavouritePost(post.id);
+            data = await get(client).unfavouritePost(post.id);
         else
-            data = await client.favouritePost(post.id);
+            data = await get(client).favouritePost(post.id);
         if (!data) {
             console.error(`Failed to favourite post ${post.id}`);
             return;
@@ -48,13 +46,12 @@
 
     async function toggleReaction(reaction) {
         if (reaction.name.includes('@')) return;
-        let client = get(Client.get());
 
         let data;
         if (reaction.me)
-            data = await client.unreactPost(post.id, reaction.name);
+            data = await get(client).unreactPost(post.id, reaction.name);
         else
-            data = await client.reactPost(post.id, reaction.name);
+            data = await get(client).reactPost(post.id, reaction.name);
         if (!data) {
             console.error(`Failed to favourite post ${post.id}`);
             return;

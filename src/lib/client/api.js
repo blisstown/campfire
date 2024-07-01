@@ -1,4 +1,4 @@
-import { Client } from '../client/client.js';
+import { client } from '../client/client.js';
 import { capabilities } from '../client/instance.js';
 import Post from '../post.js';
 import User from '../user/user.js';
@@ -31,25 +31,23 @@ export async function createApp(host) {
 }
 
 export function getOAuthUrl() {
-    let client = get(Client.get());
-    return `https://${client.instance.host}/oauth/authorize` +
-        `?client_id=${client.app.id}` +
+    return `https://${get(client).instance.host}/oauth/authorize` +
+        `?client_id=${get(client).app.id}` +
         "&scope=read+write+push" +
         `&redirect_uri=${location.origin}/callback` +
         "&response_type=code";
 }
 
 export async function getToken(code) {
-    let client = get(Client.get());
     let form = new FormData();
-    form.append("client_id", client.app.id);
-    form.append("client_secret", client.app.secret);
+    form.append("client_id", get(client).app.id);
+    form.append("client_secret", get(client).app.secret);
     form.append("redirect_uri", `${location.origin}/callback`);
     form.append("grant_type", "authorization_code");
     form.append("code", code);
     form.append("scope", "read write push");
 
-    const res = await fetch(`https://${client.instance.host}/oauth/token`, {
+    const res = await fetch(`https://${get(client).instance.host}/oauth/token`, {
         method: "POST",
         body: form,
     })
@@ -65,13 +63,12 @@ export async function getToken(code) {
 }
 
 export async function revokeToken() {
-    let client = get(Client.get());
     let form = new FormData();
-    form.append("client_id", client.app.id);
-    form.append("client_secret", client.app.secret);
-    form.append("token", client.app.token);
+    form.append("client_id", get(client).app.id);
+    form.append("client_secret", get(client).app.secret);
+    form.append("token", get(client).app.token);
 
-    const res = await fetch(`https://${client.instance.host}/oauth/revoke`, {
+    const res = await fetch(`https://${get(client).instance.host}/oauth/revoke`, {
         method: "POST",
         body: form,
     })
@@ -85,34 +82,32 @@ export async function revokeToken() {
 }
 
 export async function verifyCredentials() {
-    let client = get(Client.get());
-    let url = `https://${client.instance.host}/api/v1/accounts/verify_credentials`;
+    let url = `https://${get(client).instance.host}/api/v1/accounts/verify_credentials`;
     const data = await fetch(url, {
         method: 'GET',
-        headers: { "Authorization": "Bearer " + client.app.token }
+        headers: { "Authorization": "Bearer " + get(client).app.token }
     }).then(res => res.json());
 
     return data;
 }
 
 export async function getTimeline(last_post_id) {
-    let client = get(Client.get());
-    let url = `https://${client.instance.host}/api/v1/timelines/home`;
+    if (!get(client).instance || !get(client).app) return false;
+    let url = `https://${get(client).instance.host}/api/v1/timelines/home`;
     if (last_post_id) url += "?max_id=" + last_post_id;
     const data = await fetch(url, {
         method: 'GET',
-        headers: { "Authorization": "Bearer " + client.app.token }
+        headers: { "Authorization": "Bearer " + get(client).app.token }
     }).then(res => res.json());
 
     return data;
 }
 
 export async function getPost(post_id, ancestor_count) {
-    let client = get(Client.get());
-    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}`;
+    let url = `https://${get(client).instance.host}/api/v1/statuses/${post_id}`;
     const data = await fetch(url, {
         method: 'GET',
-        headers: { "Authorization": "Bearer " + client.app.token }
+        headers: { "Authorization": "Bearer " + get(client).app.token }
     }).then(res => { return res.ok ? res.json() : false });
 
     if (data === false) return false;
@@ -120,11 +115,10 @@ export async function getPost(post_id, ancestor_count) {
 }
 
 export async function getPostContext(post_id) {
-    let client = get(Client.get());
-    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/context`;
+    let url = `https://${get(client).instance.host}/api/v1/statuses/${post_id}/context`;
     const data = await fetch(url, {
         method: 'GET',
-        headers: { "Authorization": "Bearer " + client.app.token }
+        headers: { "Authorization": "Bearer " + get(client).app.token }
     }).then(res => { return res.ok ? res.json() : false });
 
     if (data === false) return false;
@@ -132,11 +126,10 @@ export async function getPostContext(post_id) {
 }
 
 export async function boostPost(post_id) {
-    let client = get(Client.get());
-    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/reblog`;
+    let url = `https://${get(client).instance.host}/api/v1/statuses/${post_id}/reblog`;
     const data = await fetch(url, {
         method: 'POST',
-        headers: { "Authorization": "Bearer " + client.app.token }
+        headers: { "Authorization": "Bearer " + get(client).app.token }
     }).then(res => { return res.ok ? res.json() : false });
 
     if (data === false) return false;
@@ -144,11 +137,10 @@ export async function boostPost(post_id) {
 }
 
 export async function unboostPost(post_id) {
-    let client = get(Client.get());
-    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/unreblog`;
+    let url = `https://${get(client).instance.host}/api/v1/statuses/${post_id}/unreblog`;
     const data = await fetch(url, {
         method: 'POST',
-        headers: { "Authorization": "Bearer " + client.app.token }
+        headers: { "Authorization": "Bearer " + get(client).app.token }
     }).then(res => { return res.ok ? res.json() : false });
 
     if (data === false) return false;
@@ -156,11 +148,10 @@ export async function unboostPost(post_id) {
 }
 
 export async function favouritePost(post_id) {
-    let client = get(Client.get());
-    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/favourite`;
+    let url = `https://${get(client).instance.host}/api/v1/statuses/${post_id}/favourite`;
     const data = await fetch(url, {
         method: 'POST',
-        headers: { "Authorization": "Bearer " + client.app.token }
+        headers: { "Authorization": "Bearer " + get(client).app.token }
     }).then(res => { return res.ok ? res.json() : false });
 
     if (data === false) return false;
@@ -168,11 +159,10 @@ export async function favouritePost(post_id) {
 }
 
 export async function unfavouritePost(post_id) {
-    let client = get(Client.get());
-    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/unfavourite`;
+    let url = `https://${get(client).instance.host}/api/v1/statuses/${post_id}/unfavourite`;
     const data = await fetch(url, {
         method: 'POST',
-        headers: { "Authorization": "Bearer " + client.app.token }
+        headers: { "Authorization": "Bearer " + get(client).app.token }
     }).then(res => { return res.ok ? res.json() : false });
 
     if (data === false) return false;
@@ -185,11 +175,10 @@ export async function reactPost(post_id, shortcode) {
     // to the default like emote.
     // identical api calls on chuckya instances do not display
     // this behaviour.
-    let client = get(Client.get());
-    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/react/${encodeURIComponent(shortcode)}`;
+    let url = `https://${get(client).instance.host}/api/v1/statuses/${post_id}/react/${encodeURIComponent(shortcode)}`;
     const data = await fetch(url, {
         method: 'POST',
-        headers: { "Authorization": "Bearer " + client.app.token }
+        headers: { "Authorization": "Bearer " + get(client).app.token }
     }).then(res => { return res.ok ? res.json() : false });
 
     if (data === false) return false;
@@ -197,26 +186,23 @@ export async function reactPost(post_id, shortcode) {
 }
 
 export async function unreactPost(post_id, shortcode) {
-    let client = get(Client.get());
-    let url = `https://${client.instance.host}/api/v1/statuses/${post_id}/unreact/${encodeURIComponent(shortcode)}`;
+    let url = `https://${get(client).instance.host}/api/v1/statuses/${post_id}/unreact/${encodeURIComponent(shortcode)}`;
     const data = await fetch(url, {
         method: 'POST',
-        headers: { "Authorization": "Bearer " + client.app.token }
+        headers: { "Authorization": "Bearer " + get(client).app.token }
     }).then(res => { return res.ok ? res.json() : false });
 
     if (data === false) return false;
     return data;
 }
 
-export async function parsePost(data, ancestor_count, with_context) {
-    let client = get(Client.get());
+export async function parsePost(data, ancestor_count) {
     let post = new Post();
 
     post.text = data.content;
 
     post.reply = null;
-    if (!with_context && // ancestor replies are handled in full later
-        (data.in_reply_to_id || data.reply) &&
+    if ((data.in_reply_to_id || data.reply) &&
         ancestor_count !== 0
     ) {
         const reply_data = data.reply || await getPost(data.in_reply_to_id, ancestor_count - 1);
@@ -225,28 +211,8 @@ export async function parsePost(data, ancestor_count, with_context) {
         if (!reply_data) return false;
         post.reply = await parsePost(reply_data, ancestor_count - 1, false);
     }
-    post.boost = data.reblog ? await parsePost(data.reblog, 1, false) : null;
 
-    post.replies = [];
-    if (with_context) {
-        const replies_data = await getPostContext(data.id);
-        if (replies_data) {
-            // posts this is replying to
-            if (replies_data.ancestors) {
-                let head = post;
-                while (replies_data.ancestors.length > 0) {
-                    head.reply = await parsePost(replies_data.ancestors.pop(), 0, false);
-                    head = head.reply;
-                }
-            }
-            // posts in reply to this
-            if (replies_data.descendants) {
-                for (let i in replies_data.descendants) {
-                    post.replies.push(await parsePost(replies_data.descendants[i], 0, false));
-                }
-            }
-        }
-    }
+    post.boost = data.reblog ? await parsePost(data.reblog, 1, false) : null;
 
     post.id = data.id;
     post.created_at = new Date(data.created_at);
@@ -275,7 +241,7 @@ export async function parsePost(data, ancestor_count, with_context) {
         });
     }
 
-    if (data.reactions && client.instance.capabilities.includes(capabilities.REACTIONS)) {
+    if (data.reactions && get(client).instance.capabilities.includes(capabilities.REACTIONS)) {
         post.reactions = parseReactions(data.reactions);
     }
     return post;
@@ -286,8 +252,7 @@ export async function parseUser(data) {
         console.error("Attempted to parse user data but no data was provided");
         return null;
     }
-    let client = get(Client.get());
-    let user = await client.getCacheUser(data.id);
+    let user = await get(client).getCacheUser(data.id);
 
     if (user) return user;
     // cache miss!
@@ -302,7 +267,7 @@ export async function parseUser(data) {
     if (data.acct.includes('@'))
         user.host = data.acct.split('@')[1];
     else
-        user.host = client.instance.host;
+        user.host = get(client).instance.host;
 
     user.emojis = [];
     data.emojis.forEach(emoji_data => {
@@ -312,12 +277,11 @@ export async function parseUser(data) {
         user.emojis.push(parseEmoji(emoji_data));
     });
 
-    client.putCacheUser(user);
+    get(client).putCacheUser(user);
     return user;
 }
 
 export function parseReactions(data) {
-    let client = get(Client.get());
     let reactions = [];
     data.forEach(reaction_data => {
         let reaction = {
@@ -338,16 +302,15 @@ export function parseEmoji(data) {
         data.host,
         data.url,
     );
-    get(Client.get()).putCacheEmoji(emoji);
+    get(client).putCacheEmoji(emoji);
     return emoji;
 }
 
 export async function getUser(user_id) {
-    let client = get(Client.get());
-    let url = `https://${client.instance.host}/api/v1/accounts/${user_id}`;
+    let url = `https://${get(client).instance.host}/api/v1/accounts/${user_id}`;
     const data = await fetch(url, {
         method: 'GET',
-        headers: { "Authorization": "Bearer " + client.app.token }
+        headers: { "Authorization": "Bearer " + get(client).app.token }
     }).then(res => res.json());
 
     const user = await parseUser(data);

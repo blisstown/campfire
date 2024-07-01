@@ -2,10 +2,26 @@
     import '$lib/app.css';
     import Navigation from '$lib/ui/Navigation.svelte';
     import Widgets from '$lib/ui/Widgets.svelte';
-    import { Client } from '$lib/client/client.js';
+    import { client, Client } from '$lib/client/client.js';
     import { get } from 'svelte/store';
 
-    let client = get(Client.get());
+    let ready = new Promise(resolve => {
+        if (get(client)) {
+            return resolve();
+        }
+        let new_client = new Client();
+        new_client.load();
+
+        return new_client.getUser().then(user => {
+            if (!user) {
+                client.set(new_client);
+                return resolve();
+            }
+            new_client.user = user;
+            client.set(new_client);
+            return resolve();
+        });
+    });
 </script>
 
 <div id="app">
@@ -15,7 +31,7 @@
     </header>
 
     <main>
-        {#await client.verifyCredentials()}
+        {#await ready}
             <div class="loading throb">
                 <span>just a moment...</span>
             </div>
@@ -29,3 +45,15 @@
     </div>
 
 </div>
+
+<style>
+    .loading {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2em;
+        font-weight: bold;
+    }
+</style>

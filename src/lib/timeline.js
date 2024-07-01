@@ -1,4 +1,4 @@
-import { Client } from '$lib/client/client.js';
+import { client } from '$lib/client/client.js';
 import { get, writable } from 'svelte/store';
 import { parsePost } from '$lib/client/api.js';
 
@@ -10,11 +10,9 @@ export async function getTimeline(clean) {
     if (loading) return; // no spamming!!
     loading = true;
 
-    let client = get(Client.get());
-
     let timeline_data;
-    if (clean || get(posts).length === 0) timeline_data = await client.getTimeline()
-    else timeline_data = await client.getTimeline(get(posts)[get(posts).length - 1].id);
+    if (clean || get(posts).length === 0) timeline_data = await get(client).getTimeline()
+    else timeline_data = await get(client).getTimeline(get(posts)[get(posts).length - 1].id);
 
     if (!timeline_data) {
         console.error(`Failed to retrieve timeline.`);

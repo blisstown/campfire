@@ -50,7 +50,9 @@
 
 <div class="post-container">
     {#if post.reply}
-        <ReplyContext post={post.reply} />
+        {#await post.reply then reply}
+            <ReplyContext post={reply} />
+        {/await}
     {/if}
     {#if is_boost && !post_context.text}
         <BoostContext post={post_context} />

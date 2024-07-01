@@ -1,8 +1,6 @@
 <script>
     import { parseText as parseEmojis, parseOne as parseEmoji } from '../../emoji.js';
     import { shorthand as short_time } from '../../time.js';
-    import { get } from 'svelte/store';
-    import { Client } from '../../client/client.js';
     import * as api from '../../client/api.js';
     import { goto } from '$app/navigation';
 
@@ -20,19 +18,20 @@
 
     function gotoPost() {
         if (event && event.key && event.key !== "Enter") return;
-        console.log(`/post/${post.id}`);
         goto(`/post/${post.id}`);
     }
 </script>
 
 {#if post.reply}
-    <svelte:self post={post.reply} />
+    {#await post.reply then reply}
+        <svelte:self post={reply} />
+    {/await}
 {/if}
 
 <article
         class="post-reply"
         aria-label={aria_label}
-        on:mousedown={e => {mouse_pos.left = e.pageX; mouse_pos.top = e.pageY; console.log(mouse_pos)}}
+        on:mousedown={e => {mouse_pos.left = e.pageX; mouse_pos.top = e.pageY}}
         on:mouseup={e => {if (e.pageX == mouse_pos.left && e.pageY == mouse_pos.top) gotoPost()}}
         on:keydown={gotoPost}>
     <div class="line"></div>

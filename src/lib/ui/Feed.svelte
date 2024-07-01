@@ -1,10 +1,6 @@
 <script>
     import Button from './Button.svelte';
     import Post from './post/Post.svelte';
-    import Error from './Error.svelte';
-    import { Client } from '$lib/client/client.js';
-    import { parsePost } from '$lib/client/api.js';
-    import { get } from 'svelte/store';
     import { posts, getTimeline } from '$lib/timeline.js';
 
     getTimeline();
@@ -14,6 +10,15 @@
         }
     });
 </script>
+
+<header>
+    <h1>Home</h1>
+    <nav>
+        <Button centered active>Home</Button>
+        <Button centered disabled>Local</Button>
+        <Button centered disabled>Federated</Button>
+    </nav>
+</header>
 
 <div id="feed" role="feed">
     {#if posts.length <= 0}
