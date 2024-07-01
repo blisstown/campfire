@@ -129,7 +129,7 @@
         <div id="account-button">
             <img src={$client.user.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => play_sound()}>
             <div class="account-name" aria-hidden="true">
-                <span class="nickname" title={$client.user.nickname}>{$client.user.nickname}</span>
+                <a href={$client.user.url} class="nickname" title={$client.user.nickname}>{$client.user.nickname}</a>
                 <span class="username" title={`@${$client.user.username}@${$client.user.host}`}>
                     {`@${$client.user.username}@${$client.user.host}`}
                 </span>
@@ -312,6 +312,7 @@
         overflow: hidden;
         white-space: nowrap;
         font-size: .8em;
+        color: inherit;
     }
 
     .username {
