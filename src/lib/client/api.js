@@ -313,15 +313,5 @@ export async function getUser(user_id) {
         headers: { "Authorization": "Bearer " + get(client).app.token }
     }).then(res => res.json());
 
-    const user = await parseUser(data);
-    if (user === null || user === undefined) {
-        if (data.id) {
-            console.warn("Failed to parse user data #" + data.id);
-        } else {
-            console.warn("Failed to parse user data:");
-            console.warn(data);
-        }
-        return false;
-    }
-    return user;
+    return data;
 }

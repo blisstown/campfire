@@ -23,7 +23,7 @@
                 return c;
             });
 
-            get(client).getUser().then(user => {
+            get(client).getClientUser().then(user => {
                 if (user) client.update(client => {
                     client.user = user
                     return client;

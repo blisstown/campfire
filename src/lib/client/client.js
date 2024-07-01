@@ -74,7 +74,7 @@ export class Client {
         return await api.revokeToken();
     }
 
-    async getUser() {
+    async getClientUser() {
         // already known
         if (this.user) return this.user;
 
@@ -90,6 +90,7 @@ export class Client {
         }
         const user = await api.parseUser(data);
         console.log(`Logged in as @${user.username}@${user.host}`);
+        console.log(`You have ${data.source.follow_request_count} follow request${data.source.follow_request_count === 1 ? '' : 's'}!`);
         return user;
     }
 
@@ -159,6 +160,10 @@ export class Client {
         let emoji = this.cache.emojis[emoji_id];
         if (!emoji) return false;
         return emoji;
+    }
+
+    async getUser(user_id) {
+        return await api.getUser(user_id);
     }
 
     save() {

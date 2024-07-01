@@ -12,13 +12,14 @@
         let new_client = new Client();
         new_client.load();
 
-        return new_client.getUser().then(user => {
+        return new_client.getClientUser().then(user => {
             if (!user) {
                 client.set(new_client);
                 return resolve();
             }
             new_client.user = user;
             client.set(new_client);
+            client.user
             return resolve();
         });
     });
