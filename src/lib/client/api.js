@@ -97,7 +97,7 @@ export async function getNotifications(since_id, limit, types) {
     let url = `https://${get(client).instance.host}/api/v1/notifications`;
 
     let params = new URLSearchParams();
-    if (since_id) params.append("max_id", last_post_id);
+    if (since_id) params.append("since_id", since_id);
     if (limit) params.append("limit", limit);
     if (types) params.append("types", types.join(','));
     const params_string = params.toString();
