@@ -1,5 +1,6 @@
 <script>
     import * as api from '$lib/client/api.js';
+    import { goto } from '$app/navigation';
 
     import ReplyIcon from '$lib/../img/icons/reply.svg';
     import RepostIcon from '$lib/../img/icons/repost.svg';
@@ -22,6 +23,8 @@
                 return `%1 mentioned you.`;
             case "reblog":
                 return `%1 boosted your post.`;
+            case "reaction":
+                return `%1 reacted to your post.`;
             case "follow":
                 return `%1 followed you.`;
             case "follow_request":
@@ -39,6 +42,20 @@
 
     let account = data.accounts[0];
     $: accounts_short = data.accounts.slice(0, 3).reverse();
+
+    let mouse_pos = { top: 0, left: 0 };
+
+    function gotoPost(event) {
+        if (!data.status) return;
+        if (event) {
+            if (event.type == "mouseup" && (
+                event.button !== 0 ||
+                event.shiftKey ||
+                event.ctrlKey)) return;
+            if (event.key && event.key !== "Enter") return;
+        }
+        goto(`/post/${data.status.id}`);
+    }
     
     let aria_label = function () {
         if (accounts.length == 1)
@@ -48,14 +65,19 @@
     }
 </script>
 
-<a class="notification" href={data.status ? `/post/${data.status.id}` : null} aria-label={aria_label}>
+<article
+        class="notification"
+        aria-label={aria_label}
+        on:mousedown={e => {mouse_pos.left = e.pageX; mouse_pos.top = e.pageY}}
+        on:mouseup={e => {if (e.pageX == mouse_pos.left && e.pageY == mouse_pos.top) gotoPost(e)}}
+        on:keydown={gotoPost}>
     <header aria-hidden>
         <span class="notif-icon">
             {#if data.type === "favourite"}
                 <FavouriteIcon />
             {:else if data.type === "reblog"}
                 <RepostIcon />
-            {:else if data.type === "react"}
+            {:else if data.type === "reaction"}
                 <ReactIcon />
             {:else if data.type === "mention"}
                 <ReplyIcon />
@@ -88,7 +110,7 @@
             <ActionBar post={data.status} />
         {/if}
     {/if}
-</a>
+</article>
 
 <style>
     .notification {
