@@ -18,13 +18,13 @@ will likely be incompatible, and the web console will get very upset.
 - log in with most/all fedi services! (with varying compatibility)
 - ability to favourite, boost, and react to posts
 - view threads in context
+- notifications feed
 - fun, clicky buttons!
 
 ### planned
 
 - posting! (incl. replies and quotes)
 - live feed
-- notifications feed
 
 ### "maybe"
 
