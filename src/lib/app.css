@@ -74,6 +74,11 @@ main {
     width: 732px;
 }
 
+img.emoji {
+    height: 1.2em;
+    margin: -.1em 0;
+}
+
 .throb {
     animation: .25s throb alternate infinite ease-in;
 }

@@ -72,7 +72,7 @@
     }
 
     .icon {
-        width: 20px;
+        min-width: 20px;
         height: 20px;
         display: flex;
         justify-content: center;

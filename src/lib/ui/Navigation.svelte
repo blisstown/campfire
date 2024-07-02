@@ -153,7 +153,7 @@
         <div id="account-button">
             <img src={$user.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => play_sound()}>
             <div class="account-name" aria-hidden="true">
-                <a href={$user.url} class="nickname" title={$user.nickname}>{$user.nickname}</a>
+                <a href={$user.url} class="nickname" title={$user.nickname}>{@html $user.rich_name}</a>
                 <span class="username" title={`@${$user.username}@${$user.host}`}>
                     {`@${$user.username}@${$user.host}`}
                 </span>
@@ -343,6 +343,11 @@
     .username {
         opacity: .8;
         font-size: .65em;
+    }
+
+    .nickname :global(.emoji) {
+        height: 1.2em;
+        margin: -.1em 0;
     }
 
     .flex-row {
