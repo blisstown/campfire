@@ -33,6 +33,7 @@
         switch (name) {
             case "timeline":
                 route = "/";
+                getTimeline(true);
                 break;
             case "notifcations":
             case "explore":
@@ -66,7 +67,7 @@
 
     <div id="nav-items">
         <Button label="Timeline"
-                on:click={handle_btn("timeline")}
+                on:click={() => handle_btn("timeline")}
                 active={path == "/"}>
             <svelte:fragment slot="icon">
                 <TimelineIcon/>
@@ -74,7 +75,7 @@
             Timeline
         </Button>
         <Button label="Notifications"
-                on:click={handle_btn("notifications")}
+                on:click={() => handle_btn("notifications")}
                 active={path == "/notifications"}
                 disabled>
             <svelte:fragment slot="icon">
