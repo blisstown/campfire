@@ -32,10 +32,15 @@
 
     let mouse_pos = { top: 0, left: 0 };
 
-    function gotoPost() {
+    function gotoPost(event) {
         if (focused) return;
-        if (event && event.key && event.key !== "Enter") return;
-        console.log(`/post/${post.id}`);
+        if (event) {
+            if (event.type == "mouseup" && (
+                event.button !== 0 ||
+                event.shiftKey ||
+                event.ctrlKey)) return;
+            if (event.key && event.key !== "Enter") return;
+        }
         goto(`/post/${post.id}`);
     }
 
@@ -51,7 +56,9 @@
 
 <div class="post-container">
     {#if post.reply}
-        <ReplyContext post={post.reply} />
+        {#await post.reply then reply}
+            <ReplyContext post={reply} />
+        {/await}
     {/if}
     {#if is_boost && !post_context.text}
         <BoostContext post={post_context} />
@@ -60,13 +67,15 @@
             class={"post" + (focused ? " focused" : "")}
             aria-label={aria_label}
             bind:this={el}
-            on:mousedown={e => {mouse_pos.left = e.pageX; mouse_pos.top = e.pageY; console.log(mouse_pos)}}
-            on:mouseup={e => {if (e.pageX == mouse_pos.left && e.pageY == mouse_pos.top) gotoPost()}}
+            on:mousedown={e => {mouse_pos.left = e.pageX; mouse_pos.top = e.pageY}}
+            on:mouseup={e => {if (e.pageX == mouse_pos.left && e.pageY == mouse_pos.top) gotoPost(e)}}
             on:keydown={gotoPost}>
         <PostHeader post={post} />
         <Body post={post} />
         <footer class="post-footer">
-            <ReactionBar post={post} />
+            {#if post.reactions}
+                <ReactionBar post={post} />
+            {/if}
             <ActionBar post={post} />
         </footer>
     </article>

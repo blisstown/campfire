@@ -8,16 +8,16 @@
     let time_string = post.created_at.toLocaleString();
 </script>
 
-<div class={"post-header-container" + (reply ? " reply" : "")} on:mouseup|stopPropagation>
-    <a href={post.user.url} target="_blank" class="post-avatar-container">
+<div class={"post-header-container" + (reply ? " reply" : "")}>
+    <a href={post.user.url} target="_blank" class="post-avatar-container" on:mouseup|stopPropagation>
         <img src={post.user.avatar_url} type={post.user.avatar_type} alt="" width="48" height="48" class="post-avatar" loading="lazy" decoding="async">
     </a>
     <header class="post-header">
-        <div class="post-user-info">
+        <div class="post-user-info" on:mouseup|stopPropagation>
             <a href={post.user.url} target="_blank" class="name">{@html post.user.rich_name}</a>
             <span class="username">{post.user.mention}</span>
         </div>
-        <div class="post-info">
+        <div class="post-info" on:mouseup|stopPropagation>
             <a href={post.url} target="_blank" class="created-at">
                 <time title={time_string}>{short_time(post.created_at)}</time>
                 {#if post.visibility !== "public"}
@@ -82,8 +82,8 @@
 
     .post-user-info .name :global(.emoji) {
         position: relative;
-        top: 4px;
-        height: 20px;
+        top: .2em;
+        height: 1.2em;
     }
 
     .post-user-info .username {

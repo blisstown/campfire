@@ -1,8 +1,10 @@
 import { Instance, server_types } from './instance.js';
 import * as api from './api.js';
 import { get, writable } from 'svelte/store';
+import { last_read_notif_id } from '$lib/notifications.js';
+import { user, logged_in } from '$lib/stores/user.js';
 
-let client = writable(false);
+export const client = writable(false);
 
 const save_name = "campfire";
 
@@ -20,15 +22,6 @@ export class Client {
             users: {},
             emojis: {},
         };
-    }
-
-    static get() {
-        let current = get(client);
-        if (current && current.app) return client;
-        let new_client = new Client();
-        new_client.load();
-        client.set(new_client);
-        return client;
     }
 
     async init(host) {
@@ -76,30 +69,34 @@ export class Client {
             console.error("Failed to obtain access token");
             return false;
         }
-        this.app.token = token;
-        client.set(this);
+        return token;
     }
 
     async revokeToken() {
         return await api.revokeToken();
     }
 
-    async verifyCredentials() {
+    async getClientUser() {
+        // already known
         if (this.user) return this.user;
+
+        // cannot provide- not logged in
         if (!this.app || !this.app.token) {
-            this.user = false;
             return false;
         }
+
+        // logged in- attempt to retrieve using token
         const data = await api.verifyCredentials();
         if (!data) {
-            this.user = false;
             return false;
         }
-        await client.update(async c => {
-            c.user = await api.parseUser(data);
-            console.log(`Logged in as @${c.user.username}@${c.user.host}`);
-        });
-        return this.user;
+        const user = await api.parseUser(data);
+        console.log(`Logged in as @${user.username}@${user.host}`);
+        return user;
+    }
+
+    async getNotifications(since_id, limit, types) {
+        return await api.getNotifications(since_id, limit, types);
     }
 
     async getTimeline(last_post_id) {
@@ -108,6 +105,10 @@ export class Client {
 
     async getPost(post_id, parent_replies, child_replies) {
         return await api.getPost(post_id, parent_replies, child_replies);
+    }
+
+    async getPostContext(post_id) {
+        return await api.getPostContext(post_id);
     }
 
     async boostPost(post_id) {
@@ -166,6 +167,10 @@ export class Client {
         return emoji;
     }
 
+    async getUser(user_id) {
+        return await api.getUser(user_id);
+    }
+
     save() {
         if (typeof localStorage === typeof undefined) return;
         localStorage.setItem(save_name, JSON.stringify({
@@ -174,6 +179,7 @@ export class Client {
                 host: this.instance.host,
                 version: this.instance.version,
             },
+            last_read_notif_id: get(last_read_notif_id),
             app: this.app,
         }));
     }
@@ -188,6 +194,7 @@ export class Client {
             return false;
         }
         this.instance = new Instance(saved.instance.host, saved.instance.version);
+        last_read_notif_id.set(saved.last_read_notif_id || 0);
         this.app = saved.app;
         client.set(this);
         return true;
@@ -199,7 +206,8 @@ export class Client {
             console.warn("Failed to log out correctly; ditching the old tokens anyways.");
         }
         localStorage.removeItem(save_name);
-        client.set(false);
+        logged_in.set(false);
+        client.set(new Client());
         console.log("Logged out successfully.");
     }
 }

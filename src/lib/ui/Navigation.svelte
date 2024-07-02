@@ -2,11 +2,16 @@
     import Logo from '$lib/../img/campfire-logo.svg';
     import Button from './Button.svelte';
     import Feed from './Feed.svelte';
-    import { Client } from '$lib/client/client.js';
+    import { client } from '$lib/client/client.js';
+    import { user } from '$lib/stores/user.js';
     import { play_sound } from '$lib/sound.js';
     import { getTimeline } from '$lib/timeline.js';
+    import { getNotifications } from '$lib/notifications.js';
     import { goto } from '$app/navigation';
+    import { page } from '$app/stores';
     import { get } from 'svelte/store';
+    import { logged_in } from '$lib/stores/user.js';
+    import { unread_notif_count, last_read_notif_id } from '$lib/notifications.js';
 
     import TimelineIcon from '../../img/icons/timeline.svg';
     import NotificationsIcon from '../../img/icons/notifications.svg';
@@ -21,61 +26,70 @@
     import LogoutIcon from '../../img/icons/logout.svg';
 
     const VERSION = APP_VERSION;
-    
-    let client = false;
-    Client.get().subscribe(c => {
-        client = c;
-    });
 
-    let notification_count = 0;
-    if (notification_count > 99) notification_count = "99+";
-
-    function goTimeline() {
-        if (location.pathname === "/") {
-            getTimeline(true);
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-            return;
+    function handle_btn(name) {
+        if (!get(logged_in)) return;
+        let route;
+        switch (name) {
+            case "timeline":
+                route = "/";
+                getTimeline(true);
+                break;
+            case "notifications":
+                route = "/notifications";
+                getNotifications();
+                break;
+            case "explore":
+            case "lists":
+            case "favourites":
+            case "bookmarks":
+            case "hashtags":
+            default:
+                return;
         }
-        goto("/");
+        if (!route) return;
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+        goto(route);
     }
 
     async function log_out() {
         if (!confirm("This will log you out. Are you sure?")) return;
-        await get(Client.get()).logout();
+        await get(client).logout();
         goto("/");
     }
 </script>
 
 <div id="navigation">
-    {#if client.instance && client.instance.icon_url && client.instance.banner_url}
-        <header class="instance-header" style="background-image: url({client.instance.banner_url})">
-            <img src={client.instance.icon_url} class="instance-icon" height="92px" aria-hidden="true">
-        </header>
-    {:else}
-        <header class="instance-header">
-            <div class="app-logo">
-                <Logo />
-            </div>
-        </header>
-    {/if}
+    <header class="instance-header">
+        <div class="app-logo">
+            <Logo />
+        </div>
+    </header>
 
+    {#if $logged_in}
     <div id="nav-items">
-        <Button label="Timeline" on:click={() => goTimeline()} active={client.user}>
+        <Button label="Timeline"
+                on:click={() => handle_btn("timeline")}
+                active={$page.url.pathname === "/"}>
             <svelte:fragment slot="icon">
                 <TimelineIcon/>
             </svelte:fragment>
             Timeline
         </Button>
-        <Button label="Notifications" disabled>
+        <Button label="Notifications"
+                on:click={() => handle_btn("notifications")}
+                active={$page.url.pathname === "/notifications"}>
             <svelte:fragment slot="icon">
                 <NotificationsIcon/>
             </svelte:fragment>
             Notifications
-            {#if notification_count}
-            <span class="notification-count">{notification_count}</span>
+            {#if $unread_notif_count}
+                <span class="notification-count">
+                    {$unread_notif_count <= 99 ? $unread_notif_count : "99+"}
+                </span>
             {/if}
         </Button>
         <Button label="Explore" disabled>
@@ -117,7 +131,6 @@
             </Button>
     </div>
 
-    {#if (client.user)}
     <div id="account-items">
         <div class="flex-row">
             <Button centered label="Profile information" disabled>
@@ -138,11 +151,11 @@
         </div>
 
         <div id="account-button">
-            <img src={client.user.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => play_sound()}>
+            <img src={$user.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => play_sound()}>
             <div class="account-name" aria-hidden="true">
-                <span class="nickname" title={client.user.nickname}>{client.user.nickname}</span>
-                <span class="username" title={`@${client.user.username}@${client.user.host}`}>
-                    {`@${client.user.username}@${client.user.host}`}
+                <a href={$user.url} class="nickname" title={$user.nickname}>{$user.nickname}</a>
+                <span class="username" title={`@${$user.username}@${$user.host}`}>
+                    {`@${$user.username}@${$user.host}`}
                 </span>
             </div>
         </div>
@@ -212,6 +225,7 @@
         transform: translate(22px, -16px);
         min-width: 12px;
         height: 28px;
+        margin-left: auto;
         padding: 0 8px;
         display: flex;
         justify-content: center;
@@ -323,6 +337,7 @@
         overflow: hidden;
         white-space: nowrap;
         font-size: .8em;
+        color: inherit;
     }
 
     .username {

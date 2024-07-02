@@ -34,10 +34,11 @@
 <style>
     .post-reactions {
         width: fit-content;
-        height: 32px;
+        min-height: 32px;
         margin-top: 8px;
         display: flex;
         flex-direction: row;
+        flex-wrap: wrap;
         gap: 2px;
     }
 </style>

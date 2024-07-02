@@ -1,19 +1,19 @@
 <script>
     import Button from './Button.svelte';
     import Post from './post/Post.svelte';
-    import Error from './Error.svelte';
-    import { Client } from '$lib/client/client.js';
-    import { parsePost } from '$lib/client/api.js';
-    import { get } from 'svelte/store';
-    import { posts, getTimeline } from '$lib/timeline.js';
+    import { getTimeline } from '$lib/timeline.js';
 
-    getTimeline();
-    document.addEventListener("scroll", event => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2048) {
-            getTimeline();
-        }
-    });
+    export let posts = [];
 </script>
+
+<header>
+    <h1>Home</h1>
+    <nav>
+        <Button centered active>Home</Button>
+        <Button centered disabled>Local</Button>
+        <Button centered disabled>Federated</Button>
+    </nav>
+</header>
 
 <div id="feed" role="feed">
     {#if posts.length <= 0}
@@ -21,7 +21,7 @@
             <span>getting the feed...</span>
         </div>
     {/if}
-    {#each $posts as post}
+    {#each posts as post}
         <Post post_data={post} />
     {/each}
 </div>
@@ -29,6 +29,7 @@
 <style>
     header {
         width: 100%;
+        height: 64px;
         margin: 16px 0 8px 0;
         display: flex;
         flex-direction: row;

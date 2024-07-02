@@ -10,7 +10,10 @@
 <div class="post-context">
     <span class="post-context-icon">🔁</span>
     <span class="post-context-action">
-        <a href={post.user.url} target="_blank">{@html parseEmojis(post.user.rich_name)}</a> boosted this post.
+        <a href={post.user.url} target="_blank"><span class="name">
+                {@html parseEmojis(post.user.rich_name)}</span>
+        </a>
+        boosted this post.
     </span>
     <span class="post-context-time">
         <time title="{time_string}">{short_time(post.created_at)}</time>
@@ -46,6 +49,12 @@
     }
     .post-context a:hover {
         text-decoration: underline;
+    }
+
+    .post-context .name :global(.emoji) {
+        position: relative;
+        top: .2em;
+        height: 1.2em;
     }
 
     .post-context-time {

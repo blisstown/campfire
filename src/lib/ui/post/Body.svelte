@@ -29,7 +29,7 @@
             <div class="post-media-container" data-count={post.files.length}>
                 {#each post.files as file}
                     <div class="post-media {file.type}" on:click|stopPropagation on:mouseup|stopPropagation>
-                        {#if file.type === "image"}
+                        {#if ["image", "gifv", "gif"].includes(file.type)}
                             <a href={file.url} target="_blank">
                                 <img src={file.url} alt={file.description} title={file.description} height="200" loading="lazy" decoding="async">
                             </a>
@@ -84,7 +84,8 @@
     }
 
     .post-text {
-        line-height: 1.2em;
+        font-size: .9em;
+        line-height: 1.45em;
         word-wrap: break-word;
     }
 

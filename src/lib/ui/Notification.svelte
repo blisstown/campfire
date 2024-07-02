@@ -1,0 +1,227 @@
+<script>
+    import * as api from '$lib/client/api.js';
+
+    import ReplyIcon from '$lib/../img/icons/reply.svg';
+    import RepostIcon from '$lib/../img/icons/repost.svg';
+    import FavouriteIcon from '$lib/../img/icons/like.svg';
+    import ReactIcon from '$lib/../img/icons/react.svg';
+    import QuoteIcon from '$lib/../img/icons/quote.svg';
+    import ReactionBar from '$lib/ui/post/ReactionBar.svelte';
+    import ActionBar from '$lib/ui/post/ActionBar.svelte';
+
+    let mention = (accounts) => {
+        let res = `<a href=${account.url}>${account.rich_name}</a>`;
+        if (accounts.length > 1) res += ` and <strong>${accounts.length - 1}</strong> others`;
+        return res;
+    };
+
+    export let data;
+    let activity_text = function (type) {
+        switch (type) {
+            case "mention":
+                return `%1 mentioned you.`;
+            case "reblog":
+                return `%1 boosted your post.`;
+            case "follow":
+                return `%1 followed you.`;
+            case "follow_request":
+                return `%1 requested to follow you.`;
+            case "favourite":
+                return `%1 favourited your post.`;
+            case "poll":
+                return `%1's poll as ended.`;
+            case "update":
+                return `%1 updated their post.`;
+            default:
+                return `%1 poked you!`;
+        }
+    }(data.type);
+
+    let account = data.accounts[0];
+    $: accounts_short = data.accounts.slice(0, 3).reverse();
+    
+    let aria_label = function () {
+        if (accounts.length == 1)
+            return activity_text.replace("%1", account.username) + ' ' + new Date(data.created_at);
+        else
+            return activity_text.replace("%1", `${account.username} and ${accounts.length - 1} others`) + ' ' + new Date(data.created_at);
+    }
+</script>
+
+<a class="notification" href={data.status ? `/post/${data.status.id}` : null} aria-label={aria_label}>
+    <header aria-hidden>
+        <span class="notif-icon">
+            {#if data.type === "favourite"}
+                <FavouriteIcon />
+            {:else if data.type === "reblog"}
+                <RepostIcon />
+            {:else if data.type === "react"}
+                <ReactIcon />
+            {:else if data.type === "mention"}
+                <ReplyIcon />
+            {:else}
+                <ReactIcon />
+            {/if}
+        </span>
+        <span class="notif-avatars">
+            {#if data.accounts.length == 1}
+                <a href={data.accounts[0].url} class="notif-avatar">
+                    <img src={data.accounts[0].avatar_url} alt="" width="28" height="28" />
+                </a>
+            {:else}
+                {#each accounts_short as account}
+                    <img src={account.avatar_url} alt="" width="28" height="28" />
+                {/each}
+            {/if}
+        </span>
+        <span class="notif-activity">{@html activity_text.replace("%1", mention(data.accounts))}</span>
+    </header>
+    {#if data.status}
+        <div class="notif-content">
+            {@html data.status.html}
+        </div>
+        {#if data.type === "mention"}
+            {#if data.status.reactions}
+                <ReactionBar post={data.status} />
+            {/if}
+            <ActionBar post={data.status} />
+        {/if}
+    {/if}
+</a>
+
+<style>
+    .notification {
+        display: block;
+        margin-bottom: 8px;
+        padding: 16px;
+        border-radius: 8px;
+        background: var(--bg-800);
+        text-decoration: inherit;
+        color: inherit;
+        transition: background-color .1s;
+    }
+
+    .notification:hover {
+        background-color: color-mix(in srgb, var(--bg-800), black 5%);
+    }
+
+    header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    header .notif-icon {
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+    }
+
+    header .notif-avatars {
+        display: inline-flex;
+        flex-direction: row-reverse;
+    }
+
+    header .notif-avatar {
+        line-height: 0;
+    }
+    header .notif-avatars img {
+        border-radius: 4px;
+    }
+    header .notif-avatars img:not(:first-child) {
+        box-shadow: 4px 0 8px -2px rgba(0,0,0,.33);
+    }
+    header .notif-avatars img:not(:last-child) {
+        margin-left: -8px;
+    }
+
+    header .notif-activity {
+        width: 100%;
+    }
+
+    header :global(a) {
+        font-weight: bold;
+        color: var(--text);
+    }
+
+    header :global(.emoji) {
+        margin: -.2em 0;
+    }
+
+    .notif-content {
+        margin: 16px 0 4px 0;
+        font-size: 14px;
+        line-height: 1.45em;
+    }
+
+    .notif-content :global(p) {
+        margin: 0;
+    }
+
+    .notif-content :global(.emoji) {
+        position: relative;
+        top: 6px;
+        margin-top: -10px;
+        height: 24px!important;
+    }
+
+    .notif-content :global(blockquote) {
+        margin: .4em 0;
+        padding: .1em 0 .1em 1em;
+        border-left: 4px solid #8888;
+    }
+
+    .notif-content :global(blockquote span) {
+        opacity: .5;
+    }
+
+    .notif-content :global(code) {
+        font-size: 1.2em;
+    }
+
+    .notif-content :global(pre:has(code)) {
+        margin: 8px 0;
+        padding: 8px;
+        display: block;
+        overflow-x: scroll;
+        border-radius: 8px;
+        background-color: #080808;
+        color: var(--accent);
+    }
+
+    .notif-content :global(pre code) {
+        margin: 0;
+    }
+
+    .notif-content :global(a) {
+        color: var(--accent);
+    }
+
+    .notif-content :global(a.mention) {
+        color: inherit;
+        font-weight: 600;
+        padding: 3px 6px;
+        background: var(--bg-700);
+        border-radius: 6px;
+        text-decoration: none;
+    }
+
+    .notif-content :global(a.mention:hover) {
+        text-decoration: underline;
+    }
+
+    .notif-content :global(a.hashtag) {
+        background-color: transparent;
+        padding: 0;
+        font-style: italic;
+    }
+
+    .notif-content :global(.mention-avatar) {
+        position: relative;
+        top: 4px;
+        height: 20px;
+        margin-right: 4px;
+        border-radius: 4px;
+    }
+</style>

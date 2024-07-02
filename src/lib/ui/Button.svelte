@@ -1,6 +1,8 @@
 <script>
     import { play_sound } from '../sound.js';
     import { createEventDispatcher } from 'svelte';
+    import { afterUpdate } from 'svelte';
+
     const dispatch = createEventDispatcher();
 
     export let active = false;
@@ -12,20 +14,24 @@
     export let href = false;
 
     let classes = [];
-    if (active) classes = ["active"];
-    if (filled) classes = ["filled"];
-    if (disabled) classes = ["disabled"];
-    if (centered) classes.push("centered");
 
     function click() {
+        if (disabled) return;
         if (href) {
             location = href;
             return;
         }
-        if (disabled) return;
         play_sound(sound);
         dispatch('click');
     }
+
+    afterUpdate(() => {
+        classes = [];
+        if (active) classes = ["active"];
+        if (filled) classes = ["filled"];
+        if (disabled) classes = ["disabled"];
+        if (centered) classes.push("centered");
+    });
 </script>
 
 <button
