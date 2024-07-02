@@ -48,7 +48,7 @@
     }
 </script>
 
-<a class="notification" href={`/post/${data.status.id}`} aria-label={aria_label}>
+<a class="notification" href={data.status ? `/post/${data.status.id}` : null} aria-label={aria_label}>
     <header aria-hidden>
         <span class="notif-icon">
             {#if data.type === "favourite"}

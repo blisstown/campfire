@@ -3,6 +3,8 @@
     import { goto } from '$app/navigation';
     import { error } from '@sveltejs/kit';
     import { get } from 'svelte/store';
+    import { last_read_notif_id } from '$lib/notifications.js';
+    import { logged_in, user, getUser } from '$lib/stores/user.js';
 
     export let data;
 
@@ -23,24 +25,18 @@
                 return c;
             });
 
-            get(client).getClientUser().then(user => {
-                if (user) client.update(client => {
-                    client.user = user
-                    return client;
-                });
+            getUser().then(new_user => {
+                if (!new_user) return;
+
+                logged_in.set(true);
+                user.set(new_user);
 
                 return get(client).getNotifications(
-                    get(last_read_notification_id)
+                    get(last_read_notif_id)
                 ).then(notif_data => {
-                    client.update(client => {
-                        // we've just logged in, so assume all past notifications are read.
-                        // i *would* just use the mastodon marker API to get the last read
-                        // notification, but this does not appear to be widely supported.
-                        if (notif_data.constructor === Array && notif_data.length > 0)
-                            last_read_notification_id.set(notif_data[0].id);
-                        client.save();
-                        return client;
-                    });
+                    if (notif_data.constructor === Array && notif_data.length > 0)
+                        last_read_notif_id.set(notif_data[0].id);
+                    get(client).save();
                     goto("/");
                 });
             });

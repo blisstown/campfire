@@ -3,6 +3,7 @@
     import Button from './Button.svelte';
     import Feed from './Feed.svelte';
     import { client } from '$lib/client/client.js';
+    import { user } from '$lib/stores/user.js';
     import { play_sound } from '$lib/sound.js';
     import { getTimeline } from '$lib/timeline.js';
     import { getNotifications } from '$lib/notifications.js';
@@ -150,11 +151,11 @@
         </div>
 
         <div id="account-button">
-            <img src={$client.user.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => play_sound()}>
+            <img src={$user.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => play_sound()}>
             <div class="account-name" aria-hidden="true">
-                <a href={$client.user.url} class="nickname" title={$client.user.nickname}>{$client.user.nickname}</a>
-                <span class="username" title={`@${$client.user.username}@${$client.user.host}`}>
-                    {`@${$client.user.username}@${$client.user.host}`}
+                <a href={$user.url} class="nickname" title={$user.nickname}>{$user.nickname}</a>
+                <span class="username" title={`@${$user.username}@${$user.host}`}>
+                    {`@${$user.username}@${$user.host}`}
                 </span>
             </div>
         </div>

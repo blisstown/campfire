@@ -2,7 +2,7 @@ import { Instance, server_types } from './instance.js';
 import * as api from './api.js';
 import { get, writable } from 'svelte/store';
 import { last_read_notif_id } from '$lib/notifications.js';
-import { user } from '$lib/stores/user.js';
+import { user, logged_in } from '$lib/stores/user.js';
 
 export const client = writable(false);
 
@@ -206,6 +206,7 @@ export class Client {
             console.warn("Failed to log out correctly; ditching the old tokens anyways.");
         }
         localStorage.removeItem(save_name);
+        logged_in.set(false);
         client.set(new Client());
         console.log("Logged out successfully.");
     }

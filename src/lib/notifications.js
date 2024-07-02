@@ -29,7 +29,7 @@ export async function getNotifications() {
                     }
                 }
             }
-            notif.status = await api.parsePost(notif.status, 0, false);
+            notif.status = notif.status ? await api.parsePost(notif.status, 0, false) : null;
             notifications.update(notifications => [...notifications, notif]);
         }
         last_read_notif_id.set(data[0].id);

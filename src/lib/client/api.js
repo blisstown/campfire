@@ -1,8 +1,9 @@
-import { client } from '../client/client.js';
+import { client } from '$lib/client/client.js';
+import { user } from '$lib/stores/user.js';
 import { capabilities } from '../client/instance.js';
-import Post from '../post.js';
-import User from '../user/user.js';
-import Emoji from '../emoji.js';
+import Post from '$lib/post.js';
+import User from '$lib/user/user.js';
+import Emoji from '$lib/emoji.js';
 import { get } from 'svelte/store';
 
 export async function createApp(host) {
@@ -92,7 +93,7 @@ export async function verifyCredentials() {
 }
 
 export async function getNotifications(since_id, limit, types) {
-    if (!get(client).user) return false;
+    if (!get(user)) return false;
 
     let url = `https://${get(client).instance.host}/api/v1/notifications`;
 
@@ -112,6 +113,7 @@ export async function getNotifications(since_id, limit, types) {
 }
 
 export async function getTimeline(last_post_id) {
+    if (!get(user)) return false;
     let url = `https://${get(client).instance.host}/api/v1/timelines/home`;
     if (last_post_id) url += "?max_id=" + last_post_id;
     const data = await fetch(url, {
