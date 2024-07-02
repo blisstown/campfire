@@ -75,6 +75,7 @@
             {/if}
         </span>
         <span class="notif-activity">{@html activity_text.replace("%1", mention(data.accounts))}</span>
+        <!-- TODO: timestamps -->
     </header>
     {#if data.status}
         <div class="notif-content">

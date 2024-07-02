@@ -11,13 +11,11 @@ const save_name = "campfire";
 export class Client {
     instance;
     app;
-    user;
     #cache;
 
     constructor() {
         this.instance = null;
         this.app = null;
-        this.user = null;
         this.cache = {
             users: {},
             emojis: {},
@@ -74,25 +72,6 @@ export class Client {
 
     async revokeToken() {
         return await api.revokeToken();
-    }
-
-    async getClientUser() {
-        // already known
-        if (this.user) return this.user;
-
-        // cannot provide- not logged in
-        if (!this.app || !this.app.token) {
-            return false;
-        }
-
-        // logged in- attempt to retrieve using token
-        const data = await api.verifyCredentials();
-        if (!data) {
-            return false;
-        }
-        const user = await api.parseUser(data);
-        console.log(`Logged in as @${user.username}@${user.host}`);
-        return user;
     }
 
     async getNotifications(since_id, limit, types) {

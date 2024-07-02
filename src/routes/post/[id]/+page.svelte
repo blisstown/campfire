@@ -1,6 +1,7 @@
 <script>
     import { client } from '$lib/client/client.js';
     import * as api from '$lib/client/api.js';
+    import { logged_in } from '$lib/stores/user.js';
     import { get } from 'svelte/store';
     import { goto, afterNavigate } from '$app/navigation';
     import { base } from '$app/paths'
@@ -11,9 +12,7 @@
     export let data;
     let error = false;
 
-    if (!get(client).instance || !get(client).user) {
-        goto("/");
-    }
+    if (!get(logged_in)) goto("/");
 
     let previous_page = base;
 
