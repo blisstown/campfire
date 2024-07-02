@@ -1,3 +1,6 @@
+# Campfire v0.4.0
+- Fixed custom emotes in the sidebar profile display
+
 # Campfire v0.3.0
 - Added notifications view
 - Many more background tweaks, fixes, and optimisations
