@@ -91,8 +91,27 @@ export async function verifyCredentials() {
     return data;
 }
 
+export async function getNotifications(since_id, limit, types) {
+    if (!get(client).user) return false;
+
+    let url = `https://${get(client).instance.host}/api/v1/notifications`;
+
+    let params = new URLSearchParams();
+    if (since_id) params.append("max_id", last_post_id);
+    if (limit) params.append("limit", limit);
+    if (types) params.append("types", types.join(','));
+    const params_string = params.toString();
+    if (params_string) url += '?' + params_string;
+
+    const data = await fetch(url, {
+        method: 'GET',
+        headers: { "Authorization": "Bearer " + get(client).app.token }
+    }).then(res => res.json());
+
+    return data;
+}
+
 export async function getTimeline(last_post_id) {
-    if (!get(client).instance || !get(client).app) return false;
     let url = `https://${get(client).instance.host}/api/v1/timelines/home`;
     if (last_post_id) url += "?max_id=" + last_post_id;
     const data = await fetch(url, {

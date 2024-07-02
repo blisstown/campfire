@@ -93,6 +93,10 @@ export class Client {
         return user;
     }
 
+    async getNotifications(since_id, limit, types) {
+        return await api.getNotifications(since_id, limit, types);
+    }
+
     async getTimeline(last_post_id) {
         return await api.getTimeline(last_post_id);
     }
