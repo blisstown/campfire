@@ -18,11 +18,11 @@
     if (centered) classes.push("centered");
 
     function click() {
+        if (disabled) return;
         if (href) {
             location = href;
             return;
         }
-        if (disabled) return;
         play_sound(sound);
         dispatch('click');
     }
