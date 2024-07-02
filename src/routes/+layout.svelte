@@ -4,12 +4,12 @@
     import Widgets from '$lib/ui/Widgets.svelte';
     import { client, Client } from '$lib/client/client.js';
     import { get } from 'svelte/store';
-
-    export let data;
-    $: path = data.path || "/";
+    import { logged_in } from '$lib/stores/user.js';
+    import { unread_notif_count, last_read_notif_id } from '$lib/notifications.js';
 
     let ready = new Promise(resolve => {
         if (get(client)) {
+            if (get(client).user) logged_in.set(true);
             return resolve();
         }
         let new_client = new Client();
@@ -21,8 +21,18 @@
                 client.set(new_client);
                 return resolve();
             }
+            if (user) logged_in.set(true);
             new_client.user = user;
             window.peekie = new_client;
+
+            // spin up async task to fetch notifications
+            get(client).getNotifications(
+                get(last_read_notif_id)
+            ).then(notif_data => {
+                if (!notif_data) return;
+                unread_notif_count.set(notif_data.length);
+            });
+
             client.update(client => {
                 client.user = user;
                 return client;
@@ -35,7 +45,7 @@
 <div id="app">
 
     <header>
-        <Navigation path={path} />
+        <Navigation />
     </header>
 
     <main>

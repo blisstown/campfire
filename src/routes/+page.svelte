@@ -1,14 +1,25 @@
 <script>
+    import { page } from '$app/stores';
+    import { get } from 'svelte/store';
     import { client } from '$lib/client/client.js';
+    import { timeline, getTimeline } from '$lib/timeline.js';
 
     import LoginForm from '$lib/ui/LoginForm.svelte';
     import Feed from '$lib/ui/Feed.svelte';
     import User from '$lib/user/user.js';
     import Button from '$lib/ui/Button.svelte';
+
+    getTimeline();
+    document.addEventListener("scroll", event => {
+        if (get(page).url.pathname !== "/") return;
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2048) {
+            getTimeline();
+        }
+    });
 </script>
 
 {#if $client.user}
-    <Feed />
+    <Feed posts={$timeline} />
 {:else}
     <LoginForm />
 {/if}

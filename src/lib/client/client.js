@@ -1,6 +1,8 @@
 import { Instance, server_types } from './instance.js';
 import * as api from './api.js';
 import { get, writable } from 'svelte/store';
+import { last_read_notif_id } from '$lib/notifications.js';
+import { user } from '$lib/stores/user.js';
 
 export const client = writable(false);
 
@@ -177,6 +179,7 @@ export class Client {
                 host: this.instance.host,
                 version: this.instance.version,
             },
+            last_read_notif_id: get(last_read_notif_id),
             app: this.app,
         }));
     }
@@ -191,6 +194,7 @@ export class Client {
             return false;
         }
         this.instance = new Instance(saved.instance.host, saved.instance.version);
+        last_read_notif_id.set(saved.last_read_notif_id || 0);
         this.app = saved.app;
         client.set(this);
         return true;

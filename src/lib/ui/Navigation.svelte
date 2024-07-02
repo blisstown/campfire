@@ -5,9 +5,12 @@
     import { client } from '$lib/client/client.js';
     import { play_sound } from '$lib/sound.js';
     import { getTimeline } from '$lib/timeline.js';
+    import { getNotifications } from '$lib/notifications.js';
     import { goto } from '$app/navigation';
+    import { page } from '$app/stores';
     import { get } from 'svelte/store';
-    import { onMount } from 'svelte';
+    import { logged_in } from '$lib/stores/user.js';
+    import { unread_notif_count, last_read_notif_id } from '$lib/notifications.js';
 
     import TimelineIcon from '../../img/icons/timeline.svg';
     import NotificationsIcon from '../../img/icons/notifications.svg';
@@ -21,27 +24,26 @@
     import SettingsIcon from '../../img/icons/settings.svg';
     import LogoutIcon from '../../img/icons/logout.svg';
 
-    export let path;
-
     const VERSION = APP_VERSION;
-    
-    let notification_count = 0;
-    if (notification_count > 99) notification_count = "99+";
 
     function handle_btn(name) {
+        if (!get(logged_in)) return;
         let route;
         switch (name) {
             case "timeline":
-                if (!get(client).user) break;
                 route = "/";
                 getTimeline(true);
                 break;
-            case "notifcations":
+            case "notifications":
+                route = "/notifications";
+                getNotifications();
+                break;
             case "explore":
             case "lists":
             case "favourites":
             case "bookmarks":
             case "hashtags":
+            default:
                 return;
         }
         if (!route) return;
@@ -66,11 +68,11 @@
         </div>
     </header>
 
+    {#if $logged_in}
     <div id="nav-items">
         <Button label="Timeline"
                 on:click={() => handle_btn("timeline")}
-                active={path == "/" && $client.user}
-                disabled={!$client.user}>
+                active={$page.url.pathname === "/"}>
             <svelte:fragment slot="icon">
                 <TimelineIcon/>
             </svelte:fragment>
@@ -78,14 +80,15 @@
         </Button>
         <Button label="Notifications"
                 on:click={() => handle_btn("notifications")}
-                active={path == "/notifications"}
-                disabled>
+                active={$page.url.pathname === "/notifications"}>
             <svelte:fragment slot="icon">
                 <NotificationsIcon/>
             </svelte:fragment>
             Notifications
-            {#if notification_count}
-            <span class="notification-count">{notification_count}</span>
+            {#if $unread_notif_count}
+                <span class="notification-count">
+                    {$unread_notif_count <= 99 ? $unread_notif_count : "99+"}
+                </span>
             {/if}
         </Button>
         <Button label="Explore" disabled>
@@ -127,7 +130,6 @@
             </Button>
     </div>
 
-    {#if $client.user}
     <div id="account-items">
         <div class="flex-row">
             <Button centered label="Profile information" disabled>
@@ -222,6 +224,7 @@
         transform: translate(22px, -16px);
         min-width: 12px;
         height: 28px;
+        margin-left: auto;
         padding: 0 8px;
         display: flex;
         justify-content: center;

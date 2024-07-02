@@ -219,6 +219,7 @@ export async function parsePost(data, ancestor_count) {
     let post = new Post();
 
     post.text = data.content;
+    post.html = data.content;
 
     post.reply = null;
     if ((data.in_reply_to_id || data.reply) &&
@@ -278,7 +279,7 @@ export async function parseUser(data) {
 
     user = new User();
     user.id = data.id;
-    user.nickname = data.display_name;
+    user.nickname = data.display_name.trim();
     user.username = data.username;
     user.avatar_url = data.avatar;
     user.url = data.url;

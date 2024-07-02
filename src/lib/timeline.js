@@ -2,7 +2,7 @@ import { client } from '$lib/client/client.js';
 import { get, writable } from 'svelte/store';
 import { parsePost } from '$lib/client/api.js';
 
-export let posts = writable([]);
+export let timeline = writable([]);
 
 let loading = false;
 
@@ -11,8 +11,8 @@ export async function getTimeline(clean) {
     loading = true;
 
     let timeline_data;
-    if (clean || get(posts).length === 0) timeline_data = await get(client).getTimeline()
-    else timeline_data = await get(client).getTimeline(get(posts)[get(posts).length - 1].id);
+    if (clean || get(timeline).length === 0) timeline_data = await get(client).getTimeline()
+    else timeline_data = await get(client).getTimeline(get(timeline)[get(timeline).length - 1].id);
 
     if (!timeline_data) {
         console.error(`Failed to retrieve timeline.`);
@@ -20,7 +20,7 @@ export async function getTimeline(clean) {
         return;
     }
 
-    if (clean) posts.set([]);
+    if (clean) timeline.set([]);
 
     for (let i in timeline_data) {
         const post_data = timeline_data[i];
@@ -36,7 +36,7 @@ export async function getTimeline(clean) {
             }
             continue;
         }
-        posts.update(current => [...current, post]);
+        timeline.update(current => [...current, post]);
     }
     loading = false;
 }

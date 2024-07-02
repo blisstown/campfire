@@ -84,7 +84,8 @@
     }
 
     .post-text {
-        line-height: 1.2em;
+        font-size: .9em;
+        line-height: 1.45em;
         word-wrap: break-word;
     }
 

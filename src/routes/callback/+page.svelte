@@ -28,7 +28,21 @@
                     client.user = user
                     return client;
                 });
-                goto("/");
+
+                return get(client).getNotifications(
+                    get(last_read_notification_id)
+                ).then(notif_data => {
+                    client.update(client => {
+                        // we've just logged in, so assume all past notifications are read.
+                        // i *would* just use the mastodon marker API to get the last read
+                        // notification, but this does not appear to be widely supported.
+                        if (notif_data.constructor === Array && notif_data.length > 0)
+                            last_read_notification_id.set(notif_data[0].id);
+                        client.save();
+                        return client;
+                    });
+                    goto("/");
+                });
             });
         });
     }
