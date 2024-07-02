@@ -32,6 +32,7 @@
         let route;
         switch (name) {
             case "timeline":
+                if (!get(client).user) break;
                 route = "/";
                 getTimeline(true);
                 break;
@@ -68,7 +69,8 @@
     <div id="nav-items">
         <Button label="Timeline"
                 on:click={() => handle_btn("timeline")}
-                active={path == "/"}>
+                active={path == "/" && $client.user}
+                disabled={!$client.user}>
             <svelte:fragment slot="icon">
                 <TimelineIcon/>
             </svelte:fragment>
