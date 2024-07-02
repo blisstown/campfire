@@ -90,7 +90,6 @@ export class Client {
         }
         const user = await api.parseUser(data);
         console.log(`Logged in as @${user.username}@${user.host}`);
-        console.log(`You have ${data.source.follow_request_count} follow request${data.source.follow_request_count === 1 ? '' : 's'}!`);
         return user;
     }
 

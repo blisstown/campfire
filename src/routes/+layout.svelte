@@ -5,12 +5,16 @@
     import { client, Client } from '$lib/client/client.js';
     import { get } from 'svelte/store';
 
+    export let data;
+    $: path = data.path || "/";
+
     let ready = new Promise(resolve => {
         if (get(client)) {
             return resolve();
         }
         let new_client = new Client();
         new_client.load();
+        client.set(new_client);
 
         return new_client.getClientUser().then(user => {
             if (!user) {
@@ -18,8 +22,11 @@
                 return resolve();
             }
             new_client.user = user;
-            client.set(new_client);
-            client.user
+            window.peekie = new_client;
+            client.update(client => {
+                client.user = user;
+                return client;
+            });
             return resolve();
         });
     });
@@ -28,7 +35,7 @@
 <div id="app">
 
     <header>
-        <Navigation />
+        <Navigation path={path} />
     </header>
 
     <main>

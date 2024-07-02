@@ -7,6 +7,7 @@
     import { getTimeline } from '$lib/timeline.js';
     import { goto } from '$app/navigation';
     import { get } from 'svelte/store';
+    import { onMount } from 'svelte';
 
     import TimelineIcon from '../../img/icons/timeline.svg';
     import NotificationsIcon from '../../img/icons/notifications.svg';
@@ -20,21 +21,33 @@
     import SettingsIcon from '../../img/icons/settings.svg';
     import LogoutIcon from '../../img/icons/logout.svg';
 
+    export let path;
+
     const VERSION = APP_VERSION;
     
     let notification_count = 0;
     if (notification_count > 99) notification_count = "99+";
 
-    function goTimeline() {
-        if (location.pathname === "/") {
-            getTimeline(true);
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-            return;
+    function handle_btn(name) {
+        let route;
+        switch (name) {
+            case "timeline":
+                route = "/";
+                break;
+            case "notifcations":
+            case "explore":
+            case "lists":
+            case "favourites":
+            case "bookmarks":
+            case "hashtags":
+                return;
         }
-        goto("/");
+        if (!route) return;
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+        goto(route);
     }
 
     async function log_out() {
@@ -52,13 +65,18 @@
     </header>
 
     <div id="nav-items">
-        <Button label="Timeline" on:click={() => goTimeline()} active={!!$client.user}>
+        <Button label="Timeline"
+                on:click={handle_btn("timeline")}
+                active={path == "/"}>
             <svelte:fragment slot="icon">
                 <TimelineIcon/>
             </svelte:fragment>
             Timeline
         </Button>
-        <Button label="Notifications" disabled>
+        <Button label="Notifications"
+                on:click={handle_btn("notifications")}
+                active={path == "/notifications"}
+                disabled>
             <svelte:fragment slot="icon">
                 <NotificationsIcon/>
             </svelte:fragment>
