@@ -92,7 +92,7 @@
 <style>
     .notification {
         display: block;
-        margin: 8px 0;
+        margin-bottom: 8px;
         padding: 16px;
         border-radius: 8px;
         background: var(--bg-800);
