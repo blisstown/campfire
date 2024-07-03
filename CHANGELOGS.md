@@ -1,5 +1,7 @@
 # Campfire v0.4.0
+- Infinite scrolling notifications
 - Fixed custom emotes in the sidebar profile display
+- Huge refactor, along with some improved documentation
 
 # Campfire v0.3.0
 - Added notifications view
