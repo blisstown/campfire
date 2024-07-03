@@ -1,7 +1,4 @@
 <script>
-    import { parseText as parseEmojis, parseOne as parseEmoji } from '../../emoji.js';
-    import { shorthand as short_time } from '../../time.js';
-    import * as api from '../../client/api.js';
     import { goto } from '$app/navigation';
 
     import PostHeader from './PostHeader.svelte';
@@ -12,7 +9,7 @@
 
     export let post;
     let time_string = post.created_at.toLocaleString();
-    let aria_label = post.user.username + '; ' + post.text + '; ' + post.created_at;
+    let aria_label = post.account.username + '; ' + post.text + '; ' + post.created_at;
 
     let mouse_pos = { top: 0, left: 0 };
 

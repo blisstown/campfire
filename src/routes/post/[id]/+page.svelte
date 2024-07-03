@@ -1,7 +1,9 @@
 <script>
-    import { client } from '$lib/client/client.js';
-    import * as api from '$lib/client/api.js';
-    import { logged_in } from '$lib/stores/user.js';
+    import * as api from '$lib/api.js';
+    import { logged_in } from '$lib/stores/account.js';
+    import { server } from '$lib/client/server.js';
+    import { app } from '$lib/client/app.js';
+    import { parsePost } from '$lib/post.js';
     import { get } from 'svelte/store';
     import { goto, afterNavigate } from '$app/navigation';
     import { base } from '$app/paths'
@@ -21,15 +23,15 @@
     })
 
     $: post = (async resolve => {
-        const post_data = await get(client).getPost(data.post_id, 0, false);
+        const post_data = await api.getPost(get(server).host, get(app).token, data.post_id);
         if (!post_data) {
             error = `Failed to retrieve post <code>${data.post_id}</code>.`;
             console.error(`Failed to retrieve post ${data.post_id}.`);
             return;
         }
-        let post = await api.parsePost(post_data, 0, false);
+        let post = await parsePost(post_data, 0);
 
-        const post_context = await get(client).getPostContext(data.post_id);
+        const post_context = await api.getPostContext(get(server).host, get(app).token, data.post_id);
 
         if (!post_context || !post_context.ancestors || !post_context.descendants)
             return post;
@@ -37,16 +39,14 @@
         // handle ancestors (above post)
         let thread_top = post;
         while (post_context.ancestors.length > 0) {
-            thread_top.reply = await api.parsePost(post_context.ancestors.pop(), 0, false);
+            thread_top.reply = await parsePost(post_context.ancestors.pop(), 0);
             thread_top = thread_top.reply;
         }
 
         // handle descendants (below post)
         post.replies = [];
         for (let i in post_context.descendants) {
-            post.replies.push(
-                api.parsePost(post_context.descendants[i], 0, false)
-            );
+            post.replies.push(parsePost(post_context.descendants[i], 0));
         }
 
         return post;
@@ -59,9 +59,9 @@
         <nav>
             <Button centered on:click={() => {goto(previous_page)}}>Back</Button>
         </nav>
-        <img src={post.user.avatar_url} type={post.user.avatar_type} alt="" width="40" height="40" class="header-avatar" loading="lazy" decoding="async">
+        <img src={post.account.avatar_url} type={post.account.avatar_type} alt="" width="40" height="40" class="header-avatar" loading="lazy" decoding="async">
         <h1>
-            Post by {@html post.user.rich_name}
+            Post by {@html post.account.rich_name}
         </h1>
     {/await}
 </header>

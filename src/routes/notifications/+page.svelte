@@ -1,21 +1,20 @@
 <script>
     import { notifications, getNotifications } from '$lib/notifications.js';
-    import { logged_in } from '$lib/stores/user.js';
+    import { logged_in } from '$lib/stores/account.js';
     import { goto } from '$app/navigation';
+    import { page } from '$app/stores';
     import { get } from 'svelte/store';
     import Notification from '$lib/ui/Notification.svelte';
 
     if (!get(logged_in)) goto("/");
 
     getNotifications();
-    /*
     document.addEventListener("scroll", event => {
-        if (get(logged_in) && get(page).url.pathname !== "/") return;
+        if (get(logged_in) && get(page).url.pathname !== "/notifications") return;
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2048) {
             getNotifications();
         }
     });
-    */
 </script>
 
 <header>

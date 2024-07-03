@@ -1,37 +1,42 @@
 <script>
-    import { client } from '$lib/client/client.js';
+    import * as api from '$lib/api.js';
+    import { server, createServer } from '$lib/client/server.js';
+    import { app } from '$lib/client/app.js';
     import { get } from 'svelte/store';
 
     import Logo from '$lib/../img/campfire-logo.svg';
 
-    let instance_url_error = false;
+    let display_error = false;
     let logging_in = false;
 
-    function log_in(event) {
+    async function log_in(event) {
         event.preventDefault();
-        instance_url_error = false;
+        display_error = false;
 
         logging_in = true;
         const host = event.target.host.value;
 
         if (!host || host === "") {
-            instance_url_error = "Please enter an instance domain.";
+            display_error = "Please enter an server domain.";
             logging_in = false;
             return;
         }
 
-        console.log(client);
-
-        get(client).init(host).then(res => {
+        server.set(await createServer(host));
+        if (!get(server)) {
+            display_error = "Failed to connect to the server.\nCheck the browser console for details!"
             logging_in = false;
-            if (!res) return;
-            if (res.constructor === String) {
-                instance_url_error = res;
-                return;
-            };
-            let oauth_url = get(client).getOAuthUrl();
-            location = oauth_url;
-        });
+            return;
+        }
+
+        app.set(await api.createApp(get(server).host));
+        if (!get(app)) {
+            display_error = "Failed to create an application for this server."
+            logging_in = false;
+            return;
+        }
+
+        location = api.getOAuthUrl(get(server).host, get(app).id);
     }
 </script>
 
@@ -40,11 +45,11 @@
         <Logo />
     </div>
     <p>Welcome, fediverse user!</p>
-    <p>Please enter your instance domain to log in.</p>
+    <p>Please enter your server domain to log in.</p>
     <div class="input-wrapper">
-        <input type="text" id="host" aria-label="instance domain" class={logging_in ? "throb" : ""}>
-        {#if instance_url_error}
-            <p class="error">{instance_url_error}</p>
+        <input type="text" id="host" aria-label="server domain" class={logging_in ? "throb" : ""}>
+        {#if display_error}
+            <p class="error">{display_error}</p>
         {/if}
     </div>
     <br>

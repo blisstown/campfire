@@ -1,5 +1,5 @@
 <script>
-    import * as api from '$lib/client/api.js';
+    import * as api from '$lib/api.js';
     import { goto } from '$app/navigation';
 
     import ReplyIcon from '$lib/../img/icons/reply.svg';

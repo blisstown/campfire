@@ -1,17 +1,16 @@
 <script>
-    import { parseText as parseEmojis } from '../../emoji.js';
-    import { shorthand as short_time } from '../../time.js';
+    import { shorthand as short_time } from '$lib/time.js';
 
     export let post;
 
-    let time_string = post.created_at.toLocaleString();
+    const time_string = post.created_at.toLocaleString();
 </script>
 
 <div class="post-context">
     <span class="post-context-icon">🔁</span>
     <span class="post-context-action">
-        <a href={post.user.url} target="_blank"><span class="name">
-                {@html parseEmojis(post.user.rich_name)}</span>
+        <a href={post.account.url} target="_blank"><span class="name">
+                {@html post.account.rich_name}</span>
         </a>
         boosted this post.
     </span>

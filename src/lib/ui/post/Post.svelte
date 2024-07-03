@@ -1,5 +1,4 @@
 <script>
-    import { parseOne as parseEmoji } from '../../emoji.js';
     import { play_sound } from '../../sound.js';
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
@@ -51,7 +50,7 @@
         }
     });
 
-    let aria_label = post.user.username + '; ' + post.text + '; ' + post.created_at;
+    let aria_label = post.account.username + '; ' + post.text + '; ' + post.created_at;
 </script>
 
 <div class="post-container">

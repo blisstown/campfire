@@ -1,7 +1,9 @@
 <script>
-    import { client } from '../../client/client.js';
-    import * as api from '../../client/api.js';
+    import * as api from '$lib/api.js';
     import { get } from 'svelte/store';
+    import { server } from '$lib/client/server.js';
+    import { app } from '$lib/client/app.js';
+    import { parseReactions } from '$lib/post.js';
 
     import ActionButton from './ActionButton.svelte';
 
@@ -18,9 +20,9 @@
     async function toggleBoost() {
         let data;
         if (post.boosted)
-            data = await get(client).unboostPost(post.id);
+            data = await api.unboostPost(get(server).host, get(app).token, post.id);
         else
-            data = await get(client).boostPost(post.id);
+            data = await api.boostPost(get(server).host, get(app).token, post.id);
         if (!data) {
             console.error(`Failed to boost post ${post.id}`);
             return;
@@ -32,16 +34,16 @@
     async function toggleFavourite() {
         let data;
         if (post.favourited)
-            data = await get(client).unfavouritePost(post.id);
+            data = await api.unfavouritePost(get(server).host, get(app).token, post.id);
         else
-            data = await get(client).favouritePost(post.id);
+            data = await api.favouritePost(get(server).host, get(app).token, post.id);
         if (!data) {
             console.error(`Failed to favourite post ${post.id}`);
             return;
         }
         post.favourited = data.favourited;
         post.favourite_count = data.favourites_count;
-        if (data.reactions) post.reactions = api.parseReactions(data.reactions);
+        if (data.reactions) post.reactions = parseReactions(data.reactions);
     }
 
     async function toggleReaction(reaction) {
@@ -49,16 +51,16 @@
 
         let data;
         if (reaction.me)
-            data = await get(client).unreactPost(post.id, reaction.name);
+            data = await api.unreactPost(get(server).host, get(app).token, post.id, reaction.name);
         else
-            data = await get(client).reactPost(post.id, reaction.name);
+            data = await api.reactPost(get(server).host, get(app).token, post.id, reaction.name);
         if (!data) {
             console.error(`Failed to favourite post ${post.id}`);
             return;
         }
         post.favourited = data.favourited;
         post.favourite_count = data.favourites_count;
-        if (data.reactions) post.reactions = api.parseReactions(data.reactions);
+        if (data.reactions) post.reactions = parseReactions(data.reactions);
     }
 </script>
 

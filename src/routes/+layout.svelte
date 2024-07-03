@@ -1,39 +1,42 @@
 <script>
     import '$lib/app.css';
+    import * as api from '$lib/api.js';
+    import { server } from '$lib/client/server.js';
+    import { app } from '$lib/client/app.js';
+    import { account, logged_in } from '$lib/stores/account.js';
+    import { parseAccount } from '$lib/account.js';
+    import { unread_notif_count, last_read_notif_id } from '$lib/notifications.js';
+    import { get } from 'svelte/store';
+
     import Navigation from '$lib/ui/Navigation.svelte';
     import Widgets from '$lib/ui/Widgets.svelte';
-    import { client, Client } from '$lib/client/client.js';
-    import { user, getUser } from '$lib/stores/user.js';
-    import { get } from 'svelte/store';
-    import { logged_in } from '$lib/stores/user.js';
-    import { unread_notif_count, last_read_notif_id } from '$lib/notifications.js';
 
-    let ready = new Promise(resolve => {
-        if (get(client)) {
-            if (get(user)) logged_in.set(true);
-            return resolve();
+    async function init() {
+        if (!get(app) || !get(app).token) {
+            account.set(false);
+            logged_in.set(false);
+            return;
         }
-        let new_client = new Client();
-        new_client.load();
-        client.set(new_client);
 
-        return getUser().then(new_user => {
-            if (!new_user) return resolve();
+        // logged in- attempt to retrieve using token
+        const data = await api.verifyCredentials(get(server).host, get(app).token);
+        if (!data) return;
 
-            logged_in.set(true);
-            user.set(new_user);
+        account.set(parseAccount(data));
+        logged_in.set(true);
+        console.log(`Logged in as @${get(account).username}@${get(account).host}`);
 
-            // spin up async task to fetch notifications
-            get(client).getNotifications(
-                get(last_read_notif_id)
-            ).then(notif_data => {
-                if (!notif_data) return;
-                unread_notif_count.set(notif_data.length);
-            });
+        // spin up async task to fetch notifications
+        const notif_data = await api.getNotifications(
+            get(server).host,
+            get(app).token,
+            get(last_read_notif_id)
+        );
 
-            return resolve();
-        });
-    });
+        if (!notif_data) return;
+
+        unread_notif_count.set(notif_data.length);
+    };
 </script>
 
 <div id="app">
@@ -43,7 +46,7 @@
     </header>
 
     <main>
-        {#await ready}
+        {#await init()}
             <div class="loading throb">
                 <span>just a moment...</span>
             </div>

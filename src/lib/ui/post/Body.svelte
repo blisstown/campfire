@@ -1,8 +1,6 @@
 <script>
     export let post;
 
-    let rich_text;
-    post.rich_text().then(res => {rich_text = res});
     let open_warned = false;
 </script>
 
@@ -22,22 +20,22 @@
         </button>
     {/if}
     {#if !post.warning || open_warned}
-        {#if post.text}
-            <span class="post-text">{@html rich_text}</span>
+        {#if post.html}
+            <span class="post-text">{@html post.html}</span>
         {/if}
-        {#if post.files && post.files.length > 0}
-            <div class="post-media-container" data-count={post.files.length}>
-                {#each post.files as file}
-                    <div class="post-media {file.type}" on:click|stopPropagation on:mouseup|stopPropagation>
-                        {#if ["image", "gifv", "gif"].includes(file.type)}
-                            <a href={file.url} target="_blank">
-                                <img src={file.url} alt={file.description} title={file.description} height="200" loading="lazy" decoding="async">
+        {#if post.media && post.media.length > 0}
+            <div class="post-media-container" data-count={post.media.length}>
+                {#each post.media as media}
+                    <div class="post-media {media.type}" on:click|stopPropagation on:mouseup|stopPropagation>
+                        {#if ["image", "gifv", "gif"].includes(media.type)}
+                            <a href={media.url} target="_blank">
+                                <img src={media.url} alt={media.description} title={media.description} height="200" loading="lazy" decoding="async">
                             </a>
-                        {:else if file.type === "video"}
+                        {:else if media.type === "video"}
                             <video controls height="200">
-                                <source src={file.url} alt={file.description} title={file.description} type={file.url.endsWith('.mp4') ? 'video/mp4' : 'video/webm'}>
-                                <p>{file.description} &ensp; <a href={file.url}>[link]</a></p>
-                                <!-- <media src={file.url} alt={file.description} loading="lazy" decoding="async"> -->
+                                <source src={media.url} alt={media.description} title={media.description} type={media.url.endsWith('.mp4') ? 'video/mp4' : 'video/webm'}>
+                                <p>{media.description} &ensp; <a href={media.url}>[link]</a></p>
+                                <!-- <media src={media.url} alt={media.description} loading="lazy" decoding="async"> -->
                             </video>
                         {/if}
                     </div>

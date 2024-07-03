@@ -1,13 +1,11 @@
 <script>
     import { page } from '$app/stores';
     import { get } from 'svelte/store';
-    import { logged_in } from '$lib/stores/user.js';
+    import { logged_in } from '$lib/stores/account.js';
     import { timeline, getTimeline } from '$lib/timeline.js';
 
     import LoginForm from '$lib/ui/LoginForm.svelte';
     import Feed from '$lib/ui/Feed.svelte';
-    import User from '$lib/user/user.js';
-    import Button from '$lib/ui/Button.svelte';
 
     logged_in.subscribe(logged_in => {
         if (logged_in) getTimeline();

@@ -1,17 +1,16 @@
 <script>
-    import Logo from '$lib/../img/campfire-logo.svg';
-    import Button from './Button.svelte';
-    import Feed from './Feed.svelte';
-    import { client } from '$lib/client/client.js';
-    import { user } from '$lib/stores/user.js';
+    import { account, logged_in } from '$lib/stores/account.js';
     import { play_sound } from '$lib/sound.js';
     import { getTimeline } from '$lib/timeline.js';
     import { getNotifications } from '$lib/notifications.js';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { get } from 'svelte/store';
-    import { logged_in } from '$lib/stores/user.js';
     import { unread_notif_count, last_read_notif_id } from '$lib/notifications.js';
+
+    import Logo from '$lib/../img/campfire-logo.svg';
+    import Button from './Button.svelte';
+    import Feed from './Feed.svelte';
 
     import TimelineIcon from '../../img/icons/timeline.svg';
     import NotificationsIcon from '../../img/icons/notifications.svg';
@@ -37,7 +36,7 @@
                 break;
             case "notifications":
                 route = "/notifications";
-                getNotifications();
+                getNotifications(true);
                 break;
             case "explore":
             case "lists":
@@ -63,7 +62,7 @@
 </script>
 
 <div id="navigation">
-    <header class="instance-header">
+    <header class="server-header">
         <div class="app-logo">
             <Logo />
         </div>
@@ -151,11 +150,11 @@
         </div>
 
         <div id="account-button">
-            <img src={$user.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => play_sound()}>
+            <img src={$account.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => play_sound()}>
             <div class="account-name" aria-hidden="true">
-                <a href={$user.url} class="nickname" title={$user.nickname}>{@html $user.rich_name}</a>
-                <span class="username" title={`@${$user.username}@${$user.host}`}>
-                    {`@${$user.username}@${$user.host}`}
+                <a href={$account.url} class="nickname" title={$account.nickname}>{@html $account.rich_name}</a>
+                <span class="username" title={`@${$account.username}@${$account.host}`}>
+                    {`@${$account.username}@${$account.host}`}
                 </span>
             </div>
         </div>
@@ -183,7 +182,7 @@
         background-color: var(--bg-800);
     }
 
-    .instance-header {
+    .server-header {
         width: 100%;
         height: 172px;
         display: flex;
@@ -196,7 +195,7 @@
         background-image: linear-gradient(to top, var(--bg-800), var(--bg-600));
     }
 
-    .instance-icon {
+    .server-icon {
         height: 50%;
         border-radius: 8px;
     }
