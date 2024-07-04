@@ -9,7 +9,11 @@
     import { get } from 'svelte/store';
 
     import Navigation from '$lib/ui/Navigation.svelte';
+    import Modal from '@cf/ui/Modal.svelte';
+    import Composer from '@cf/ui/Composer.svelte';
     import Widgets from '$lib/ui/Widgets.svelte';
+
+    let show_composer = false;
 
     async function init() {
         if (!get(app) || !get(app).token) {
@@ -40,9 +44,8 @@
 </script>
 
 <div id="app">
-
     <header>
-        <Navigation />
+        <Navigation on:compose={() => show_composer = true} />
     </header>
 
     <main>
@@ -59,6 +62,9 @@
         <Widgets />
     </div>
 
+    <Modal bind:visible={show_composer}>
+        <Composer/>
+    </Modal>
 </div>
 
 <style>

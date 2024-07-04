@@ -6,6 +6,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { get } from 'svelte/store';
+    import { createEventDispatcher } from 'svelte';
     import { unread_notif_count, last_read_notif_id } from '$lib/notifications.js';
 
     import Logo from '$lib/../img/campfire-logo.svg';
@@ -25,6 +26,8 @@
     import LogoutIcon from '../../img/icons/logout.svg';
 
     const VERSION = APP_VERSION;
+
+    const dispatch = createEventDispatcher();
 
     function handle_btn(name) {
         if (!get(logged_in)) return;
@@ -122,12 +125,12 @@
             </Button>
         </div>
 
-        <Button filled label="Post" disabled>
+        <Button filled label="Post" disabled on:click={() => dispatch("compose")}>
             <svelte:fragment slot="icon">
                 <PostIcon/>
             </svelte:fragment>
             Post
-            </Button>
+        </Button>
     </div>
 
     <div id="account-items">

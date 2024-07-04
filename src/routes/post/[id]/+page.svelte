@@ -113,6 +113,7 @@
         margin-right: 8px;
         display: flex;
         flex-direction: row;
+        align-items: center;
         gap: 8px;
     }
 

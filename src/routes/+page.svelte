@@ -6,6 +6,7 @@
 
     import LoginForm from '$lib/ui/LoginForm.svelte';
     import Feed from '$lib/ui/Feed.svelte';
+  import Modal from '../lib/ui/Modal.svelte';
 
     logged_in.subscribe(logged_in => {
         if (logged_in) getTimeline();
