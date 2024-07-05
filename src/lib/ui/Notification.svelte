@@ -57,12 +57,12 @@
         goto(`/post/${data.status.id}`);
     }
     
-    let aria_label = function () {
-        if (accounts.length == 1)
+    let aria_label = function (data) {
+        if (data.accounts.length == 1)
             return activity_text.replace("%1", account.username) + ' ' + new Date(data.created_at);
         else
-            return activity_text.replace("%1", `${account.username} and ${accounts.length - 1} others`) + ' ' + new Date(data.created_at);
-    }
+            return activity_text.replace("%1", `${account.username} and ${data.accounts.length - 1} others`) + ' ' + new Date(data.created_at);
+    }(data);
 </script>
 
 <article
@@ -101,7 +101,13 @@
     </header>
     {#if data.status}
         <div class="notif-content">
-            {@html data.status.html}
+            {#if data.status.warning}
+                <div class="warning">
+                    {data.status.warning}
+                </div>
+            {:else}
+                {@html data.status.html}
+            {/if}
         </div>
         {#if data.type === "mention"}
             {#if data.status.reactions}
@@ -246,5 +252,22 @@
         height: 20px;
         margin-right: 4px;
         border-radius: 4px;
+    }
+
+    .notif-content .warning {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 4px 8px;
+        --warn-bg: color-mix(in srgb, var(--bg-700), var(--accent) 1%);
+        background: repeating-linear-gradient(-45deg, transparent, transparent 10px, var(--warn-bg) 10px, var(--warn-bg) 20px);
+        font-family: inherit;
+        font-size: inherit;
+        color: inherit;
+        text-align: left;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        outline-color: var(--warn-bg);
+        transition: outline .05s, box-shadow .05s;
     }
 </style>
