@@ -132,6 +132,19 @@ export async function verifyCredentials(host, token) {
 }
 
 /**
+ * GET /api/v1/streaming/health
+ * Checks if the server's streaming service is alive
+ */
+export async function getStreamingHealth(host) {
+    let url = `https://${host}/api/v1/streaming/health`;
+    const res = await fetch(url, {
+        method: 'GET'
+    });
+
+    return res.ok;
+}
+
+/**
  * GET /api/v1/notifications
  * @param {string} host - The domain of the target server.
  * @param {string} token - The application token.
@@ -250,7 +263,7 @@ export async function editPost(host, token, post_id, post_data) {
  * @param {string} token - The application token
  * @param {any} post_id - The ID of the post to delete.
  */
-export async function editPost(host, token, post_id) {
+export async function deletePost(host, token, post_id) {
     let url = `https://${host}/api/v1/statuses/${post_id}`;
     const data = await fetch(url, {
         method: 'POST',
