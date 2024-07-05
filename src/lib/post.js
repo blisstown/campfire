@@ -44,9 +44,11 @@ export async function parsePost(data, ancestor_count) {
     post.visibility = data.visibility;
 
     post.emojis = [];
-    data.emojis.forEach(emoji => {
-        post.emojis[emoji.shortcode] = parseEmoji(emoji.shortcode, emoji.url);
-    });
+    if (post.emojis) {
+        data.emojis.forEach(emoji => {
+            post.emojis[emoji.shortcode] = parseEmoji(emoji.shortcode, emoji.url);
+        });
+    }
 
     if (data.reactions) post.reactions = parseReactions(data.reactions);
 
