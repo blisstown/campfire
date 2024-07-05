@@ -255,7 +255,7 @@
     }
 
     .notif-content .warning {
-        width: 100%;
+        width: calc(100% - 16px);
         margin-bottom: 10px;
         padding: 4px 8px;
         --warn-bg: color-mix(in srgb, var(--bg-700), var(--accent) 1%);
