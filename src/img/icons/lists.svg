@@ -1,3 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 128 128">
-  <path fill-rule="evenodd" d="M36 16h4.03c.517 8.37 7.47 15 15.97 15h16c8.5 0 15.453-6.63 15.97-15H92a8 8 0 0 1 8 8v80a8 8 0 0 1-8 8H36a8 8 0 0 1-8-8V24a8 8 0 0 1 8-8Zm43.938 0H48.062A8.001 8.001 0 0 0 56 23h16a8.001 8.001 0 0 0 7.938-7ZM44 46a4 4 0 0 0 0 8h41a4 4 0 0 0 0-8H44Zm-4 20a4 4 0 0 1 4-4h41a4 4 0 0 1 0 8H44a4 4 0 0 1-4-4Zm4 12a4 4 0 0 0 0 8h41a4 4 0 0 0 0-8H44Z" clip-rule="evenodd"/>
+<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 32 32">
+  <g clip-path="url(#a)">
+    <path fill-rule="evenodd" d="M9 4h1.008A4 4 0 0 0 14 7.75h4A4 4 0 0 0 21.992 4H23a2 2 0 0 1 2 2v20a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm10.985 0h-7.97A2 2 0 0 0 14 5.75h4A2 2 0 0 0 19.985 4ZM11 11.5a1 1 0 1 0 0 2h10.25a1 1 0 1 0 0-2H11Zm-1 5a1 1 0 0 1 1-1h10.25a1 1 0 1 1 0 2H11a1 1 0 0 1-1-1Zm1 3a1 1 0 1 0 0 2h10.25a1 1 0 1 0 0-2H11Z" clip-rule="evenodd"/>
+  </g>
+  <defs>
+    <clipPath id="a">
+      <path d="M4 4h24v24H4z"/>
+    </clipPath>
+  </defs>
 </svg>

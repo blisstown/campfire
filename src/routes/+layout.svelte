@@ -63,7 +63,7 @@
     </div>
 
     <Modal bind:visible={show_composer}>
-        <Composer/>
+        <Composer on:compose_finished={() => show_composer = false }/>
     </Modal>
 </div>
 

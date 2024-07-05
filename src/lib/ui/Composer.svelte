@@ -1,7 +1,42 @@
-<script>
+<script lang="js">
     import { account } from '@cf/store/account';
+    import * as api from '$lib/api';
+    import { server } from '$lib/client/server';
+    import { app } from '$lib/client/app';
+    import { parsePost } from '$lib/post.js';
+    import { timeline } from '$lib/timeline.js';
+    import { createEventDispatcher } from 'svelte';
+
     import Button from '@cf/ui/Button.svelte';
     import PostIcon from '@cf/icons/post.svg';
+    import MediaIcon from '@cf/icons/media.svg';
+    import PollIcon from '@cf/icons/poll.svg';
+    import WarningIcon from '@cf/icons/warning.svg';
+
+    import PublicVisIcon from '@cf/icons/public.svg';
+
+    let content_warning = ""
+    let content = "";
+    // let media_ids = [];
+    let show_cw = false;
+
+    const dispatch = createEventDispatcher();
+
+    async function buildPost() {
+        let postdata = {}
+        if(show_cw) {
+            postdata.spoiler_text = content_warning;
+        }
+
+        if(!content) return;
+        postdata.status = content;
+
+        let new_post = await api.createPost($server.host, $app.token, postdata);
+        let new_post_parsed = await parsePost(new_post);
+
+        timeline.update(current => [new_post_parsed ,...current])
+        dispatch("compose_finished")
+    }
 </script>
 
 <div class="composer">
@@ -19,25 +54,35 @@
         </header>
         <div>
             <Button centered={true}>
-                vis
+                <svelte:fragment slot="icon">
+                    <PublicVisIcon/>
+                </svelte:fragment>
             </Button>
         </div>
     </div>
-    <input type="text" id="" placeholder="content warning"/>
-    <textarea placeholder="what's cooking, mae?" class="textbox"></textarea>
+    {#if show_cw}
+        <input type="text" id="" placeholder="content warning" bind:value={content_warning}/>
+    {/if}
+    <textarea placeholder="what's cooking, mae?" class="textbox" bind:value={content}></textarea>
     <div class="composer-footer">
-        <div>
-            <Button centered={true}>
-                media
+        <div class="actions">
+            <Button centered={true} disabled>
+                <svelte:fragment slot="icon">
+                    <MediaIcon/>
+                </svelte:fragment>
             </Button>
-            <Button centered={true}>
-                poll
+            <Button centered={true} disabled>
+                <svelte:fragment slot="icon">
+                    <PollIcon/>
+                </svelte:fragment>
             </Button>
-            <Button centered={true}>
-                cw
+            <Button centered={true} active={show_cw} on:click={() => show_cw = !show_cw}>
+                <svelte:fragment slot="icon">
+                    <WarningIcon/>
+                </svelte:fragment>
             </Button>
         </div>
-        <Button filled={true} centered={true} class="postbtn">
+        <Button filled={true} centered={true} class="postbtn" on:click={buildPost}>
             <svelte:fragment slot="icon">
                 <PostIcon/>
             </svelte:fragment>
@@ -82,6 +127,14 @@
         background-color: var(--bg-700);
         color: var(--text);
         font-family: inherit;
+
+        border-radius: 8px;
+        border: 1px solid color-mix(in srgb, transparent, var(--accent) 25%);
+    }
+
+    input[type="text"]:focus, textarea:focus {
+        outline: none;
+        box-shadow: 0 0 16px color-mix(in srgb, transparent, var(--accent) 25%);
     }
 
     .textbox {

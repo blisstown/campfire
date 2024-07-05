@@ -198,6 +198,28 @@ export async function getPost(host, token, post_id) {
 }
 
 /**
+ * POST /api/v1/statuses
+ * @param {string} host - The domain of the target server.
+ * @param {string} token - The application token
+ * @param {any} post_data - The post content
+ */
+export async function createPost(host, token, post_data) {
+    let formdata = new FormData();
+    for (const key in post_data) {
+        formdata.append(key, post_data[key]);
+    }
+
+    let url = `https://${host}/api/v1/statuses`;
+    const data = await fetch(url, {
+        method: 'POST',
+        headers: { "Authorization": `Bearer ${token}` },
+        body: formdata
+    })
+
+    return await data.json()
+}
+
+/**
  * GET /api/v1/statuses/{post_id}/context.
  * @param {string} host - The domain of the target server.
  * @param {string} token - The application token.

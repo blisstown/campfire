@@ -1,13 +1,16 @@
 <script>
+    import { beforeUpdate } from "svelte";
     export let visible = true;
     export let centered = false;
 
-    // disable scrolling hack: this has to be on body
-    $: if(visible) {
-        document.body.style.overflowY = "hidden";
-    } else {
-        document.body.style.overflowY = "scroll";
-    }
+    beforeUpdate(() => {
+        // disable scrolling hack: this has to be on body
+        if(visible) {
+            document.body.style.overflowY = "hidden";
+        } else {
+            document.body.style.overflowY = "scroll";
+        }
+    })
 </script>
 
 {#if visible}
@@ -40,6 +43,8 @@
         box-shadow: 0px 16px 64px 4px rgba(0,0,0,0.5);
         animation: modal_pop_up .15s cubic-bezier(0.22, 1, 0.36, 1);
         height: fit-content;
+
+        pointer-events: all;
     }
 
     .overlay {
@@ -78,10 +83,12 @@
 
     @keyframes modal_pop_up {
         from {
+            opacity: 0%;
             transform: translateY(16px) scale(0.95);
         }
 
         to {
+            opacity: 100%;
             transform: translateY(0px) scale(1);
         }
     }

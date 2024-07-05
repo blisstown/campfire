@@ -125,7 +125,7 @@
             </Button>
         </div>
 
-        <Button filled label="Post" disabled on:click={() => dispatch("compose")}>
+        <Button filled label="Post" on:click={() => dispatch("compose")}>
             <svelte:fragment slot="icon">
                 <PostIcon/>
             </svelte:fragment>
