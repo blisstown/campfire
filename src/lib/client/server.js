@@ -16,8 +16,9 @@ const server_types = {
 };
 
 export const capabilities = {
-    MARKDOWN_CONTENT: "mdcontent",
+    MARKDOWN_CONTENT: "markdown_content",
     REACTIONS: "reactions",
+    FOREIGN_REACTIONS: "foreign_reactions",
 };
 
 // if server is falsy, assume user has not begun the login process.
@@ -118,6 +119,7 @@ function getCapabilities(type) {
             break;
         case server_types.CHUCKYA:
             c.push(capabilities.REACTIONS);
+            c.push(capabilities.FOREIGN_REACTIONS);
             break;
         case server_types.FIREFISH:
             c.push(capabilities.REACTIONS);

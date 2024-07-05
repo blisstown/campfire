@@ -11,7 +11,6 @@
     import RepostIcon from '../../../img/icons/repost.svg';
     import FavouriteIcon from '../../../img/icons/like.svg';
     import FavouriteIconFill from '../../../img/icons/like_fill.svg';
-    import ReactIcon from '../../../img/icons/react.svg';
     import QuoteIcon from '../../../img/icons/quote.svg';
     import MoreIcon from '../../../img/icons/more.svg';
 
@@ -37,23 +36,6 @@
             data = await api.unfavouritePost(get(server).host, get(app).token, post.id);
         else
             data = await api.favouritePost(get(server).host, get(app).token, post.id);
-        if (!data) {
-            console.error(`Failed to favourite post ${post.id}`);
-            return;
-        }
-        post.favourited = data.favourited;
-        post.favourite_count = data.favourites_count;
-        if (data.reactions) post.reactions = parseReactions(data.reactions);
-    }
-
-    async function toggleReaction(reaction) {
-        if (reaction.name.includes('@')) return;
-
-        let data;
-        if (reaction.me)
-            data = await api.unreactPost(get(server).host, get(app).token, post.id, reaction.name);
-        else
-            data = await api.reactPost(get(server).host, get(app).token, post.id, reaction.name);
         if (!data) {
             console.error(`Failed to favourite post ${post.id}`);
             return;
