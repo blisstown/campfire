@@ -192,7 +192,9 @@ export async function getPost(host, token, post_id) {
     const data = await fetch(url, {
         method: 'GET',
         headers: { "Authorization": token ? `Bearer ${token}` : null }
-    }).then(res => res.json());
+    }).then(res => res.json())
+
+    if (!data || data.error) return false;
 
     return data;
 }
