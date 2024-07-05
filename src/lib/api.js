@@ -222,6 +222,29 @@ export async function createPost(host, token, post_data) {
 }
 
 /**
+ * PUT /api/v1/statuses/{post_id}
+ * @param {string} host - The domain of the target server.
+ * @param {string} token - The application token
+ * @param {any} post_id - The ID of the post to edit.
+ * @param {any} post_data - The post content
+ */
+export async function editPost(host, token, post_id, post_data) {
+    let formdata = new FormData();
+    for (const key in post_data) {
+        formdata.append(key, post_data[key]);
+    }
+
+    let url = `https://${host}/api/v1/statuses/${post_id}`;
+    const data = await fetch(url, {
+        method: 'POST',
+        headers: { "Authorization": `Bearer ${token}` },
+        body: formdata
+    })
+
+    return await data.json()
+}
+
+/**
  * GET /api/v1/statuses/{post_id}/context.
  * @param {string} host - The domain of the target server.
  * @param {string} token - The application token.
