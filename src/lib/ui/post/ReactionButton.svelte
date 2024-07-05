@@ -49,6 +49,7 @@
         border-radius: 8px;
         transition: background-color .1s, color .1s;
         cursor: pointer;
+        border: 1px solid var(--bg-700);
     }
 
     button.active {
