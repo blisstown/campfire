@@ -245,6 +245,22 @@ export async function editPost(host, token, post_id, post_data) {
 }
 
 /**
+ * DELETE /api/v1/statuses/{post_id}
+ * @param {string} host - The domain of the target server.
+ * @param {string} token - The application token
+ * @param {any} post_id - The ID of the post to delete.
+ */
+export async function editPost(host, token, post_id) {
+    let url = `https://${host}/api/v1/statuses/${post_id}`;
+    const data = await fetch(url, {
+        method: 'POST',
+        headers: { "Authorization": `Bearer ${token}` },
+    })
+
+    return await data.json()
+}
+
+/**
  * GET /api/v1/statuses/{post_id}/context.
  * @param {string} host - The domain of the target server.
  * @param {string} token - The application token.
