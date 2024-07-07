@@ -1,7 +1,11 @@
 # Campfire v0.4.0
-- Infinite scrolling notifications
-- Fixed custom emotes in the sidebar profile display
 - Huge refactor, along with some improved documentation
+- Custom emotes now show in the sidebar profile display
+- Infinite scrolling notifications
+- Notifications now show content warnings instead of plain content
+- Added compose box, and the ability to create posts
+- Added ability to delete posts
+- Rewrote Campfire URLs so they can be viewed anonymously
 
 # Campfire v0.3.0
 - Added notifications view
