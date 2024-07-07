@@ -75,6 +75,10 @@
         text-align: center;
     }
 
+    .app-logo :global(svg) {
+        width: 100%;
+    }
+
     .input-wrapper {
         width: 360px;
         margin: 0 auto;
