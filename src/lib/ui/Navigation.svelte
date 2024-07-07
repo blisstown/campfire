@@ -1,6 +1,6 @@
 <script>
     import * as api from '$lib/api.js';
-    import { account, logged_in } from '$lib/stores/account.js';
+    import { account } from '$lib/stores/account.js';
     import { server } from '$lib/client/server.js';
     import { app } from '$lib/client/app.js';
     import { play_sound } from '$lib/sound.js';
@@ -8,7 +8,6 @@
     import { getNotifications } from '$lib/notifications.js';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { get } from 'svelte/store';
     import { createEventDispatcher } from 'svelte';
     import { unread_notif_count } from '$lib/notifications.js';
 
@@ -32,7 +31,7 @@
     const dispatch = createEventDispatcher();
 
     function handle_btn(name) {
-        if (!get(logged_in)) return;
+        if (!$account) return;
         let route;
         switch (name) {
             case "timeline":
@@ -63,16 +62,15 @@
         if (!confirm("This will log you out. Are you sure?")) return;
         
         const res = await api.revokeToken(
-            get(server).host,
-            get(app).id,
-            get(app).secret,
-            get(app).token
+            $server.host,
+            $app.id,
+            $app.secret,
+            $app.token
         );
 
         if (!res.ok)
             console.warn("Token revocation failed! Dumping data anyways");
 
-        logged_in.set(false);
         account.set(false);
         app.set(false);
         server.set(false);

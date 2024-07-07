@@ -7,7 +7,7 @@
     import { goto } from '$app/navigation';
     import { error } from '@sveltejs/kit';
     import { unread_notif_count, last_read_notif_id } from '$lib/notifications.js';
-    import { logged_in, account } from '$lib/stores/account.js';
+    import { account } from '$lib/stores/account.js';
 
     export let data;
 
@@ -30,7 +30,6 @@
                 if (!data) return goto("/");
 
                 account.set(parseAccount(data));
-                logged_in.set(true);
                 console.log(`Logged in as @${get(account).username}@${get(account).host}`);
 
                 // spin up async task to fetch notifications

@@ -3,7 +3,7 @@
     import * as api from '$lib/api.js';
     import { server } from '$lib/client/server.js';
     import { app } from '$lib/client/app.js';
-    import { account, logged_in } from '$lib/stores/account.js';
+    import { account } from '$lib/stores/account.js';
     import { parseAccount } from '$lib/account.js';
     import { unread_notif_count, last_read_notif_id } from '$lib/notifications.js';
 
@@ -17,7 +17,6 @@
     async function init() {
         if (!$app || !$app.token) {
             account.set(false);
-            logged_in.set(false);
             return;
         }
 
@@ -26,7 +25,6 @@
         if (!data) return;
 
         account.set(parseAccount(data));
-        logged_in.set(true);
         console.log(`Logged in as @${$account.username}@${$account.host}`);
 
         // spin up async task to fetch notifications

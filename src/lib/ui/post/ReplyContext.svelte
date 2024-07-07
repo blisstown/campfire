@@ -1,9 +1,9 @@
 <script>
+    import { server } from '$lib/client/server';
     import { goto } from '$app/navigation';
 
     import PostHeader from './PostHeader.svelte';
     import Body from './Body.svelte';
-    import Post from './Post.svelte';
     import ActionBar from './ActionBar.svelte';
     import ReactionBar from './ReactionBar.svelte';
 
@@ -22,7 +22,7 @@
                 event.ctrlKey)) return;
             if (event.key && event.key !== "Enter") return;
         }
-        goto(`/post/${post.id}`);
+        goto(`/${$server.host}/${post.account.mention}/${post.id}`);
     }
 </script>
 

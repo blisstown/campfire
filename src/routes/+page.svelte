@@ -1,6 +1,5 @@
 <script>
     import { page } from '$app/stores';
-    import { get } from 'svelte/store';
     import { account } from '$lib/stores/account.js';
     import { timeline, getTimeline } from '$lib/timeline.js';
 
@@ -13,7 +12,7 @@
     });
 
     document.addEventListener("scroll", () => {
-        if (get(logged_in) && get(page).url.pathname !== "/") return;
+        if ($account && $page.url.pathname !== "/") return;
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2048) {
             getTimeline();
         }

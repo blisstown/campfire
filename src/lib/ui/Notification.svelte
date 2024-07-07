@@ -1,12 +1,12 @@
 <script>
-    import * as api from '$lib/api.js';
+    import { server } from '$lib/client/server';
     import { goto } from '$app/navigation';
 
     import ReplyIcon from '$lib/../img/icons/reply.svg';
     import RepostIcon from '$lib/../img/icons/repost.svg';
     import FavouriteIcon from '$lib/../img/icons/like.svg';
     import ReactIcon from '$lib/../img/icons/react.svg';
-    import QuoteIcon from '$lib/../img/icons/quote.svg';
+    // import QuoteIcon from '$lib/../img/icons/quote.svg';
     import ReactionBar from '$lib/ui/post/ReactionBar.svelte';
     import ActionBar from '$lib/ui/post/ActionBar.svelte';
 
@@ -54,7 +54,7 @@
                 event.ctrlKey)) return;
             if (event.key && event.key !== "Enter") return;
         }
-        goto(`/post/${data.status.id}`);
+        goto(`/${$server.host}/${data.status.account.mention}/${data.status.id}`);
     }
     
     let aria_label = function (data) {

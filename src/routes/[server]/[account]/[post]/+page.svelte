@@ -4,7 +4,7 @@
     import { app } from '$lib/client/app.js';
     import { parsePost } from '$lib/post.js';
     import { goto, afterNavigate } from '$app/navigation';
-    import { base as previous_page } from '$app/paths'
+    import { base } from '$app/paths'
 
     import Post from '$lib/ui/post/Post.svelte';
     import Button from '$lib/ui/Button.svelte';
@@ -13,6 +13,7 @@
 
     let post;
     let error = false;
+    let previous_page = base;
 
     if (($server && $server.host === data.server_host) && $app) {
         post = fetchPost(data.post_id, $app.token);
