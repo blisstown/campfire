@@ -11,29 +11,31 @@
 
     export let data;
 
-    let post;
+    let post = fetchPost(data.post_id);
     let error = false;
     let previous_page = base;
 
-    if (($server && $server.host === data.server_host) && $app) {
-        post = fetchPost(data.post_id, $app.token);
-    } else {
-        post = createServer(data.server_host).then(new_server => {
-            server.set(new_server);
+    afterNavigate(({from}) => {
+        previous_page = from?.url.pathname || previous_page;
+        post = fetchPost(data.post_id);
+    })
+
+    async function fetchPost(post_id) {
+        let token = $app ? $app.token : null;
+
+        if (!$server || $server.host !== data.server_host) {
+            // this will probably break in the odd case the user is logged in
+            // while accessing a URI paired to another instance, as it
+            // overrides the current server state to match the new target.
+            // TODO: make `server` a key/value pair to support multiple servers
+            server.set(await createServer(data.server_host));
             if (!$server) {
                 error = `Failed to connect to <code>${data.server_host}</code>.`;
                 console.error(`Failed to connect to ${data.server_host}.`);
                 return;
             }
-            return post = fetchPost(data.post_id, null);
-        });
-    }
+        }
 
-    afterNavigate(({from}) => {
-        previous_page = from?.url.pathname || previous_page
-    })
-
-    async function fetchPost(post_id, token) {
         const post_data = await api.getPost($server.host, token, post_id);
         if (!post_data || post_data.error) {
             error = `Failed to retrieve post <code>${post_id}</code>.`;
