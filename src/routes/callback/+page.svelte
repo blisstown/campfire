@@ -19,7 +19,6 @@
         api.getToken(get(server).host, get(app).id, get(app).secret, auth_code).then(token => {
             if (!token) {
                 error(400, { message: "Invalid auth code provided" });
-                return;
             }
 
             app.update(app => {

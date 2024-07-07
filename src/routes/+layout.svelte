@@ -6,7 +6,6 @@
     import { account, logged_in } from '$lib/stores/account.js';
     import { parseAccount } from '$lib/account.js';
     import { unread_notif_count, last_read_notif_id } from '$lib/notifications.js';
-    import { get } from 'svelte/store';
 
     import Navigation from '$lib/ui/Navigation.svelte';
     import Modal from '@cf/ui/Modal.svelte';
@@ -16,25 +15,25 @@
     let show_composer = false;
 
     async function init() {
-        if (!get(app) || !get(app).token) {
+        if (!$app || !$app.token) {
             account.set(false);
             logged_in.set(false);
             return;
         }
 
         // logged in- attempt to retrieve using token
-        const data = await api.verifyCredentials(get(server).host, get(app).token);
+        const data = await api.verifyCredentials($server.host, $app.token);
         if (!data) return;
 
         account.set(parseAccount(data));
         logged_in.set(true);
-        console.log(`Logged in as @${get(account).username}@${get(account).host}`);
+        console.log(`Logged in as @${$account.username}@${$account.host}`);
 
         // spin up async task to fetch notifications
         const notif_data = await api.getNotifications(
-            get(server).host,
-            get(app).token,
-            get(last_read_notif_id)
+            $server.host,
+            $app.token,
+            $last_read_notif_id
         );
 
         if (!notif_data) return;

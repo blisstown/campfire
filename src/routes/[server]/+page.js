@@ -1,5 +1,5 @@
 export async function load({ params }) {
     return {
-        post_id: params.id
+        server_domain: params.server
     };
 }

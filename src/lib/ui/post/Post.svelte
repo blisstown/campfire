@@ -1,6 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
+    import { server } from '$lib/client/server';
 
     import BoostContext from './BoostContext.svelte';
     import ReplyContext from './ReplyContext.svelte';
@@ -31,7 +32,7 @@
                 event.ctrlKey)) return;
             if (event.key && event.key !== "Enter") return;
         }
-        goto(`/post/${post.id}`);
+        goto(`/${$server.host}/${post.account.mention}/${post.id}`);
     }
 
     let el;

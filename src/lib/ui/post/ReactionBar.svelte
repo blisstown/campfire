@@ -2,7 +2,7 @@
     import * as api from '$lib/api.js';
     import { server, capabilities } from '$lib/client/server.js';
     import { app } from '$lib/client/app.js';
-    import { get } from 'svelte/store';
+    import { account } from '@cf/store/account';
     import { parseReactions } from '$lib/post.js';
 
     import ReactionButton from './ReactionButton.svelte';
@@ -11,6 +11,8 @@
     export let post;
 
     async function toggleReaction(reaction) {
+        if (!$app || !$app.token) return;
+
         if (
             reaction.name.includes('@') &&
             !$server.capabilities.includes(capabilities.FOREIGN_REACTIONS)
@@ -18,9 +20,9 @@
 
         let data;
         if (reaction.me)
-            data = await api.unreactPost(get(server).host, get(app).token, post.id, reaction.name);
+            data = await api.unreactPost($server.host, $app.token, post.id, reaction.name);
         else
-            data = await api.reactPost(get(server).host, get(app).token, post.id, reaction.name);
+            data = await api.reactPost($server.host, $app.token, post.id, reaction.name);
         if (!data) {
             console.error(`Failed to favourite post ${post.id}`);
             return;
@@ -39,7 +41,7 @@
                 on:click={() => toggleReaction(reaction)}
                 bind:active={reaction.me}
                 bind:count={reaction.count}
-                disabled={reaction.name.includes('@') && !$server.capabilities.includes(capabilities.FOREIGN_REACTIONS)}
+                disabled={!$account || (reaction.name.includes('@') && !$server.capabilities.includes(capabilities.FOREIGN_REACTIONS))}
                 title={reaction.name}
                 label="">
                 {#if reaction.url}

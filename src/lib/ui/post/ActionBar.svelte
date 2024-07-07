@@ -1,6 +1,5 @@
 <script>
     import * as api from '$lib/api';
-    import { get } from 'svelte/store';
     import { server } from '$lib/client/server';
     import { app } from '$lib/client/app';
     import { account } from '@cf/store/account';
@@ -20,11 +19,13 @@
     export let post;
 
     async function toggleBoost() {
+        if (!$app || !$app.token) return;
+
         let data;
         if (post.boosted)
-            data = await api.unboostPost(get(server).host, get(app).token, post.id);
+            data = await api.unboostPost($server.host, $app.token, post.id);
         else
-            data = await api.boostPost(get(server).host, get(app).token, post.id);
+            data = await api.boostPost($server.host, $app.token, post.id);
         if (!data) {
             console.error(`Failed to boost post ${post.id}`);
             return;
@@ -34,11 +35,13 @@
     }
 
     async function toggleFavourite() {
+        if (!$app || !$app.token) return;
+
         let data;
         if (post.favourited)
-            data = await api.unfavouritePost(get(server).host, get(app).token, post.id);
+            data = await api.unfavouritePost($server.host, $app.token, post.id);
         else
-            data = await api.favouritePost(get(server).host, get(app).token, post.id);
+            data = await api.favouritePost($server.host, $app.token, post.id);
         if (!data) {
             console.error(`Failed to favourite post ${post.id}`);
             return;
@@ -69,13 +72,13 @@
     <ActionButton type="reply" label="Reply" bind:count={post.reply_count} sound="post" disabled>
         <ReplyIcon/>
     </ActionButton>
-    <ActionButton type="boost" label="Boost" on:click={toggleBoost} bind:active={post.boosted} bind:count={post.boost_count} sound="boost">
+    <ActionButton type="boost" label="Boost" on:click={toggleBoost} bind:active={post.boosted} bind:count={post.boost_count} sound="boost" disabled={!$account}>
         <RepostIcon/>
         <svelte:fragment slot="activeIcon">
             <RepostIcon/>
         </svelte:fragment>
     </ActionButton>
-    <ActionButton type="favourite" label="Favourite" on:click={toggleFavourite} bind:active={post.favourited} bind:count={post.favourite_count}>
+    <ActionButton type="favourite" label="Favourite" on:click={toggleFavourite} bind:active={post.favourited} bind:count={post.favourite_count} disabled={!$account}>
         <FavouriteIcon/>
         <svelte:fragment slot="activeIcon">
             <FavouriteIconFill/>

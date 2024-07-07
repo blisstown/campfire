@@ -88,7 +88,7 @@
         </div>
     </header>
 
-    {#if $logged_in}
+    {#if $account}
     <div id="nav-items">
         <Button label="Timeline"
                 on:click={() => handle_btn("timeline")}
@@ -180,6 +180,7 @@
         </div>
     </div>
     {/if}
+
     <span class="version">
         campfire v{VERSION}
         <br>

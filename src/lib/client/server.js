@@ -73,7 +73,10 @@ export async function createServer(host) {
  */
 function saveServer(server) {
     if (!browser) return;
-    if (!server) localStorage.removeItem(app_name + "_server");
+    if (!server) {
+        localStorage.removeItem(app_name + "_server");
+        return;
+    }
     localStorage.setItem(app_name + "_server", JSON.stringify(server));
 }
 

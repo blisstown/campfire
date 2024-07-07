@@ -18,7 +18,10 @@ app.subscribe(app => {
  */
 function saveApp(app) {
     if (!browser) return;
-    if (!app) localStorage.removeItem(app_name + "_app");
+    if (!app) {
+        localStorage.removeItem(app_name + "_app");
+        return;
+    }
     localStorage.setItem(app_name + "_app", JSON.stringify(app));
 }
 
