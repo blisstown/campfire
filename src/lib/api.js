@@ -231,7 +231,7 @@ export async function createPost(host, token, post_data) {
         body: formdata
     })
 
-    return await data.json()
+    return await data.json();
 }
 
 /**
@@ -249,16 +249,17 @@ export async function editPost(host, token, post_id, post_data) {
 
     let url = `https://${host}/api/v1/statuses/${post_id}`;
     const data = await fetch(url, {
-        method: 'POST',
+        method: 'PUT',
         headers: { "Authorization": `Bearer ${token}` },
         body: formdata
     })
 
-    return await data.json()
+    return await data.json();
 }
 
 /**
  * DELETE /api/v1/statuses/{post_id}
+ * Returns the deleted post's data, in the case of republishing.
  * @param {string} host - The domain of the target server.
  * @param {string} token - The application token
  * @param {any} post_id - The ID of the post to delete.
@@ -266,11 +267,11 @@ export async function editPost(host, token, post_id, post_data) {
 export async function deletePost(host, token, post_id) {
     let url = `https://${host}/api/v1/statuses/${post_id}`;
     const data = await fetch(url, {
-        method: 'POST',
+        method: 'DELETE',
         headers: { "Authorization": `Bearer ${token}` },
     })
 
-    return await data.json()
+    return await data.json();
 }
 
 /**

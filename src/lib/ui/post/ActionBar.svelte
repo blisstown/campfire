@@ -1,9 +1,11 @@
 <script>
-    import * as api from '$lib/api.js';
+    import * as api from '$lib/api';
     import { get } from 'svelte/store';
-    import { server } from '$lib/client/server.js';
-    import { app } from '$lib/client/app.js';
-    import { parseReactions } from '$lib/post.js';
+    import { server } from '$lib/client/server';
+    import { app } from '$lib/client/app';
+    import { account } from '@cf/store/account';
+    import { timeline } from '$lib/timeline';
+    import { parseReactions } from '$lib/post';
 
     import ActionButton from './ActionButton.svelte';
 
@@ -13,6 +15,7 @@
     import FavouriteIconFill from '../../../img/icons/like_fill.svg';
     import QuoteIcon from '../../../img/icons/quote.svg';
     import MoreIcon from '../../../img/icons/more.svg';
+    import DeleteIcon from '../../../img/icons/bin.svg';
 
     export let post;
 
@@ -44,9 +47,25 @@
         post.favourite_count = data.favourites_count;
         if (data.reactions) post.reactions = parseReactions(data.reactions);
     }
+
+    async function deletePost() {
+        if (!$account || post.account.id !== $account.id) return;
+
+        if (!confirm("Are you sure you want to delete this post? This action cannot be undone."))
+            return;
+
+        const res = await api.deletePost($server.host, $app.token, post.id);
+
+        if (!res || res.error) {
+            console.error(`Error while deleting post ${post.id}`);
+            return;
+        }
+
+        timeline.update(timeline => timeline.filter(p => p.id !== post.id));
+    }
 </script>
 
-<div class="post-actions" aria-label="Post actions" on:mouseup|stopPropagation on:keydown|stopPropagation>
+<div class="post-actions" aria-label="Post actions" role="toolbar" tabindex="0" on:mouseup|stopPropagation on:keydown|stopPropagation>
     <ActionButton type="reply" label="Reply" bind:count={post.reply_count} sound="post" disabled>
         <ReplyIcon/>
     </ActionButton>
@@ -68,6 +87,11 @@
     <ActionButton type="more" label="More" disabled>
         <MoreIcon/>
     </ActionButton>
+    {#if $account && post.account.id === $account.id}
+        <ActionButton type="delete" label="Delete" on:click={deletePost}>
+            <DeleteIcon/>
+        </ActionButton>
+    {/if}
 </div>
 
 <style>
