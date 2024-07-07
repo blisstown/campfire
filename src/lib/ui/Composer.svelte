@@ -19,6 +19,15 @@
     let content = "";
     // let media_ids = [];
     let show_cw = false;
+    const placeholders = [
+        "What's cooking, $1?",
+        "Speak your mind!",
+        "Federate something...",
+        "I sure love posting!",
+        "Another day, another $1 post!",
+    ];
+    let placeholder = placeholders[Math.floor(placeholders.length * Math.random())]
+        .replaceAll("$1", $account.username);
 
     const dispatch = createEventDispatcher();
 
@@ -34,7 +43,7 @@
         let new_post = await api.createPost($server.host, $app.token, postdata);
         let new_post_parsed = await parsePost(new_post);
 
-        timeline.update(current => [new_post_parsed ,...current])
+        timeline.update(current => [new_post_parsed, ...current]);
         dispatch("compose_finished")
     }
 </script>
@@ -63,7 +72,7 @@
     {#if show_cw}
         <input type="text" id="" placeholder="content warning" bind:value={content_warning}/>
     {/if}
-    <textarea placeholder="what's cooking, mae?" class="textbox" bind:value={content}></textarea>
+    <textarea placeholder="{placeholder}" class="textbox" bind:value={content}></textarea>
     <div class="composer-footer">
         <div class="actions">
             <Button centered={true} disabled>

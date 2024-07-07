@@ -10,11 +10,10 @@
     import { page } from '$app/stores';
     import { get } from 'svelte/store';
     import { createEventDispatcher } from 'svelte';
-    import { unread_notif_count, last_read_notif_id } from '$lib/notifications.js';
+    import { unread_notif_count } from '$lib/notifications.js';
 
     import Logo from '$lib/../img/campfire-logo.svg';
     import Button from './Button.svelte';
-    import Feed from './Feed.svelte';
 
     import TimelineIcon from '../../img/icons/timeline.svg';
     import NotificationsIcon from '../../img/icons/notifications.svg';
