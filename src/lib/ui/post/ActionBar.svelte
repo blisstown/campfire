@@ -28,7 +28,7 @@
             data = await api.unboostPost($server.host, $app.token, post.id);
         } else {
             playSound("boost");
-            data = await api.boostPost($server.host, $app.token, post.id);
+            data = await api.boostPost($server.host, $app.token, post.id, post.visibility);
         }
 
         if (!data) {

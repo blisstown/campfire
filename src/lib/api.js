@@ -297,13 +297,18 @@ export async function getPostContext(host, token, post_id) {
  * @param {string} host - The domain of the target server.
  * @param {string} token - The application token.
  * @param {string} post_id - The ID of the post to boost.
+ * @param {string} visibility - The visibility with which to boost the post.
  */
-export async function boostPost(host, token, post_id) {
+export async function boostPost(host, token, post_id, visibility) {
     let url = `https://${host}/api/v1/statuses/${post_id}/reblog`;
+
+    let form = new FormData();
+    if (visibility) form.append("visibility", visibility);
 
     const data = await fetch(url, {
         method: 'POST',
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: { "Authorization": `Bearer ${token}` },
+        body: form,
     }).then(res => res.json());
 
     return data;
