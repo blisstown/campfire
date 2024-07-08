@@ -152,11 +152,12 @@ export async function getStreamingHealth(host) {
  * @param {string} limit - The maximum number of notifications to retrieve (default 40).
  * @param {string} types - A list of notification types to filter to.
  */
-export async function getNotifications(host, token, min_id, limit, types) {
+export async function getNotifications(host, token, min_id, max_id, limit, types) {
     let url = `https://${host}/api/v1/notifications`;
 
     let params = new URLSearchParams();
     if (min_id) params.append("min_id", min_id);
+    if (max_id) params.append("max_id", max_id);
     if (limit) params.append("limit", limit);
     if (types) params.append("types", types.join(','));
     const params_string = params.toString();

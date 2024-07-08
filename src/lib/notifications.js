@@ -42,18 +42,15 @@ function load(name) {
 }
 
 let loading;
-export async function getNotifications(clean) {
+export async function getNotifications(min_id, max_id) {
     if (loading) return; // no spamming!!
     loading = true;
-
-    let last_id = false;
-    if (!clean && get(notifications).length > 0)
-        last_id = get(notifications)[get(notifications).length - 1].id;
 
     const notif_data = await api.getNotifications(
         get(server).host,
         get(app).token,
-        last_id
+        min_id,
+        max_id,
     );
 
     if (!notif_data) {
@@ -61,8 +58,6 @@ export async function getNotifications(clean) {
         loading = false;
         return;
     }
-
-    if (clean) notifications.set([]);
 
     for (let i in notif_data) {
         let notif = notif_data[i];
@@ -82,7 +77,5 @@ export async function getNotifications(clean) {
         notif.status = notif.status ? await parsePost(notif.status, 0, false) : null;
         notifications.update(notifications => [...notifications, notif]);
     }
-    if (!last_id) last_read_notif_id.set(notif_data[0].id);
-    if (!last_id) unread_notif_count.set(0);
     loading = false;
 }

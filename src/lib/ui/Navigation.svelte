@@ -9,7 +9,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { createEventDispatcher } from 'svelte';
-    import { unread_notif_count } from '$lib/notifications.js';
+    import { notifications, unread_notif_count } from '$lib/notifications.js';
 
     import Logo from '$lib/../img/campfire-logo.svg';
     import Button from './Button.svelte';
@@ -40,7 +40,8 @@
                 break;
             case "notifications":
                 route = "/notifications";
-                getNotifications(true);
+                notifications.set([]);
+                getNotifications();
                 break;
             case "explore":
             case "lists":

@@ -1,5 +1,5 @@
 <script>
-    import { notifications, getNotifications } from '$lib/notifications.js';
+    import { notifications, last_read_notif_id, unread_notif_count, getNotifications } from '$lib/notifications.js';
     import { account } from '$lib/stores/account.js';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
@@ -7,11 +7,17 @@
 
     if (!$account) goto("/");
 
-    getNotifications();
+    getNotifications().then(notif_data => {
+        if (notif_data && notif_data.constructor === Array) {
+            last_read_notif_id.set(notif_data[0].id);
+        }
+        unread_notif_count.set(0);
+    });
     document.addEventListener("scroll", () => {
         if ($account && $page.url.pathname !== "/notifications") return;
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2048) {
-            getNotifications();
+            let max_id = $notifications.length > 0 ? $notifications[$notifications.length - 1].id : null;
+            getNotifications(null, max_id);
         }
     });
 </script>
