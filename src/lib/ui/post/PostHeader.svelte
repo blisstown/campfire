@@ -79,12 +79,6 @@
         display: block;
     }
 
-    .post-user-info .name :global(.emoji) {
-        position: relative;
-        top: .2em;
-        height: 1.2em;
-    }
-
     .post-user-info .username {
         opacity: .8;
         font-size: .9em;

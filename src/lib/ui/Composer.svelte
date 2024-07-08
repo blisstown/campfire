@@ -14,11 +14,18 @@
     import WarningIcon from '@cf/icons/warning.svg';
 
     import PublicVisIcon from '@cf/icons/public.svg';
+    import UnlistedVisIcon from '@cf/icons/unlisted.svg';
+    import FollowersVisIcon from '@cf/icons/followers.svg';
+    import PrivateVisIcon from '@cf/icons/dm.svg';
+
+    export let reply_id;
 
     let content_warning = ""
     let content = "";
     // let media_ids = [];
     let show_cw = false;
+    let visibility = "Public";
+
     const placeholders = [
         "What's cooking, $1?",
         "Speak your mind!",
@@ -33,18 +40,51 @@
 
     async function buildPost() {
         let postdata = {}
-        if(show_cw) {
-            postdata.spoiler_text = content_warning;
-        }
 
-        if(!content) return;
+        if (!content) return;
         postdata.status = content;
+        switch (visibility) {
+            case "Public":
+                postdata.visibility = "public";
+                break;
+            case "Unlisted":
+                postdata.visibility = "unlisted";
+                break;
+            case "Followers only":
+                postdata.visibility = "private";
+                break;
+            case "Private":
+                postdata.visibility = "direct";
+                break;
+        }
+        if (show_cw) {
+            postdata.spoiler_text = content_warning;
+            postdata.sensitive = true;
+        }
+        if (reply_id) postdata.in_reply_to_id = reply_id;
 
         let new_post = await api.createPost($server.host, $app.token, postdata);
         let new_post_parsed = await parsePost(new_post);
 
         timeline.update(current => [new_post_parsed, ...current]);
         dispatch("compose_finished")
+    }
+
+    function cycleVisibility() {
+        switch (visibility) {
+            case "Public":
+                visibility = "Unlisted";
+                break;
+            case "Unlisted":
+                visibility = "Followers only";
+                break;
+            case "Followers only":
+                visibility = "Private";
+                break;
+            case "Private":
+                visibility = "Public";
+                break;
+        }
     }
 </script>
 
@@ -55,22 +95,31 @@
         </a>
         <header class="composer-header">
             <div class="composer-user-info" on:mouseup|stopPropagation>
-                {@html $account.rich_name}
+                <span class="display-name">{@html $account.rich_name}</span>
                 <span class="username">{$account.mention}</span>
             </div>
             <div class="composer-info" on:mouseup|stopPropagation>
             </div>
         </header>
-        <div>
-            <Button centered={true}>
+        <div title={visibility}>
+            <Button centered={true} on:click={() => {cycleVisibility()}}>
                 <svelte:fragment slot="icon">
-                    <PublicVisIcon/>
+                    <!-- TODO: this should be a drop-down option!...later -->
+                    {#if visibility === "Public"}
+                        <PublicVisIcon/>
+                    {:else if visibility === "Unlisted"}
+                        <UnlistedVisIcon/>
+                    {:else if visibility === "Followers only"}
+                        <FollowersVisIcon/>
+                    {:else if visibility === "Private"}
+                        <PrivateVisIcon/>
+                    {/if}
                 </svelte:fragment>
             </Button>
         </div>
     </div>
     {#if show_cw}
-        <input type="text" id="" placeholder="content warning" bind:value={content_warning}/>
+        <input type="text" id="" placeholder="Content warning" bind:value={content_warning}/>
     {/if}
     <textarea placeholder="{placeholder}" class="textbox" bind:value={content}></textarea>
     <div class="composer-footer">
