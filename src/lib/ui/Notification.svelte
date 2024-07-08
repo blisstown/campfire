@@ -108,6 +108,26 @@
             {:else}
                 {@html data.status.html}
             {/if}
+
+            {#if data.status.media && data.status.media.length > 0}
+                <div class="notif-media-container" data-count={data.status.media.length}>
+                    {#each data.status.media as media}
+                        <div class="notif-media {media.type}" on:click|stopPropagation on:mouseup|stopPropagation>
+                            {#if ["image", "gifv", "gif"].includes(media.type)}
+                                <a href={media.url} target="_blank">
+                                    <img src={media.url} alt={media.description} title={media.description} height="200" loading="lazy" decoding="async">
+                                </a>
+                            {:else if media.type === "video"}
+                                <video controls height="200">
+                                    <source src={media.url} alt={media.description} title={media.description} type={media.url.endsWith('.mp4') ? 'video/mp4' : 'video/webm'}>
+                                    <p>{media.description} &ensp; <a href={media.url}>[link]</a></p>
+                                    <!-- <media src={media.url} alt={media.description} loading="lazy" decoding="async"> -->
+                                </video>
+                            {/if}
+                        </div>
+                    {/each}
+                </div>
+            {/if}
         </div>
         {#if data.type === "mention"}
             {#if data.status.reactions}
@@ -269,5 +289,36 @@
         cursor: pointer;
         outline-color: var(--warn-bg);
         transition: outline .05s, box-shadow .05s;
+    }
+
+    .notif-media-container {
+        margin: 16px 0 4px 0;
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        font-size: 14px;
+        line-height: 1.45em;
+    }
+
+    .notif-media {
+        display: inline-block;
+        border-radius: 12px;
+        background-color: #000;
+        overflow: hidden;
+    }
+
+    .notif-media a {
+        width: 5em;
+        height: 5em;
+        display: block;
+        cursor: zoom-in;
+    }
+
+    .notif-media img,
+    .notif-media video {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
     }
 </style>
