@@ -180,6 +180,7 @@
     }
     header .notif-avatars img:not(:first-child) {
         box-shadow: 4px 0 8px -2px rgba(0,0,0,.33);
+        z-index: 0;
     }
     header .notif-avatars img:not(:last-child) {
         margin-left: -8px;
