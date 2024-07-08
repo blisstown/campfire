@@ -1,5 +1,5 @@
 <script>
-    import { play_sound } from '../../sound.js';
+    import { playSound } from '../../sound.js';
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
@@ -12,7 +12,7 @@
     export let sound = "default";
 
     function click() {
-        play_sound(sound);
+        playSound(sound);
         dispatch('click');
     }
 </script>

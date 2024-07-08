@@ -5,6 +5,7 @@
     import { account } from '@cf/store/account';
     import { timeline } from '$lib/timeline';
     import { parseReactions } from '$lib/post';
+    import { playSound } from '$lib/sound';
 
     import ActionButton from './ActionButton.svelte';
 
@@ -22,10 +23,14 @@
         if (!$app || !$app.token) return;
 
         let data;
-        if (post.boosted)
+        if (post.boosted) {
+            playSound();
             data = await api.unboostPost($server.host, $app.token, post.id);
-        else
+        } else {
+            playSound("boost");
             data = await api.boostPost($server.host, $app.token, post.id);
+        }
+
         if (!data) {
             console.error(`Failed to boost post ${post.id}`);
             return;
@@ -72,7 +77,7 @@
     <ActionButton type="reply" label="Reply" bind:count={post.reply_count} sound="post" disabled>
         <ReplyIcon/>
     </ActionButton>
-    <ActionButton type="boost" label="Boost" on:click={toggleBoost} bind:active={post.boosted} bind:count={post.boost_count} sound="boost" disabled={!$account}>
+    <ActionButton type="boost" label="Boost" on:click={toggleBoost} bind:active={post.boosted} bind:count={post.boost_count} disabled={!$account}>
         <RepostIcon/>
         <svelte:fragment slot="activeIcon">
             <RepostIcon/>

@@ -6,12 +6,12 @@ let sounds;
 if (typeof Audio !== typeof undefined) {
     sounds = {
         "default": new Audio(sound_log),
-        "post": new Audio(sound_hello),
-        "boost": new Audio(sound_success),
+        "post": new Audio(sound_success),
+        "boost": new Audio(sound_hello),
     };
 }
 
-export function play_sound(name) {
+export function playSound(name) {
     if (name === false) return;
     if (!name) name = "default";
     const sound = sounds[name];

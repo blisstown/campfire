@@ -1,5 +1,5 @@
 <script>
-    import { play_sound } from '../sound.js';
+    import { playSound } from '../sound.js';
     import { createEventDispatcher } from 'svelte';
     import { afterUpdate } from 'svelte';
 
@@ -21,7 +21,7 @@
             location = href;
             return;
         }
-        play_sound(sound);
+        playSound(sound);
         dispatch('click');
     }
 

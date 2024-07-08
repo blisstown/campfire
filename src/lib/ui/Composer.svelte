@@ -6,6 +6,7 @@
     import { parsePost } from '$lib/post.js';
     import { timeline } from '$lib/timeline.js';
     import { createEventDispatcher } from 'svelte';
+    import { playSound } from '$lib/sound';
 
     import Button from '@cf/ui/Button.svelte';
     import PostIcon from '@cf/icons/post.svg';
@@ -67,6 +68,8 @@
         let new_post_parsed = await parsePost(new_post);
 
         timeline.update(current => [new_post_parsed, ...current]);
+
+        playSound("post");
         dispatch("compose_finished")
     }
 
@@ -140,7 +143,7 @@
                 </svelte:fragment>
             </Button>
         </div>
-        <Button filled={true} centered={true} class="postbtn" on:click={buildPost}>
+        <Button filled={true} centered={true} class="postbtn" on:click={buildPost} sound={false}>
             <svelte:fragment slot="icon">
                 <PostIcon/>
             </svelte:fragment>

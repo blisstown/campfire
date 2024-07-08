@@ -3,7 +3,7 @@
     import { account } from '$lib/stores/account.js';
     import { server } from '$lib/client/server.js';
     import { app } from '$lib/client/app.js';
-    import { play_sound } from '$lib/sound.js';
+    import { playSound } from '$lib/sound.js';
     import { getTimeline } from '$lib/timeline.js';
     import { getNotifications } from '$lib/notifications.js';
     import { goto } from '$app/navigation';
@@ -169,7 +169,7 @@
         </div>
 
         <div id="account-button">
-            <img src={$account.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => play_sound()}>
+            <img src={$account.avatar_url} class="account-avatar" height="64px" alt="" aria-hidden="true" on:click={() => playSound()}>
             <div class="account-name" aria-hidden="true">
                 <a href={$account.url} class="nickname" title={$account.nickname}>{@html $account.rich_name}</a>
                 <span class="username" title={`@${$account.username}@${$account.host}`}>
