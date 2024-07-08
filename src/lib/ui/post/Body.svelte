@@ -20,7 +20,9 @@
         </button>
     {/if}
     {#if !post.warning || open_warned}
-        {#if post.html}
+        {#if post.rich_text}
+            <span class="post-text">{@html post.rich_text}</span>
+        {:else if post.html}
             <span class="post-text">{@html post.html}</span>
         {/if}
         {#if post.media && post.media.length > 0}
@@ -88,10 +90,11 @@
     }
 
     .post-text :global(.emoji) {
-        position: relative;
-        top: 6px;
-        margin-top: -10px;
-        height: 24px!important;
+        transition: transform .1s ease-out;
+    }
+
+    .post-text :global(.emoji):hover {
+        transform: scale(1.2);
     }
 
     .post-text :global(blockquote) {
