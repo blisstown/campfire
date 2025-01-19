@@ -106,7 +106,7 @@
                     {data.status.warning}
                 </div>
             {:else}
-                {@html data.status.html}
+                {@html data.status.rich_text}
             {/if}
 
             {#if data.status.media && data.status.media.length > 0}
