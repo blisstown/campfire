@@ -149,6 +149,7 @@ export async function getStreamingHealth(host) {
  * @param {string} host - The domain of the target server.
  * @param {string} token - The application token.
  * @param {string} min_id - If provided, only shows notifications after this ID.
+ * @param {string} max_id - If provided, only shows notifications before this ID.
  * @param {string} limit - The maximum number of notifications to retrieve (default 40).
  * @param {string} types - A list of notification types to filter to.
  */

@@ -8,6 +8,7 @@ import { parsePost } from '$lib/post.js';
 import { parseAccount } from '$lib/account.js';
 
 const prefix = app_name + '_notif_';
+const notification_limit = 40;
 
 export const notifications = writable([]);
 export const unread_notif_count = writable(load("unread_count"));
@@ -41,29 +42,29 @@ function load(name) {
     return data ? data : false;
 }
 
-let loading;
 export async function getNotifications(min_id, max_id) {
-    if (loading) return; // no spamming!!
-    loading = true;
-
-    const notif_data = await api.getNotifications(
+    const new_notifications = await api.getNotifications(
         get(server).host,
         get(app).token,
         min_id,
         max_id,
+        notification_limit,
     );
 
-    if (!notif_data) {
+    if (!new_notifications) {
         console.error(`Failed to retrieve notifications.`);
         loading = false;
         return;
     }
 
-    for (let i in notif_data) {
-        let notif = notif_data[i];
+    for (let i in new_notifications) {
+        let notif = new_notifications[i];
         notif.accounts = [ await parseAccount(notif.account) ];
-        if (get(notifications).length > 0) {
-            let prev = get(notifications)[get(notifications).length - 1];
+
+        const _notifications = get(notifications);
+        if (_notifications.length > 0) {
+            let prev = _notifications[_notifications.length - 1];
+
             if (notif.type === prev.type) {
                 if (prev.status && notif.status && prev.status.id === notif.status.id) {
                     notifications.update(notifications => {
@@ -74,8 +75,8 @@ export async function getNotifications(min_id, max_id) {
                 }
             }
         }
+
         notif.status = notif.status ? await parsePost(notif.status, 0, false) : null;
         notifications.update(notifications => [...notifications, notif]);
     }
-    loading = false;
 }

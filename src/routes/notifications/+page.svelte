@@ -13,11 +13,19 @@
         }
         unread_notif_count.set(0);
     });
+
+    let notif_lock = true; // `true` means "open"
     document.addEventListener("scroll", () => {
+        if (!notif_lock) return;
         if ($account && $page.url.pathname !== "/notifications") return;
+
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2048) {
             let max_id = $notifications.length > 0 ? $notifications[$notifications.length - 1].id : null;
-            getNotifications(null, max_id);
+
+            notif_lock = false;
+            getNotifications(null, max_id).then(() => {
+                notif_lock = true;
+            });
         }
     });
 </script>
