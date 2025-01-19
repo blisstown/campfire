@@ -7,9 +7,9 @@
 
     if (!$account) goto("/");
 
-    getNotifications().then(notif_data => {
-        if (notif_data && notif_data.constructor === Array) {
-            last_read_notif_id.set(notif_data[0].id);
+    getNotifications().then(() => {
+        if ($notifications.length > 0) {
+            last_read_notif_id.set($notifications[0].id);
         }
         unread_notif_count.set(0);
     });
