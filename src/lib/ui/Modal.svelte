@@ -55,8 +55,8 @@
         left: 0;
         z-index: 100;
         
-        background-color: rgba(0,0,0,0.2);
-        backdrop-filter: blur(32px) saturate(1.25);
+        background-color: rgba(0,0,0,0.5);
+        backdrop-filter: blur(10px) saturate(1.25);
         user-select: none;
 
         animation: modal_bg .15s cubic-bezier(0.22, 1, 0.36, 1);
@@ -75,10 +75,12 @@
             background-color: rgba(0,0,0,0);
             backdrop-filter: blur(0px) saturate(1.0);
         }
+        /*
         to {
-            background-color: rgba(0,0,0,0.2);
-            backdrop-filter: blur(32px) saturate(1.25);
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px) saturate(1.25);
         }
+        */
     }
 
     @keyframes modal_pop_up {
