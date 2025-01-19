@@ -148,6 +148,7 @@
         text-decoration: inherit;
         color: inherit;
         transition: background-color .1s;
+        cursor: pointer;
     }
 
     .notification:hover {

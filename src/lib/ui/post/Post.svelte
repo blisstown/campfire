@@ -87,6 +87,7 @@
         padding: 16px;
         border-radius: 8px;
         transition: background-color .1s;
+        cursor: pointer;
     }
     
     .post:not(.focused) {
