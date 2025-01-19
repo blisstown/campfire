@@ -2,10 +2,14 @@
 - Huge refactor, along with some improved documentation
 - Custom emotes now show in the sidebar profile display
 - Infinite scrolling notifications
-- Notifications now show content warnings instead of plain content
+- Notifications now show content warnings where applicable
+- Notifications now show custom emoji
+- Notifications now show post media
+- Boosts now reflect the visibility of the original post
 - Added compose box, and the ability to create posts
-- Added ability to delete posts
+- Added button to delete own posts
 - Rewrote Campfire URLs so they can be viewed anonymously
+- Improved UI tweaks
 
 # Campfire v0.3.0
 - Added notifications view
